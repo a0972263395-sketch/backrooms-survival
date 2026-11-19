@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LEVEL-0 交易終端 | 後室物資價值評估與玩家討論系統</title>
+    <!-- PWA 獨立 App 與系統通知設定 -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#1b180d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="LEVEL-0 終端">
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Google Fonts: Share Tech Mono, Noto Sans TC & Inter -->
@@ -586,11 +592,15 @@
                                     每月 1 日重置
                                 </span>
                             </div>
-                            <p class="text-xs text-[#a39765]">點擊他人頭像可發起私聊請求；每月 1 日 00:00 自動清空公共聊天</p>
+                            <p class="text-xs text-[#a39765]">點擊他人頭像可發起私聊請求；開啟「允許通知」可在背景接收新訊息提醒</p>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto flex-wrap">
+                        <button type="button" id="notif-permission-btn" onclick="requestSystemNotificationPermission()" class="px-3 py-1.5 rounded-lg bg-amber-950/90 hover:bg-amber-900 text-amber-300 border border-amber-500/70 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
+                            <i id="notif-permission-icon" class="fa-solid fa-bell"></i>
+                            <span id="notif-permission-label">開啟通知</span>
+                        </button>
                         <button type="button" onclick="openFunShopModal()" class="px-3 py-1.5 rounded-lg bg-cyan-950/90 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/60 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
                             <i class="fa-solid fa-store"></i>
                             <span>趣玩商店</span>
@@ -893,6 +903,12 @@
     </div>
 
     <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            });
+        }
+
         const ADMIN_SECRET_CODE = 'MEG2026';
 
         const AVATAR_FRAMES_DB = [
@@ -978,6 +994,90 @@
             dmRooms: {},
             activeDmRoomId: '',
             dmMessages: []
+        };
+
+        // 系統瀏覽器通知權限與背景推播邏輯
+        function updateNotificationButtonUI() {
+            const btn = document.getElementById('notif-permission-btn');
+            const label = document.getElementById('notif-permission-label');
+            const icon = document.getElementById('notif-permission-icon');
+            if (!btn || !label || !icon) return;
+
+            if (!('Notification' in window)) {
+                label.textContent = '不支援通知';
+                btn.disabled = true;
+                btn.className = 'px-3 py-1.5 rounded-lg bg-[#1c180b] text-[#7d734b] border border-[#3d3518] text-xs font-bold flex items-center gap-1.5 opacity-60';
+                return;
+            }
+
+            if (Notification.permission === 'granted') {
+                label.textContent = '通知已開啟';
+                icon.className = 'fa-solid fa-bell text-emerald-400';
+                btn.className = 'px-3 py-1.5 rounded-lg bg-emerald-950/90 text-emerald-300 border border-emerald-500/70 text-xs font-black flex items-center gap-1.5';
+            } else if (Notification.permission === 'denied') {
+                label.textContent = '通知已封鎖';
+                icon.className = 'fa-solid fa-bell-slash text-red-400';
+                btn.className = 'px-3 py-1.5 rounded-lg bg-red-950/80 text-red-300 border border-red-600/60 text-xs font-bold flex items-center gap-1.5';
+            } else {
+                label.textContent = '開啟通知';
+                icon.className = 'fa-solid fa-bell';
+                btn.className = 'px-3 py-1.5 rounded-lg bg-amber-950/90 hover:bg-amber-900 text-amber-300 border border-amber-500/70 text-xs font-black transition flex items-center gap-1.5 active:scale-95';
+            }
+        }
+
+        window.requestSystemNotificationPermission = async function() {
+            if (!('Notification' in window)) {
+                window.showToast('目前瀏覽器不支援系統通知（iPhone 需先加入主畫面）', 'error');
+                return;
+            }
+            if (Notification.permission === 'granted') {
+                window.sendBrowserSystemNotification('LEVEL-0 終端測試', '系統訊息通知已正常運作！');
+                window.showToast('系統通知已啟用', 'success');
+                return;
+            }
+            if (Notification.permission === 'denied') {
+                window.showToast('通知權限已被瀏覽器封鎖，請至網址列左側圖示重新開啟允許', 'error');
+                return;
+            }
+            try {
+                const permission = await Notification.requestPermission();
+                updateNotificationButtonUI();
+                if (permission === 'granted') {
+                    window.sendBrowserSystemNotification('LEVEL-0 交易終端', '已成功開啟新訊息系統通知！');
+                    window.showToast('已開啟系統訊息通知！', 'success');
+                } else {
+                    window.showToast('你拒絕了通知權限，若需接收通知請再點擊開啟', 'info');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
+        window.sendBrowserSystemNotification = async function(title, bodyText) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            const options = {
+                body: bodyText,
+                icon: 'https://cdn-icons-png.flaticon.com/512/1067/1067357.png',
+                tag: 'backrooms-chat-msg',
+                renotify: true
+            };
+            try {
+                if ('serviceWorker' in navigator) {
+                    const reg = await navigator.serviceWorker.getRegistration();
+                    if (reg && reg.showNotification) {
+                        await reg.showNotification(title, options);
+                        return;
+                    }
+                }
+                const n = new Notification(title, options);
+                n.onclick = () => {
+                    window.focus();
+                    window.switchTab('chat');
+                    n.close();
+                };
+            } catch (e) {
+                console.error(e);
+            }
         };
 
         function getAvatarFrameClass(frameId) {
@@ -1082,6 +1182,7 @@
 
             updateAdminUI();
             updateCurrencyAndFrameUI();
+            updateNotificationButtonUI();
         }
 
         // 趣玩商店功能（頭像框 + 聊天框特效）
@@ -2726,9 +2827,22 @@
             }
         };
 
+        let lastNotifiedReqId = '';
         onValue(dmRequestsRef, (snap) => {
             window.state.dmRequests = snap.val() || {};
             renderDmSidebar();
+            const entries = Object.entries(window.state.dmRequests)
+                .filter(([_, r]) => r && r.toUid === window.currentUserUid && r.status === 'pending');
+            if (entries.length > 0) {
+                const [latestReqId, latestReq] = entries[entries.length - 1];
+                if (latestReqId !== lastNotifiedReqId) {
+                    lastNotifiedReqId = latestReqId;
+                    window.sendBrowserSystemNotification(
+                        '收到新的私聊請求',
+                        `${latestReq.fromNickname || '流浪者'} 想與你開啟獨立私聊`
+                    );
+                }
+            }
         });
 
         onValue(dmRoomsRef, (snap) => {
@@ -2794,6 +2908,12 @@
 
             if (!isFirstLoad && latestMsg && latestMsg.id !== lastKnownMsgId && latestMsg.senderUid !== window.currentUserUid) {
                 window.showTopMessageBanner(latestMsg);
+                if (document.hidden || window.state.activeTab !== "chat") {
+                    window.sendBrowserSystemNotification(
+                        `${latestMsg.isAdmin ? '[管理員] ' : ''}${latestMsg.nickname}`,
+                        latestMsg.text
+                    );
+                }
             }
 
             if (latestMsg) lastKnownMsgId = latestMsg.id;
