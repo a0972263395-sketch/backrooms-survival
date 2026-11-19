@@ -89,7 +89,7 @@
             border-bottom-color: rgba(52, 211, 153, 0.5) !important;
         }
 
-        /* 賽博頭像框（套用在頭像外框，不影響聊天框） */
+        /* 賽博頭像框 */
         .cyber-avatar-frame {
             border-color: #00ff88 !important;
             box-shadow: 0 0 0 2px #052e16, 0 0 14px #00ff88, 0 0 24px rgba(16, 185, 129, 0.75) !important;
@@ -133,6 +133,36 @@
             border: 2px solid #67e8f9 !important;
             color: #ecfeff !important;
             box-shadow: 0 0 15px rgba(103, 232, 249, 0.4), inset 0 0 12px rgba(165, 243, 252, 0.22);
+        }
+
+        /* 賽博掉落小球與輪盤特效 */
+        @keyframes cyber-drop-center {
+            0% { transform: translateY(-65vh) scale(0.55) rotate(0deg); opacity: 0.2; }
+            75% { transform: translateY(14px) scale(1.08) rotate(240deg); opacity: 1; }
+            100% { transform: translateY(0px) scale(1) rotate(360deg); opacity: 1; }
+        }
+        @keyframes orb-aura {
+            0%, 100% {
+                box-shadow: 0 0 25px #00ff88, 0 0 55px rgba(16, 185, 129, 0.8), inset 0 0 20px #a7f3d0;
+            }
+            50% {
+                box-shadow: 0 0 40px #34d399, 0 0 85px rgba(16, 185, 129, 1), inset 0 0 30px #ffffff;
+            }
+        }
+        .cyber-drop-orb {
+            animation: cyber-drop-center 0.95s cubic-bezier(0.22, 1.35, 0.36, 1) forwards, orb-aura 1.4s infinite ease-in-out;
+        }
+        .cyber-wheel-disc {
+            background: conic-gradient(
+                #064e3b 0deg 60deg,
+                #047857 60deg 120deg,
+                #065f46 120deg 180deg,
+                #059669 180deg 240deg,
+                #064e3b 240deg 300deg,
+                #10b981 300deg 360deg
+            );
+            box-shadow: 0 0 35px rgba(16, 185, 129, 0.65), inset 0 0 20px rgba(0, 0, 0, 0.6);
+            transition: transform 3.8s cubic-bezier(0.14, 0.88, 0.22, 1);
         }
 
         /* 手機／全螢幕聊天放大模式 */
@@ -257,6 +287,11 @@
                         <i class="fa-solid fa-comments text-amber-400"></i>
                         <span>玩家討論</span>
                         <span id="unread-chat-badge" class="hidden ml-0.5 px-1.5 py-0.2 rounded-full bg-emerald-500 text-stone-950 text-[10px] font-mono-tech font-black">NEW</span>
+                    </button>
+                    <button type="button" onclick="switchTab('dm')" id="tab-dm" class="px-3.5 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] flex items-center gap-1.5 relative">
+                        <i class="fa-solid fa-envelope text-cyan-400"></i>
+                        <span>私訊</span>
+                        <span id="unread-dm-badge" class="hidden ml-0.5 px-1.5 py-0.2 rounded-full bg-cyan-400 text-stone-950 text-[10px] font-mono-tech font-black">!</span>
                     </button>
                 </div>
 
@@ -469,7 +504,7 @@
                                     每日 00:00 重置
                                 </span>
                             </div>
-                            <p class="text-xs text-[#a39765]">免登入即時同步：頭像、暱稱與歷史發言已鎖定此裝置；每 0 點自動重置聊天紀錄</p>
+                            <p class="text-xs text-[#a39765]">點擊他人頭像可發起私聊請求；每日 00:00 自動重置聊天紀錄</p>
                         </div>
                     </div>
 
@@ -507,7 +542,6 @@
 
                 <form onsubmit="handleSendChatMessage(event)" class="p-3 sm:p-4 bg-[#1a170c] border-t border-[#594e25] flex flex-col sm:flex-row gap-2.5 shrink-0">
                     <div class="flex items-center gap-2 sm:w-56 shrink-0">
-                        <!-- 自訂頭像上傳按鈕 -->
                         <input type="file" id="chat-avatar-file" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
                         <button type="button" onclick="document.getElementById('chat-avatar-file').click()" title="點擊上傳玩家頭像（鎖定於此裝置）" class="relative w-10 h-10 rounded-full border-2 border-[#8c7b38] hover:border-amber-400 overflow-hidden shrink-0 bg-[#0d0b05] group transition">
                             <img id="my-avatar-preview" src="" alt="我的頭像" class="w-full h-full object-cover">
@@ -533,6 +567,70 @@
             </div>
         </div>
 
+        <!-- ==================== 分頁 3：私訊頁面 (獨立私聊空間) ==================== -->
+        <div id="view-dm" class="hidden">
+            <div class="backrooms-panel rounded-2xl border border-cyan-500/40 overflow-hidden grid grid-cols-1 md:grid-cols-12 h-[72vh] min-h-[520px]">
+                <!-- 左側：私聊請求與已建立私聊列表 -->
+                <div class="md:col-span-4 border-b md:border-b-0 md:border-r border-[#4a4122] bg-[#121008]/90 flex flex-col overflow-hidden">
+                    <div class="px-4 py-3.5 border-b border-[#4a4122] bg-[#1a170c] flex items-center justify-between">
+                        <span class="text-xs sm:text-sm font-black text-cyan-300 flex items-center gap-2">
+                            <i class="fa-solid fa-user-secret"></i> 私訊頻道清單
+                        </span>
+                        <span class="text-[10px] font-mono-tech text-[#9c9163]">點頭像可發起私聊</span>
+                    </div>
+
+                    <div class="p-3 overflow-y-auto space-y-4 flex-grow">
+                        <div>
+                            <div class="text-[11px] font-black text-amber-400 mb-2 flex items-center justify-between">
+                                <span><i class="fa-solid fa-bell mr-1"></i>收到的私聊請求</span>
+                                <span id="dm-incoming-count" class="font-mono-tech">0</span>
+                            </div>
+                            <div id="dm-incoming-list" class="space-y-2">
+                                <p class="text-xs text-[#7d734b]">目前沒有待處理的私聊請求</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="text-[11px] font-black text-emerald-400 mb-2 flex items-center justify-between">
+                                <span><i class="fa-solid fa-lock mr-1"></i>已建立的獨立私聊</span>
+                                <span id="dm-rooms-count" class="font-mono-tech">0</span>
+                            </div>
+                            <div id="dm-rooms-list" class="space-y-2">
+                                <p class="text-xs text-[#7d734b]">尚未與其他玩家建立私聊</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右側：獨立私聊對話區 -->
+                <div class="md:col-span-8 flex flex-col bg-[#0d0b05]/80 overflow-hidden">
+                    <div id="dm-active-header" class="px-5 py-3.5 border-b border-[#4a4122] bg-[#1a170c] flex items-center justify-between shrink-0">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-comments text-cyan-400"></i>
+                            <span id="dm-partner-title" class="text-sm font-black text-[#faf2c3]">請選擇或同意一個私聊對象</span>
+                        </div>
+                        <span id="dm-room-status" class="text-[10px] font-mono-tech text-[#9c9163]">PRIVATE CHANNEL</span>
+                    </div>
+
+                    <div id="dm-messages-container" class="flex-grow overflow-y-auto p-4 sm:p-5 space-y-3">
+                        <div class="h-full flex flex-col items-center justify-center text-[#7d734b] text-xs">
+                            <i class="fa-solid fa-user-lock text-2xl mb-2 opacity-50"></i>
+                            <p>在「玩家討論」點擊他人頭像並確認私聊，或於左側選擇已建立的私聊頻道。</p>
+                        </div>
+                    </div>
+
+                    <form id="dm-send-form" onsubmit="handleSendDmMessage(event)" class="p-3 sm:p-4 bg-[#1a170c] border-t border-[#4a4122] flex gap-2 shrink-0">
+                        <input type="text" id="dm-text-input" maxlength="300" disabled placeholder="請先選擇或同意私聊對象..." 
+                            class="w-full bg-[#0d0b05] border border-[#594e25] focus:border-cyan-400 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-[#faf2c3] placeholder-[#5e5534] outline-none transition disabled:opacity-50">
+                        <button type="submit" id="dm-send-btn" disabled class="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-stone-950 font-black text-xs sm:text-sm transition flex items-center gap-2 shrink-0 disabled:opacity-40">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>傳送</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
@@ -540,6 +638,32 @@
     <footer class="border-t border-[#423a1e] py-4 text-center text-xs font-mono-tech text-[#8a7f56] bg-[#121008]">
         LEVEL-0 TRADING TERMINAL // 謹慎評估每一筆物資交換，願你在後室平安生存。
     </footer>
+
+    <!-- ==================== 點擊頭像：確認私聊彈窗 ==================== -->
+    <div id="dm-confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+        <div class="bg-[#1a170c] border-2 border-cyan-500/70 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-[#4a4122] pb-3">
+                <h3 class="text-base font-black text-[#faf2c3] flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-cyan-400"></i> 發起私人聊天請求
+                </h3>
+                <button type="button" onclick="closeDmConfirmModal()" class="text-[#9c9163] hover:text-[#faf2c3]">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="flex items-center gap-3 bg-[#121008] p-3.5 rounded-xl border border-[#4a4122]">
+                <img id="dm-target-avatar" src="" alt="對象頭像" class="w-12 h-12 rounded-full object-cover border-2 border-cyan-400 bg-[#241f0f]">
+                <div>
+                    <div class="text-xs text-[#9c9163]">私聊對象</div>
+                    <div id="dm-target-name" class="text-sm font-black text-cyan-300">流浪者</div>
+                </div>
+            </div>
+            <p class="text-xs text-[#a39765]">送出請求後，需等待對方同意，雙方即可在獨立私聊空間對話。</p>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeDmConfirmModal()" class="px-4 py-2 rounded-xl bg-[#262111] text-[#d6c67c] border border-[#574d28] text-xs font-bold">取消</button>
+                <button type="button" onclick="submitDmRequest()" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-stone-950 text-xs font-black">確認私聊</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ==================== 趣玩商店彈出視窗 ==================== -->
     <div id="fun-shop-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
@@ -567,28 +691,54 @@
         </div>
     </div>
 
-    <!-- ==================== 整點綠色賽博免費抽獎視窗 ==================== -->
-    <div id="cyber-lottery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
-        <div class="bg-[#051a10] border-2 border-emerald-400 rounded-2xl w-full max-w-md p-6 shadow-[0_0_40px_rgba(16,185,129,0.35)] space-y-4 text-emerald-100">
+    <!-- ==================== 整點綠色賽博抽獎視窗（掉落小球 + 5秒自動開啟 + 輪盤） ==================== -->
+    <div id="cyber-lottery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
+        <div class="bg-[#051a10] border-2 border-emerald-400 rounded-2xl w-full max-w-md p-6 shadow-[0_0_50px_rgba(16,185,129,0.45)] space-y-4 text-emerald-100 relative overflow-hidden">
             <div class="flex items-center justify-between border-b border-emerald-700/60 pb-3">
                 <h3 class="text-base sm:text-lg font-black text-emerald-300 flex items-center gap-2">
-                    <i class="fa-solid fa-microchip text-emerald-400"></i> 綠色賽博整點免費抽獎
+                    <i class="fa-solid fa-microchip text-emerald-400"></i> 綠色賽博整點輪盤抽獎
                 </h3>
                 <button type="button" onclick="closeCyberLotteryModal()" class="text-emerald-400 hover:text-white">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <p class="text-xs text-emerald-200/85 leading-relaxed">
-                每小時整點限時 1 分鐘免費抽獎！<br>
-                • <span class="text-cyan-300 font-bold">小獎</span>：能量核心（+10 ~ +35）<br>
-                • <span class="text-emerald-300 font-bold">大獎</span>：永久解鎖「賽博頭像框」（套用於頭像外框）
-            </p>
-            <div id="cyber-lottery-result" class="p-3.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-center text-xs font-mono-tech text-emerald-300">
-                點擊下方按鈕抽取本時段免費獎勵
+
+            <!-- 階段 1：螢幕上方掉落小球至正中央（點擊或 5 秒後自動開啟） -->
+            <div id="cyber-orb-stage" class="py-6 flex flex-col items-center justify-center space-y-4">
+                <button type="button" id="cyber-drop-orb-btn" onclick="openCyberWheelFromOrb()" class="cyber-drop-orb w-24 h-24 rounded-full bg-gradient-to-br from-emerald-300 via-emerald-500 to-teal-900 border-2 border-emerald-200 flex flex-col items-center justify-center text-stone-950 font-black cursor-pointer">
+                    <i class="fa-solid fa-atom text-2xl animate-spin"></i>
+                    <span class="text-[11px] mt-1">點我開啟</span>
+                </button>
+                <div class="text-center text-xs font-mono-tech text-emerald-300">
+                    賽博能量球已降落！點擊小球或 <span id="cyber-orb-auto-sec" class="text-white font-bold">5</span> 秒後自動展開輪盤...
+                </div>
             </div>
-            <div class="flex justify-end gap-2">
-                <button type="button" onclick="closeCyberLotteryModal()" class="px-4 py-2 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-700 text-xs font-bold">關閉</button>
-                <button type="button" id="cyber-spin-btn" onclick="spinCyberLottery()" class="px-5 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-stone-950 text-xs font-black shadow-lg">立即免費抽獎</button>
+
+            <!-- 階段 2：輪盤抽獎區 -->
+            <div id="cyber-wheel-stage" class="hidden flex-col items-center space-y-4 py-2">
+                <div class="relative w-52 h-52 flex items-center justify-center">
+                    <!-- 頂部指針 -->
+                    <div class="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[20px] border-t-amber-300 absolute -top-2 z-20 drop-shadow-[0_0_8px_#fbbf24]"></div>
+                    <!-- 輪盤本體 -->
+                    <div id="cyber-wheel-disc" class="cyber-wheel-disc w-48 h-48 rounded-full border-4 border-emerald-300 relative flex items-center justify-center">
+                        <span class="absolute top-3 text-[11px] font-black text-amber-200 drop-shadow">賽博頭像框</span>
+                        <span class="absolute right-3 text-[11px] font-black text-cyan-200">+20 核心</span>
+                        <span class="absolute bottom-3 text-[11px] font-black text-emerald-100">+15 核心</span>
+                        <span class="absolute left-3 text-[11px] font-black text-lime-200">+35 核心</span>
+                        <div class="w-12 h-12 rounded-full bg-stone-950 border-2 border-emerald-300 flex items-center justify-center text-xs font-black text-emerald-300 z-10">
+                            SPIN
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cyber-lottery-result" class="w-full p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-center text-xs font-mono-tech text-emerald-300">
+                    小獎：能量核心（+10 ~ +35）｜大獎：賽博頭像框
+                </div>
+
+                <div class="flex justify-end gap-2 w-full">
+                    <button type="button" onclick="closeCyberLotteryModal()" class="px-4 py-2 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-700 text-xs font-bold">關閉</button>
+                    <button type="button" id="cyber-spin-btn" onclick="spinCyberLottery()" class="px-5 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-stone-950 text-xs font-black shadow-lg">啟動輪盤抽獎</button>
+                </div>
             </div>
         </div>
     </div>
@@ -648,12 +798,9 @@
         </div>
     </div>
 
-    <!-- 交易評估、商店、抽獎與 UI 核心邏輯 -->
     <script>
-        // ★ 管理員金鑰（可自行修改成你專屬的密碼）
         const ADMIN_SECRET_CODE = 'MEG2026';
 
-        // 趣玩商店：五款聊天框特效
         const CHAT_EFFECT_SHOP = [
             { id: 'gold', name: '金色聊天框', cost: 30, cssClass: 'bubble-fx-gold', badge: '奢華金光' },
             { id: 'silver', name: '銀色聊天框', cost: 25, cssClass: 'bubble-fx-silver', badge: '合金銀輝' },
@@ -662,7 +809,6 @@
             { id: 'ice', name: '冰聊天框', cost: 45, cssClass: 'bubble-fx-ice', badge: '寒冰晶透' }
         ];
 
-        // 預設後室探員 SVG 頭像
         const DEFAULT_AVATAR_URL = "data:image/svg+xml;utf8," + encodeURIComponent(
             `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#241f0f"/><circle cx="40" cy="30" r="14" fill="#d6c67c"/><path d="M16 70c2-14 14-20 24-20s22 6 24 20" fill="#8c7b38"/></svg>`
         );
@@ -712,7 +858,6 @@
             their: { points: 0, weapons: {} },
             chatMessages: [],
             mutedUsers: {},
-            playerWallets: {},
             energyCores: 0,
             ownedEffects: [],
             equippedEffect: '',
@@ -725,7 +870,12 @@
             userAvatar: DEFAULT_AVATAR_URL,
             userNickname: '',
             activeModalSide: 'my',
-            modalFilter: 'all'
+            modalFilter: 'all',
+            dmTargetCandidate: null,
+            dmRequests: {},
+            dmRooms: {},
+            activeDmRoomId: '',
+            dmMessages: []
         };
 
         function getTodayDateKey() {
@@ -918,9 +1068,11 @@
             window.showToast(window.state.equippedCyberFrame ? '已穿戴賽博頭像框' : '已卸下賽博頭像框', 'info');
         };
 
-        // 每小時整點綠色賽博模式與 1 分鐘免費抽獎
+        // 每小時整點綠色賽博模式 + 掉落小球 + 5 秒自動開啟 + 輪盤抽獎
         let lastTriggeredHourSlot = '';
         let cyberCountdownTimer = null;
+        let orbAutoOpenTimer = null;
+        let orbCountdownInterval = null;
 
         function activateCyberEvent(durationMs = 60000) {
             const now = Date.now();
@@ -952,7 +1104,6 @@
             cyberCountdownTimer = setInterval(() => {
                 const now = new Date();
                 const slotKey = getCurrentHourSlotKey();
-                // 整點前 60 秒內（分鐘為 0）自動開啟 1 分鐘綠色賽博活動
                 if (now.getMinutes() === 0 && slotKey !== lastTriggeredHourSlot) {
                     lastTriggeredHourSlot = slotKey;
                     activateCyberEvent(60000);
@@ -961,6 +1112,28 @@
                 updateCyberCountdown();
             }, 1000);
         }
+
+        function clearOrbTimers() {
+            if (orbAutoOpenTimer) {
+                clearTimeout(orbAutoOpenTimer);
+                orbAutoOpenTimer = null;
+            }
+            if (orbCountdownInterval) {
+                clearInterval(orbCountdownInterval);
+                orbCountdownInterval = null;
+            }
+        }
+
+        window.openCyberWheelFromOrb = function() {
+            clearOrbTimers();
+            const orbStage = document.getElementById('cyber-orb-stage');
+            const wheelStage = document.getElementById('cyber-wheel-stage');
+            if (orbStage) orbStage.classList.add('hidden');
+            if (wheelStage) {
+                wheelStage.classList.remove('hidden');
+                wheelStage.classList.add('flex');
+            }
+        };
 
         window.adminStartCyberEvent = function() {
             if (!window.state.isAdmin) return;
@@ -974,18 +1147,54 @@
                 return;
             }
             const modal = document.getElementById('cyber-lottery-modal');
+            const orbStage = document.getElementById('cyber-orb-stage');
+            const wheelStage = document.getElementById('cyber-wheel-stage');
             const spinBtn = document.getElementById('cyber-spin-btn');
             const resultEl = document.getElementById('cyber-lottery-result');
+            const autoSecEl = document.getElementById('cyber-orb-auto-sec');
             const currentSlot = getCurrentHourSlotKey();
             const alreadySpunThisHour = window.state.lastSpunSlotKey === currentSlot;
 
+            clearOrbTimers();
+            if (orbStage) orbStage.classList.remove('hidden');
+            if (wheelStage) {
+                wheelStage.classList.add('hidden');
+                wheelStage.classList.remove('flex');
+            }
+
+            // 重新觸發小球掉落動畫
+            const orbBtn = document.getElementById('cyber-drop-orb-btn');
+            if (orbBtn) {
+                orbBtn.classList.remove('cyber-drop-orb');
+                void orbBtn.offsetWidth;
+                orbBtn.classList.add('cyber-drop-orb');
+            }
+
+            let leftSec = 5;
+            if (autoSecEl) autoSecEl.textContent = String(leftSec);
+            orbCountdownInterval = setInterval(() => {
+                leftSec -= 1;
+                if (autoSecEl) autoSecEl.textContent = String(Math.max(0, leftSec));
+                if (leftSec <= 0 && orbCountdownInterval) {
+                    clearInterval(orbCountdownInterval);
+                    orbCountdownInterval = null;
+                }
+            }, 1000);
+
+            orbAutoOpenTimer = setTimeout(() => {
+                window.openCyberWheelFromOrb();
+            }, 5000);
+
             if (spinBtn) {
                 spinBtn.disabled = alreadySpunThisHour;
-                spinBtn.textContent = alreadySpunThisHour ? '本時段已抽過' : '立即免費抽獎';
+                spinBtn.textContent = alreadySpunThisHour ? '本時段已抽過' : '啟動輪盤抽獎';
             }
             if (resultEl && alreadySpunThisHour) {
                 resultEl.textContent = '你已經領取過本時段的免費賽博抽獎囉！';
+            } else if (resultEl) {
+                resultEl.textContent = '小獎：能量核心（+10 ~ +35）｜大獎：賽博頭像框';
             }
+
             if (modal) {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
@@ -993,6 +1202,7 @@
         };
 
         window.closeCyberLotteryModal = function() {
+            clearOrbTimers();
             const modal = document.getElementById('cyber-lottery-modal');
             if (modal) {
                 modal.classList.add('hidden');
@@ -1000,7 +1210,11 @@
             }
         };
 
+        let wheelCurrentDeg = 0;
+        let isWheelSpinning = false;
+
         window.spinCyberLottery = function() {
+            if (isWheelSpinning) return;
             if (window.state.cyberEventEndsAt <= Date.now()) {
                 window.showToast('活動時間已結束！', 'error');
                 closeCyberLotteryModal();
@@ -1012,36 +1226,255 @@
                 return;
             }
 
+            isWheelSpinning = true;
             window.state.lastSpunSlotKey = currentSlot;
             const spinBtn = document.getElementById('cyber-spin-btn');
-            if (spinBtn) {
-                spinBtn.disabled = true;
-                spinBtn.textContent = '本時段已抽過';
+            const wheelDisc = document.getElementById('cyber-wheel-disc');
+            const resultEl = document.getElementById('cyber-lottery-result');
+            if (spinBtn) spinBtn.disabled = true;
+
+            const isBigPrize = Math.random() < 0.2;
+            const coresWon = [10, 15, 20, 25, 35][Math.floor(Math.random() * 5)];
+            const extraSpin = 1440 + Math.floor(Math.random() * 360);
+            wheelCurrentDeg += extraSpin;
+            if (wheelDisc) {
+                wheelDisc.style.transform = `rotate(${wheelCurrentDeg}deg)`;
             }
 
-            const resultEl = document.getElementById('cyber-lottery-result');
-            const roll = Math.random();
+            if (resultEl) {
+                resultEl.textContent = '賽博輪盤高速運轉中...';
+            }
 
-            // 20% 機率抽中大獎「賽博頭像框」，80% 抽中小獎「能量核心」
-            if (roll < 0.2) {
-                window.state.hasCyberFrame = true;
-                window.state.equippedCyberFrame = true;
-                saveLocalPlayerItems();
-                updateCurrencyAndFrameUI();
-                window.renderChatMessages();
-                if (resultEl) {
-                    resultEl.innerHTML = `🎉 <b>抽中大獎【賽博頭像框】</b>！已自動為你穿戴於頭像外框！`;
+            setTimeout(() => {
+                isWheelSpinning = false;
+                if (spinBtn) {
+                    spinBtn.disabled = true;
+                    spinBtn.textContent = '本時段已抽過';
                 }
-                window.showToast('恭喜抽中大獎：賽博頭像框！', 'success');
-            } else {
-                const coresWon = [10, 15, 20, 25, 35][Math.floor(Math.random() * 5)];
-                window.state.energyCores += coresWon;
-                saveLocalPlayerItems();
-                updateCurrencyAndFrameUI();
-                if (resultEl) {
-                    resultEl.innerHTML = `⚡ <b>抽中小獎【能量核心 +${coresWon}】</b>！快去趣玩商店挑特效吧！`;
+
+                if (isBigPrize) {
+                    window.state.hasCyberFrame = true;
+                    window.state.equippedCyberFrame = true;
+                    saveLocalPlayerItems();
+                    updateCurrencyAndFrameUI();
+                    window.renderChatMessages();
+                    if (resultEl) {
+                        resultEl.innerHTML = `🎉 <b>輪盤停在【賽博頭像框】大獎</b>！已自動套用至頭像外框！`;
+                    }
+                    window.showToast('恭喜抽中大獎：賽博頭像框！', 'success');
+                } else {
+                    window.state.energyCores += coresWon;
+                    saveLocalPlayerItems();
+                    updateCurrencyAndFrameUI();
+                    if (resultEl) {
+                        resultEl.innerHTML = `⚡ <b>輪盤停在【能量核心 +${coresWon}】</b>！快去趣玩商店挑特效吧！`;
+                    }
+                    window.showToast(`抽中小獎：獲得 ${coresWon} 能量核心！`, 'success');
                 }
-                window.showToast(`抽中小獎：獲得 ${coresWon} 能量核心！`, 'success');
+            }, 3900);
+        };
+
+        // 私聊請求與獨立私聊空間邏輯
+        function getDmRoomId(uidA, uidB) {
+            return [uidA, uidB].sort().join('__');
+        }
+
+        window.openDmConfirmModal = function(targetUid, targetNickname, targetAvatar) {
+            if (!targetUid || targetUid === window.currentUserUid) return;
+            window.state.dmTargetCandidate = {
+                uid: targetUid,
+                nickname: targetNickname || '無名流浪者',
+                avatar: (targetAvatar && targetAvatar.startsWith('data:image/')) ? targetAvatar : DEFAULT_AVATAR_URL
+            };
+            const modal = document.getElementById('dm-confirm-modal');
+            const nameEl = document.getElementById('dm-target-name');
+            const avatarEl = document.getElementById('dm-target-avatar');
+            if (nameEl) nameEl.textContent = window.state.dmTargetCandidate.nickname;
+            if (avatarEl) avatarEl.src = window.state.dmTargetCandidate.avatar;
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closeDmConfirmModal = function() {
+            window.state.dmTargetCandidate = null;
+            const modal = document.getElementById('dm-confirm-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.submitDmRequest = async function() {
+            const target = window.state.dmTargetCandidate;
+            if (!target || !window.dmCloudAPI?.sendRequest) return;
+            try {
+                await window.dmCloudAPI.sendRequest(target);
+                window.closeDmConfirmModal();
+                window.showToast(`已向「${target.nickname}」送出私聊請求`, 'success');
+            } catch (err) {
+                console.error(err);
+                window.showToast('發送私聊請求失敗', 'error');
+            }
+        };
+
+        window.acceptDmRequest = async function(reqId, reqData) {
+            if (!window.dmCloudAPI?.acceptRequest) return;
+            try {
+                const roomId = await window.dmCloudAPI.acceptRequest(reqId, reqData);
+                window.switchTab('dm');
+                window.selectDmRoom(roomId);
+                window.showToast(`已同意與「${reqData.fromNickname}」開啟獨立私聊`, 'success');
+            } catch (err) {
+                console.error(err);
+                window.showToast('同意私聊失敗', 'error');
+            }
+        };
+
+        window.rejectDmRequest = async function(reqId) {
+            if (!window.dmCloudAPI?.rejectRequest) return;
+            try {
+                await window.dmCloudAPI.rejectRequest(reqId);
+                window.showToast('已拒絕私聊請求', 'info');
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        window.selectDmRoom = function(roomId) {
+            window.state.activeDmRoomId = roomId;
+            renderDmSidebar();
+            renderDmActiveHeader();
+            const textInput = document.getElementById('dm-text-input');
+            const sendBtn = document.getElementById('dm-send-btn');
+            if (textInput) {
+                textInput.disabled = false;
+                textInput.placeholder = '輸入私聊訊息...';
+            }
+            if (sendBtn) sendBtn.disabled = false;
+            if (window.dmCloudAPI?.subscribeRoomMessages) {
+                window.dmCloudAPI.subscribeRoomMessages(roomId);
+            }
+        };
+
+        function renderDmActiveHeader() {
+            const titleEl = document.getElementById('dm-partner-title');
+            const statusEl = document.getElementById('dm-room-status');
+            const roomId = window.state.activeDmRoomId;
+            if (!titleEl || !statusEl) return;
+            if (!roomId || !window.state.dmRooms[roomId]) {
+                titleEl.textContent = '請選擇或同意一個私聊對象';
+                statusEl.textContent = 'PRIVATE CHANNEL';
+                return;
+            }
+            const room = window.state.dmRooms[roomId];
+            const partner = room.members?.[window.currentUserUid === room.uidA ? room.uidB : room.uidA];
+            titleEl.textContent = `獨立私聊 // ${partner?.nickname || '流浪者'}`;
+            statusEl.textContent = 'ENCRYPTED DM';
+        }
+
+        function renderDmSidebar() {
+            const incomingListEl = document.getElementById('dm-incoming-list');
+            const roomsListEl = document.getElementById('dm-rooms-list');
+            const incCountEl = document.getElementById('dm-incoming-count');
+            const roomCountEl = document.getElementById('dm-rooms-count');
+            const dmBadge = document.getElementById('unread-dm-badge');
+
+            const myUid = window.currentUserUid;
+            const incoming = Object.entries(window.state.dmRequests || {})
+                .filter(([_, r]) => r && r.toUid === myUid && r.status === 'pending');
+
+            if (incCountEl) incCountEl.textContent = incoming.length;
+            if (dmBadge) {
+                if (incoming.length > 0 && window.state.activeTab !== 'dm') {
+                    dmBadge.classList.remove('hidden');
+                } else {
+                    dmBadge.classList.add('hidden');
+                }
+            }
+
+            if (incomingListEl) {
+                if (incoming.length === 0) {
+                    incomingListEl.innerHTML = `<p class="text-xs text-[#7d734b]">目前沒有待處理的私聊請求</p>`;
+                } else {
+                    incomingListEl.innerHTML = incoming.map(([id, r]) => `
+                        <div class="p-2.5 rounded-xl bg-[#1a170c] border border-amber-500/50 space-y-2">
+                            <div class="text-xs font-bold text-[#faf2c3] truncate">${escapeHtml(r.fromNickname || '流浪者')} 想與你私聊</div>
+                            <div class="flex gap-1.5">
+                                <button type="button" onclick='acceptDmRequest("${id}", ${JSON.stringify(r).replace(/'/g, "&#39;")})' class="px-2.5 py-1 rounded bg-emerald-500 text-stone-950 text-[11px] font-black">同意</button>
+                                <button type="button" onclick="rejectDmRequest('${id}')" class="px-2.5 py-1 rounded bg-red-950 text-red-300 border border-red-700/50 text-[11px] font-bold">拒絕</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            const myRooms = Object.entries(window.state.dmRooms || {})
+                .filter(([_, room]) => room && (room.uidA === myUid || room.uidB === myUid));
+
+            if (roomCountEl) roomCountEl.textContent = myRooms.length;
+            if (roomsListEl) {
+                if (myRooms.length === 0) {
+                    roomsListEl.innerHTML = `<p class="text-xs text-[#7d734b]">尚未與其他玩家建立私聊</p>`;
+                } else {
+                    roomsListEl.innerHTML = myRooms.map(([roomId, room]) => {
+                        const partnerUid = myUid === room.uidA ? room.uidB : room.uidA;
+                        const partner = room.members?.[partnerUid] || { nickname: '流浪者', avatar: DEFAULT_AVATAR_URL };
+                        const isSelected = window.state.activeDmRoomId === roomId;
+                        return `
+                            <button type="button" onclick="selectDmRoom('${roomId}')" class="w-full text-left p-2.5 rounded-xl border transition flex items-center gap-2.5 ${isSelected ? 'bg-cyan-950/60 border-cyan-400 text-cyan-200' : 'bg-[#1a170c] border-[#4a4122] text-[#faf2c3] hover:border-cyan-500/50'}">
+                                <img src="${(partner.avatar && partner.avatar.startsWith('data:image/')) ? partner.avatar : DEFAULT_AVATAR_URL}" alt="頭像" class="w-8 h-8 rounded-full object-cover border border-cyan-400/60 shrink-0">
+                                <span class="text-xs font-bold truncate">${escapeHtml(partner.nickname || '流浪者')}</span>
+                            </button>
+                        `;
+                    }).join('');
+                }
+            }
+        }
+
+        window.renderDmMessages = function() {
+            const container = document.getElementById('dm-messages-container');
+            if (!container) return;
+            if (!window.state.activeDmRoomId) {
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-[#7d734b] text-xs">
+                        <i class="fa-solid fa-user-lock text-2xl mb-2 opacity-50"></i>
+                        <p>在「玩家討論」點擊他人頭像並確認私聊，或於左側選擇已建立的私聊頻道。</p>
+                    </div>`;
+                return;
+            }
+            const msgs = window.state.dmMessages || [];
+            if (msgs.length === 0) {
+                container.innerHTML = `<div class="py-12 text-center text-xs text-[#7d734b]">私聊頻道已建立，傳送第一則訊息吧！</div>`;
+                return;
+            }
+            container.innerHTML = msgs.map(m => {
+                const isMine = m.senderUid === window.currentUserUid;
+                return `
+                    <div class="flex ${isMine ? 'justify-end' : 'justify-start'}">
+                        <div class="max-w-[78%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm ${isMine ? 'bg-cyan-950 border border-cyan-400/60 text-cyan-100 rounded-tr-sm' : 'bg-[#1a170c] border border-[#4a4122] text-[#faf2c3] rounded-tl-sm'}">
+                            <div class="text-[10px] text-[#9c9163] mb-0.5">${escapeHtml(m.nickname || '流浪者')} · ${formatChatTime(m.createdAt)}</div>
+                            <div class="break-words">${escapeHtml(m.text)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            container.scrollTop = container.scrollHeight;
+        };
+
+        window.handleSendDmMessage = async function(event) {
+            event.preventDefault();
+            const roomId = window.state.activeDmRoomId;
+            const input = document.getElementById('dm-text-input');
+            const text = input ? input.value.trim().slice(0, 300) : '';
+            if (!roomId || !text || !window.dmCloudAPI?.sendMessage) return;
+            try {
+                await window.dmCloudAPI.sendMessage(roomId, window.state.userNickname, text);
+                if (input) input.value = '';
+            } catch (err) {
+                console.error(err);
+                window.showToast('私訊傳送失敗', 'error');
             }
         };
 
@@ -1222,7 +1655,6 @@
             }
         };
 
-        // 管理員發放能量核心給指定玩家
         window.adminGrantCores = async function(targetUid, nickname, amount = 20) {
             if (!window.state.isAdmin || !targetUid) return;
             if (targetUid === window.currentUserUid) {
@@ -1337,7 +1769,7 @@
                 window.setChatFullscreen(false);
             }
             window.state.activeTab = tabName;
-            ['calculator', 'chat'].forEach(t => {
+            ['calculator', 'chat', 'dm'].forEach(t => {
                 const view = document.getElementById(`view-${t}`);
                 const btn = document.getElementById(`tab-${t}`);
                 if (!view || !btn) return;
@@ -1365,6 +1797,11 @@
                 const badge = document.getElementById('unread-chat-badge');
                 if (badge) badge.classList.add('hidden');
                 window.renderChatMessages();
+            } else if (tabName === 'dm') {
+                const dmBadge = document.getElementById('unread-dm-badge');
+                if (dmBadge) dmBadge.classList.add('hidden');
+                renderDmSidebar();
+                window.renderDmMessages();
             }
         };
 
@@ -1707,11 +2144,14 @@
                             ? 'bg-[#362f14] border border-amber-500/50 text-[#faf2c3] rounded-tr-sm'
                             : 'bg-[#17150c] border border-[#4d4423] text-[#e6dfb8] rounded-tl-sm'));
 
-                const avatarClass = `w-9 h-9 rounded-full object-cover shrink-0 border ${hasFrame ? 'cyber-avatar-frame' : (isSenderAdmin ? 'border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.6)]' : 'border-[#594e25]')} bg-[#1a170c] mt-0.5`;
+                const avatarClass = `w-9 h-9 rounded-full object-cover shrink-0 border ${hasFrame ? 'cyber-avatar-frame' : (isSenderAdmin ? 'border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.6)]' : 'border-[#594e25]')} bg-[#1a170c] mt-0.5 ${!isMine && msg.senderUid ? 'cursor-pointer hover:scale-105 transition' : ''}`;
+                const avatarClickAttr = (!isMine && msg.senderUid)
+                    ? `onclick='openDmConfirmModal("${msg.senderUid}", "${safeNick.replace(/"/g, "&quot;")}", "${safeAvatar}")' title="點擊發起私聊"`
+                    : '';
 
                 return `
                     <div class="flex items-start gap-2.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}">
-                        <img src="${safeAvatar}" alt="頭像" class="${avatarClass}">
+                        <img src="${safeAvatar}" alt="頭像" class="${avatarClass}" ${avatarClickAttr}>
                         <div class="flex flex-col ${isMine ? 'items-end' : 'items-start'} max-w-[82%] sm:max-w-[70%]">
                             <div class="flex items-center flex-wrap gap-1.5 mb-1 px-1 ${isMine ? 'justify-end' : 'justify-start'}">
                                 ${nameHtml}
@@ -1814,7 +2254,7 @@
         });
     </script>
 
-    <!-- Firebase Realtime Database 免登入多人同步聊天模組 -->
+    <!-- Firebase Realtime Database 免登入多人同步聊天與私聊模組 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import {
@@ -1823,6 +2263,7 @@
             push,
             remove,
             set,
+            update,
             onValue,
             query,
             limitToLast
@@ -1845,6 +2286,8 @@
         const mutedUsersRef = ref(db, "mutedUsers");
         const dailyResetRef = ref(db, "dailyResetDate");
         const myGiftCoresRef = ref(db, `coreGifts/${window.currentUserUid}`);
+        const dmRequestsRef = ref(db, "dmRequests");
+        const dmRoomsRef = ref(db, "dmRooms");
 
         let checkingMidnight = false;
         async function checkAndResetAtMidnight() {
@@ -1905,7 +2348,91 @@
             }
         };
 
-        // 接收管理員發放的能量核心禮物
+        let activeDmUnsub = null;
+        window.dmCloudAPI = {
+            sendRequest: async (target) => {
+                const reqId = `${window.currentUserUid}_${target.uid}`;
+                await set(ref(db, `dmRequests/${reqId}`), {
+                    fromUid: window.currentUserUid,
+                    fromNickname: window.state.userNickname,
+                    fromAvatar: window.state.userAvatar,
+                    toUid: target.uid,
+                    toNickname: target.nickname,
+                    toAvatar: target.avatar,
+                    status: "pending",
+                    createdAt: Date.now()
+                });
+            },
+            acceptRequest: async (reqId, reqData) => {
+                const roomId = getDmRoomId(reqData.fromUid, reqData.toUid);
+                await set(ref(db, `dmRooms/${roomId}`), {
+                    uidA: reqData.fromUid,
+                    uidB: reqData.toUid,
+                    members: {
+                        [reqData.fromUid]: {
+                            nickname: reqData.fromNickname || "流浪者",
+                            avatar: reqData.fromAvatar || ""
+                        },
+                        [reqData.toUid]: {
+                            nickname: window.state.userNickname || "流浪者",
+                            avatar: window.state.userAvatar || ""
+                        }
+                    },
+                    createdAt: Date.now()
+                });
+                await update(ref(db, `dmRequests/${reqId}`), { status: "accepted" });
+                return roomId;
+            },
+            rejectRequest: async (reqId) => {
+                await remove(ref(db, `dmRequests/${reqId}`));
+            },
+            subscribeRoomMessages: (roomId) => {
+                if (activeDmUnsub) {
+                    activeDmUnsub();
+                    activeDmUnsub = null;
+                }
+                const roomMsgsQuery = query(ref(db, `dmMessages/${roomId}`), limitToLast(80));
+                activeDmUnsub = onValue(roomMsgsQuery, (snap) => {
+                    const list = [];
+                    snap.forEach((child) => {
+                        const v = child.val();
+                        if (v && typeof v.text === "string") {
+                            list.push({
+                                id: child.key,
+                                senderUid: v.senderUid || "",
+                                nickname: v.nickname || "流浪者",
+                                text: v.text,
+                                createdAt: v.createdAt || Date.now()
+                            });
+                        }
+                    });
+                    window.state.dmMessages = list;
+                    if (window.state.activeTab === "dm") {
+                        window.renderDmMessages();
+                    }
+                });
+            },
+            sendMessage: async (roomId, nickname, text) => {
+                await push(ref(db, `dmMessages/${roomId}`), {
+                    senderUid: window.currentUserUid,
+                    nickname: nickname || "流浪者",
+                    text: text,
+                    createdAt: Date.now()
+                });
+            }
+        };
+
+        onValue(dmRequestsRef, (snap) => {
+            window.state.dmRequests = snap.val() || {};
+            renderDmSidebar();
+        });
+
+        onValue(dmRoomsRef, (snap) => {
+            window.state.dmRooms = snap.val() || {};
+            renderDmSidebar();
+            renderDmActiveHeader();
+        });
+
         onValue(myGiftCoresRef, async (snap) => {
             const giftAmount = Number(snap.val() || 0);
             if (giftAmount > 0) {
@@ -1917,7 +2444,6 @@
             }
         });
 
-        // 監聽雲端禁言名單
         onValue(mutedUsersRef, (snapshot) => {
             window.state.mutedUsers = snapshot.val() || {};
             if (window.state.activeTab === "chat") {
