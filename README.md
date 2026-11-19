@@ -65,7 +65,7 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* 整點綠色賽博風格模式 */
+        /* 綠色賽博風格模式 */
         body.cyber-green-mode {
             background-color: #04130b !important;
             color: #bbf7d0 !important;
@@ -165,6 +165,30 @@
             transition: transform 3.8s cubic-bezier(0.14, 0.88, 0.22, 1);
         }
 
+        /* 紅包從上方飄落到下方 */
+        @keyframes red-packet-drift {
+            0% {
+                transform: translateY(-80px) translateX(0px) rotate(-6deg);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(50vh) translateX(18px) rotate(6deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(108vh) translateX(-10px) rotate(-4deg);
+                opacity: 0.95;
+            }
+        }
+        .falling-red-packet {
+            position: fixed;
+            top: 0;
+            z-index: 55;
+            animation: red-packet-drift var(--fall-duration, 4.8s) linear forwards;
+            cursor: pointer;
+            user-select: none;
+        }
+
         /* 手機／全螢幕聊天放大模式 */
         body.chat-fullscreen-active header,
         body.chat-fullscreen-active footer {
@@ -231,6 +255,9 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-stone-950 scanlines">
 
+    <!-- 飄落紅包容器 -->
+    <div id="red-packet-layer" class="fixed inset-0 pointer-events-none z-50 overflow-hidden"></div>
+
     <!-- 頂端新訊息即時廣播橫幅 -->
     <div id="top-msg-banner" onclick="handleTopBannerClick()" class="fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[92%] max-w-md cursor-pointer transition-all duration-300 -translate-y-28 opacity-0 pointer-events-none">
         <div class="bg-[#1c180c]/95 backdrop-blur-xl border border-amber-400/80 rounded-2xl px-4 py-3 shadow-[0_10px_35px_rgba(0,0,0,0.85)] flex items-center gap-3">
@@ -245,12 +272,12 @@
         </div>
     </div>
 
-    <!-- 整點綠色賽博免費抽獎活動橫幅（活動期間顯示，持續 1 分鐘） -->
+    <!-- 全體玩家同步綠色賽博抽獎活動橫幅 -->
     <div id="cyber-event-bar" class="hidden bg-emerald-950/95 border-b border-emerald-400/70 text-emerald-200 px-4 py-2.5 shadow-[0_0_25px_rgba(16,185,129,0.3)] z-20">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
             <div class="flex items-center gap-2.5 font-black text-emerald-300">
                 <i class="fa-solid fa-microchip animate-pulse text-emerald-400"></i>
-                <span>【賽博整點空投】綠色賽博模式啟動中！剩餘 <span id="cyber-countdown" class="font-mono-tech text-white bg-emerald-800/80 px-2 py-0.5 rounded">60s</span></span>
+                <span>【賽博空投同步中】綠色賽博模式啟動！剩餘 <span id="cyber-countdown" class="font-mono-tech text-white bg-emerald-800/80 px-2 py-0.5 rounded">60s</span></span>
             </div>
             <button type="button" onclick="openCyberLotteryModal()" class="px-3.5 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-black text-xs shadow-md transition flex items-center gap-1.5 active:scale-95">
                 <i class="fa-solid fa-gift"></i> 免費抽獎（核心／賽博頭像框）
@@ -515,7 +542,11 @@
                         </button>
                         <button type="button" id="admin-cyber-trigger-btn" onclick="adminStartCyberEvent()" class="hidden px-3 py-1.5 rounded-lg bg-emerald-950 hover:bg-emerald-800 text-emerald-300 border border-emerald-400 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
                             <i class="fa-solid fa-wand-magic-sparkles"></i>
-                            <span>開啟賽博抽獎</span>
+                            <span>全體賽博活動</span>
+                        </button>
+                        <button type="button" id="admin-redpacket-trigger-btn" onclick="adminStartRedPacketEvent()" class="hidden px-3 py-1.5 rounded-lg bg-red-950 hover:bg-red-800 text-red-200 border border-red-400 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                            <span>全體搶紅包</span>
                         </button>
                         <div class="text-xs font-mono-tech text-[#9c9163] bg-[#121008] px-3 py-1.5 rounded-lg border border-[#4d4423]">
                             近期訊息: <span id="chat-msg-count" class="text-[#f2e394] font-bold">0</span>
@@ -576,7 +607,7 @@
                         <span class="text-xs sm:text-sm font-black text-cyan-300 flex items-center gap-2">
                             <i class="fa-solid fa-user-secret"></i> 私訊頻道清單
                         </span>
-                        <span class="text-[10px] font-mono-tech text-[#9c9163]">點頭像可發起私聊</span>
+                        <span class="text-[10px] font-mono-tech text-[#9c9163]">上限 50 則訊息</span>
                     </div>
 
                     <div class="p-3 overflow-y-auto space-y-4 flex-grow">
@@ -683,7 +714,7 @@
             <div class="p-4 overflow-y-auto space-y-2.5 flex-grow" id="fun-shop-items"></div>
 
             <div class="px-6 py-3.5 border-t border-[#4a4122] bg-[#211d0f] flex items-center justify-between">
-                <span class="text-xs text-[#9c9163]">賽博頭像框請於整點賽博抽獎獲得並套用</span>
+                <span class="text-xs text-[#9c9163]">賽博頭像框請於賽博抽獎獲得並套用</span>
                 <button type="button" id="toggle-cyber-frame-btn" onclick="toggleEquipCyberFrame()" class="px-3.5 py-1.5 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-xs font-bold">
                     賽博頭像框：未解鎖
                 </button>
@@ -691,12 +722,12 @@
         </div>
     </div>
 
-    <!-- ==================== 整點綠色賽博抽獎視窗（掉落小球 + 5秒自動開啟 + 輪盤） ==================== -->
+    <!-- ==================== 綠色賽博抽獎視窗（掉落小球 + 5秒自動開啟 + 輪盤） ==================== -->
     <div id="cyber-lottery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
         <div class="bg-[#051a10] border-2 border-emerald-400 rounded-2xl w-full max-w-md p-6 shadow-[0_0_50px_rgba(16,185,129,0.45)] space-y-4 text-emerald-100 relative overflow-hidden">
             <div class="flex items-center justify-between border-b border-emerald-700/60 pb-3">
                 <h3 class="text-base sm:text-lg font-black text-emerald-300 flex items-center gap-2">
-                    <i class="fa-solid fa-microchip text-emerald-400"></i> 綠色賽博整點輪盤抽獎
+                    <i class="fa-solid fa-microchip text-emerald-400"></i> 綠色賽博輪盤抽獎
                 </h3>
                 <button type="button" onclick="closeCyberLotteryModal()" class="text-emerald-400 hover:text-white">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -717,9 +748,7 @@
             <!-- 階段 2：輪盤抽獎區 -->
             <div id="cyber-wheel-stage" class="hidden flex-col items-center space-y-4 py-2">
                 <div class="relative w-52 h-52 flex items-center justify-center">
-                    <!-- 頂部指針 -->
                     <div class="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[20px] border-t-amber-300 absolute -top-2 z-20 drop-shadow-[0_0_8px_#fbbf24]"></div>
-                    <!-- 輪盤本體 -->
                     <div id="cyber-wheel-disc" class="cyber-wheel-disc w-48 h-48 rounded-full border-4 border-emerald-300 relative flex items-center justify-center">
                         <span class="absolute top-3 text-[11px] font-black text-amber-200 drop-shadow">賽博頭像框</span>
                         <span class="absolute right-3 text-[11px] font-black text-cyan-200">+20 核心</span>
@@ -754,7 +783,7 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <p class="text-xs text-[#a39765]">驗證通過後可刪除任意訊息、禁言玩家、發放能量核心、手動開啟賽博抽獎，且發言自帶彩虹特效。</p>
+            <p class="text-xs text-[#a39765]">驗證通過後可刪除任意訊息、禁言玩家、發放能量核心、開啟全體賽博／搶紅包活動，且發言自帶彩虹特效。</p>
             <input type="password" id="admin-password-input" onkeydown="if(event.key==='Enter') verifyAdminLogin()" placeholder="輸入管理員金鑰..." 
                 class="w-full bg-[#0d0b05] border border-[#594e25] focus:border-amber-400 rounded-xl px-3.5 py-2.5 text-sm font-mono-tech text-[#faf2c3] outline-none">
             <div class="flex justify-end gap-2">
@@ -864,6 +893,7 @@
             hasCyberFrame: false,
             equippedCyberFrame: false,
             cyberEventEndsAt: 0,
+            lastSeenRedPacketWaveId: '',
             lastSpunSlotKey: '',
             chatFullscreen: false,
             isAdmin: false,
@@ -924,7 +954,7 @@
             const frameBtn = document.getElementById('toggle-cyber-frame-btn');
             if (frameBtn) {
                 if (!window.state.hasCyberFrame) {
-                    frameBtn.textContent = '賽博頭像框：未解鎖（整點抽獎獲得）';
+                    frameBtn.textContent = '賽博頭像框：未解鎖（賽博抽獎獲得）';
                     frameBtn.className = 'px-3.5 py-1.5 rounded-lg bg-emerald-950/60 text-emerald-400/70 border border-emerald-700/40 text-xs font-bold';
                 } else if (window.state.equippedCyberFrame) {
                     frameBtn.textContent = '賽博頭像框：使用中（點此卸下）';
@@ -1058,7 +1088,7 @@
 
         window.toggleEquipCyberFrame = function() {
             if (!window.state.hasCyberFrame) {
-                window.showToast('尚未解鎖賽博頭像框，請把握整點賽博抽獎！', 'info');
+                window.showToast('尚未解鎖賽博頭像框，請把握賽博抽獎！', 'info');
                 return;
             }
             window.state.equippedCyberFrame = !window.state.equippedCyberFrame;
@@ -1068,20 +1098,19 @@
             window.showToast(window.state.equippedCyberFrame ? '已穿戴賽博頭像框' : '已卸下賽博頭像框', 'info');
         };
 
-        // 每小時整點綠色賽博模式 + 掉落小球 + 5 秒自動開啟 + 輪盤抽獎
+        // 全體玩家同步綠色賽博模式 + 紅包活動
         let lastTriggeredHourSlot = '';
         let cyberCountdownTimer = null;
         let orbAutoOpenTimer = null;
         let orbCountdownInterval = null;
 
-        function activateCyberEvent(durationMs = 60000) {
-            const now = Date.now();
-            window.state.cyberEventEndsAt = Math.max(window.state.cyberEventEndsAt, now + durationMs);
-            document.body.classList.add('cyber-green-mode');
-            const bar = document.getElementById('cyber-event-bar');
-            if (bar) bar.classList.remove('hidden');
+        window.applyCloudCyberEvent = function(endsAt) {
+            const targetEnd = Number(endsAt || 0);
+            if (targetEnd > Date.now()) {
+                window.state.cyberEventEndsAt = Math.max(window.state.cyberEventEndsAt, targetEnd);
+            }
             updateCyberCountdown();
-        }
+        };
 
         function updateCyberCountdown() {
             const remainingMs = window.state.cyberEventEndsAt - Date.now();
@@ -1106,8 +1135,10 @@
                 const slotKey = getCurrentHourSlotKey();
                 if (now.getMinutes() === 0 && slotKey !== lastTriggeredHourSlot) {
                     lastTriggeredHourSlot = slotKey;
-                    activateCyberEvent(60000);
-                    window.showToast('整點賽博空投啟動！網頁已切換為綠色賽博模式（持續 1 分鐘）', 'success');
+                    const endsAt = Date.now() + 60000;
+                    window.applyCloudCyberEvent(endsAt);
+                    window.eventsCloudAPI?.broadcastCyberEvent?.(endsAt);
+                    window.showToast('整點賽博空投啟動！全體玩家同步切換為綠色賽博模式', 'success');
                 }
                 updateCyberCountdown();
             }, 1000);
@@ -1126,6 +1157,17 @@
 
         window.openCyberWheelFromOrb = function() {
             clearOrbTimers();
+            window.state.lastSpunSlotKey = '';
+            saveLocalPlayerItems();
+            const spinBtn = document.getElementById('cyber-spin-btn');
+            const resultEl = document.getElementById('cyber-lottery-result');
+            if (spinBtn) {
+                spinBtn.disabled = false;
+                spinBtn.textContent = '啟動輪盤抽獎';
+            }
+            if (resultEl) {
+                resultEl.textContent = '小獎：能量核心（+10 ~ +35）｜大獎：賽博頭像框';
+            }
             const orbStage = document.getElementById('cyber-orb-stage');
             const wheelStage = document.getElementById('cyber-wheel-stage');
             if (orbStage) orbStage.classList.add('hidden');
@@ -1135,10 +1177,74 @@
             }
         };
 
-        window.adminStartCyberEvent = function() {
+        window.adminStartCyberEvent = async function() {
             if (!window.state.isAdmin) return;
-            activateCyberEvent(60000);
-            window.showToast('管理員已手動開啟綠色賽博抽獎活動（持續 1 分鐘）！', 'success');
+            const endsAt = Date.now() + 60000;
+            window.applyCloudCyberEvent(endsAt);
+            if (window.eventsCloudAPI?.broadcastCyberEvent) {
+                await window.eventsCloudAPI.broadcastCyberEvent(endsAt);
+            }
+            window.showToast('已向所有線上玩家同步開啟綠色賽博抽獎活動（持續 1 分鐘）！', 'success');
+        };
+
+        window.adminStartRedPacketEvent = async function() {
+            if (!window.state.isAdmin) return;
+            const waveId = 'wave-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
+            const packets = Array.from({ length: 12 }, (_, idx) => ({
+                id: `pkt-${idx}`,
+                leftPercent: Number((6 + Math.random() * 86).toFixed(2)),
+                durationSec: Number((4.2 + Math.random() * 2.6).toFixed(2)),
+                delayMs: idx * 320,
+                cores: Math.floor(Math.random() * 3) + 1
+            }));
+            window.spawnRedPacketWave(waveId, packets);
+            if (window.eventsCloudAPI?.broadcastRedPacketEvent) {
+                await window.eventsCloudAPI.broadcastRedPacketEvent(waveId, packets);
+            }
+            window.showToast('已向所有線上玩家同步發放「搶紅包」活動！', 'success');
+        };
+
+        window.spawnRedPacketWave = function(waveId, packets) {
+            if (!waveId || !Array.isArray(packets)) return;
+            if (window.state.lastSeenRedPacketWaveId === waveId) return;
+            window.state.lastSeenRedPacketWaveId = waveId;
+
+            const layer = document.getElementById('red-packet-layer');
+            if (!layer) return;
+
+            packets.forEach((p) => {
+                setTimeout(() => {
+                    const pkt = document.createElement('button');
+                    pkt.type = 'button';
+                    const leftPercent = Number(p.leftPercent) || 50;
+                    const duration = (Number(p.durationSec) || 4.8).toFixed(2) + 's';
+                    const coresReward = Math.min(3, Math.max(1, Number(p.cores) || 1));
+
+                    pkt.className = 'falling-red-packet pointer-events-auto w-12 h-16 rounded-xl bg-gradient-to-b from-red-500 via-red-600 to-red-800 border-2 border-amber-300 shadow-[0_0_18px_rgba(239,68,68,0.75)] flex flex-col items-center justify-center text-amber-200 font-black';
+                    pkt.style.left = `${leftPercent}%`;
+                    pkt.style.setProperty('--fall-duration', duration);
+                    pkt.innerHTML = `<i class="fa-solid fa-sack-dollar text-amber-300 text-lg"></i><span class="text-[10px] mt-0.5">紅包</span>`;
+
+                    let claimed = false;
+                    pkt.addEventListener('click', () => {
+                        if (claimed) return;
+                        claimed = true;
+                        window.state.energyCores += coresReward;
+                        saveLocalPlayerItems();
+                        updateCurrencyAndFrameUI();
+                        window.showToast(`搶到紅包！獲得 ${coresReward} 能量核心`, 'success');
+                        pkt.remove();
+                    });
+
+                    pkt.addEventListener('animationend', () => {
+                        if (!claimed) {
+                            pkt.remove();
+                        }
+                    });
+
+                    layer.appendChild(pkt);
+                }, Number(p.delayMs) || 0);
+            });
         };
 
         window.openCyberLotteryModal = function() {
@@ -1146,14 +1252,15 @@
                 window.showToast('目前不在賽博抽獎活動時間內', 'info');
                 return;
             }
+            window.state.lastSpunSlotKey = '';
+            saveLocalPlayerItems();
+
             const modal = document.getElementById('cyber-lottery-modal');
             const orbStage = document.getElementById('cyber-orb-stage');
             const wheelStage = document.getElementById('cyber-wheel-stage');
             const spinBtn = document.getElementById('cyber-spin-btn');
             const resultEl = document.getElementById('cyber-lottery-result');
             const autoSecEl = document.getElementById('cyber-orb-auto-sec');
-            const currentSlot = getCurrentHourSlotKey();
-            const alreadySpunThisHour = window.state.lastSpunSlotKey === currentSlot;
 
             clearOrbTimers();
             if (orbStage) orbStage.classList.remove('hidden');
@@ -1162,7 +1269,6 @@
                 wheelStage.classList.remove('flex');
             }
 
-            // 重新觸發小球掉落動畫
             const orbBtn = document.getElementById('cyber-drop-orb-btn');
             if (orbBtn) {
                 orbBtn.classList.remove('cyber-drop-orb');
@@ -1186,12 +1292,10 @@
             }, 5000);
 
             if (spinBtn) {
-                spinBtn.disabled = alreadySpunThisHour;
-                spinBtn.textContent = alreadySpunThisHour ? '本時段已抽過' : '啟動輪盤抽獎';
+                spinBtn.disabled = false;
+                spinBtn.textContent = '啟動輪盤抽獎';
             }
-            if (resultEl && alreadySpunThisHour) {
-                resultEl.textContent = '你已經領取過本時段的免費賽博抽獎囉！';
-            } else if (resultEl) {
+            if (resultEl) {
                 resultEl.textContent = '小獎：能量核心（+10 ~ +35）｜大獎：賽博頭像框';
             }
 
@@ -1222,7 +1326,7 @@
             }
             const currentSlot = getCurrentHourSlotKey();
             if (window.state.lastSpunSlotKey === currentSlot) {
-                window.showToast('本時段免費抽獎已使用過！', 'info');
+                window.showToast('本輪抽獎已使用過，重新開啟小球即可重置！', 'info');
                 return;
             }
 
@@ -1248,8 +1352,9 @@
             setTimeout(() => {
                 isWheelSpinning = false;
                 if (spinBtn) {
-                    spinBtn.disabled = true;
-                    spinBtn.textContent = '本時段已抽過';
+                    spinBtn.disabled = false;
+                    spinBtn.textContent = '再抽一次';
+                    window.state.lastSpunSlotKey = '';
                 }
 
                 if (isBigPrize) {
@@ -1350,7 +1455,7 @@
             const sendBtn = document.getElementById('dm-send-btn');
             if (textInput) {
                 textInput.disabled = false;
-                textInput.placeholder = '輸入私聊訊息...';
+                textInput.placeholder = '輸入私聊訊息（上限 50 則，超過自動刪除最早訊息）...';
             }
             if (sendBtn) sendBtn.disabled = false;
             if (window.dmCloudAPI?.subscribeRoomMessages) {
@@ -1371,7 +1476,7 @@
             const room = window.state.dmRooms[roomId];
             const partner = room.members?.[window.currentUserUid === room.uidA ? room.uidB : room.uidA];
             titleEl.textContent = `獨立私聊 // ${partner?.nickname || '流浪者'}`;
-            statusEl.textContent = 'ENCRYPTED DM';
+            statusEl.textContent = 'MAX 50 MSGS';
         }
 
         function renderDmSidebar() {
@@ -1566,17 +1671,20 @@
             const label = document.getElementById('admin-status-label');
             const logoutBtn = document.getElementById('admin-logout-btn');
             const cyberBtn = document.getElementById('admin-cyber-trigger-btn');
+            const redPacketBtn = document.getElementById('admin-redpacket-trigger-btn');
             if (!btn) return;
             if (window.state.isAdmin) {
                 btn.className = 'px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-fuchsia-950/90 via-amber-950/90 to-cyan-950/90 text-amber-300 border border-amber-400 text-xs font-black transition flex items-center gap-1.5 shadow-[0_0_12px_rgba(251,191,36,0.35)]';
                 if (label) label.textContent = '管理員已啟用';
                 if (logoutBtn) logoutBtn.classList.remove('hidden');
                 if (cyberBtn) cyberBtn.classList.remove('hidden');
+                if (redPacketBtn) redPacketBtn.classList.remove('hidden');
             } else {
                 btn.className = 'px-2.5 py-1.5 rounded-lg bg-[#1c180b] hover:bg-[#2e2712] text-[#a39765] hover:text-amber-300 border border-[#524926] text-xs font-bold transition flex items-center gap-1.5 active:scale-95';
                 if (label) label.textContent = '管理員';
                 if (logoutBtn) logoutBtn.classList.add('hidden');
                 if (cyberBtn) cyberBtn.classList.add('hidden');
+                if (redPacketBtn) redPacketBtn.classList.add('hidden');
             }
         }
 
@@ -2254,7 +2362,7 @@
         });
     </script>
 
-    <!-- Firebase Realtime Database 免登入多人同步聊天與私聊模組 -->
+    <!-- Firebase Realtime Database 免登入多人同步聊天、私聊與全體活動模組 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import {
@@ -2266,7 +2374,8 @@
             update,
             onValue,
             query,
-            limitToLast
+            limitToLast,
+            get
         } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
         const firebaseConfig = {
@@ -2288,6 +2397,45 @@
         const myGiftCoresRef = ref(db, `coreGifts/${window.currentUserUid}`);
         const dmRequestsRef = ref(db, "dmRequests");
         const dmRoomsRef = ref(db, "dmRooms");
+        const cyberEventRef = ref(db, "events/cyber");
+        const redPacketEventRef = ref(db, "events/redPacket");
+
+        const pageLoadedAt = Date.now();
+
+        window.eventsCloudAPI = {
+            broadcastCyberEvent: async (endsAt) => {
+                await set(cyberEventRef, {
+                    endsAt: Number(endsAt),
+                    triggeredAt: Date.now()
+                });
+            },
+            broadcastRedPacketEvent: async (waveId, packets) => {
+                await set(redPacketEventRef, {
+                    waveId,
+                    packets,
+                    triggeredAt: Date.now()
+                });
+            }
+        };
+
+        onValue(cyberEventRef, (snap) => {
+            const val = snap.val();
+            if (!val) return;
+            const endsAt = Number(val.endsAt || 0);
+            const triggeredAt = Number(val.triggeredAt || 0);
+            if (endsAt > Date.now() && triggeredAt >= pageLoadedAt - 15000) {
+                window.applyCloudCyberEvent(endsAt);
+            }
+        });
+
+        onValue(redPacketEventRef, (snap) => {
+            const val = snap.val();
+            if (!val || !val.waveId || !Array.isArray(val.packets)) return;
+            const triggeredAt = Number(val.triggeredAt || 0);
+            if (triggeredAt >= pageLoadedAt - 10000) {
+                window.spawnRedPacketWave(val.waveId, val.packets);
+            }
+        });
 
         let checkingMidnight = false;
         async function checkAndResetAtMidnight() {
@@ -2391,13 +2539,13 @@
                     activeDmUnsub();
                     activeDmUnsub = null;
                 }
-                const roomMsgsQuery = query(ref(db, `dmMessages/${roomId}`), limitToLast(80));
-                activeDmUnsub = onValue(roomMsgsQuery, (snap) => {
-                    const list = [];
+                const roomMsgsQuery = query(ref(db, `dmMessages/${roomId}`), limitToLast(60));
+                activeDmUnsub = onValue(roomMsgsQuery, async (snap) => {
+                    const entries = [];
                     snap.forEach((child) => {
                         const v = child.val();
                         if (v && typeof v.text === "string") {
-                            list.push({
+                            entries.push({
                                 id: child.key,
                                 senderUid: v.senderUid || "",
                                 nickname: v.nickname || "流浪者",
@@ -2406,7 +2554,14 @@
                             });
                         }
                     });
-                    window.state.dmMessages = list;
+                    if (entries.length > 50) {
+                        const overflow = entries.slice(0, entries.length - 50);
+                        for (const oldMsg of overflow) {
+                            await remove(ref(db, `dmMessages/${roomId}/${oldMsg.id}`));
+                        }
+                        return;
+                    }
+                    window.state.dmMessages = entries;
                     if (window.state.activeTab === "dm") {
                         window.renderDmMessages();
                     }
@@ -2419,6 +2574,16 @@
                     text: text,
                     createdAt: Date.now()
                 });
+                const snap = await get(ref(db, `dmMessages/${roomId}`));
+                if (snap.exists()) {
+                    const keys = Object.keys(snap.val());
+                    if (keys.length > 50) {
+                        const toDelete = keys.slice(0, keys.length - 50);
+                        for (const k of toDelete) {
+                            await remove(ref(db, `dmMessages/${roomId}/${k}`));
+                        }
+                    }
+                }
             }
         };
 
