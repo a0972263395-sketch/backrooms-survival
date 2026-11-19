@@ -89,10 +89,65 @@
             border-bottom-color: rgba(52, 211, 153, 0.5) !important;
         }
 
-        /* 賽博頭像框 */
-        .cyber-avatar-frame {
-            border-color: #00ff88 !important;
-            box-shadow: 0 0 0 2px #052e16, 0 0 14px #00ff88, 0 0 24px rgba(16, 185, 129, 0.75) !important;
+        /* ==================== 頭像框特效樣式（賽博 / 機械 / 黑客 / 黑金） ==================== */
+        @keyframes cyber-frame-pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 2px #052e16, 0 0 12px #00ff88, 0 0 24px rgba(0, 255, 136, 0.75);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 0 2px #a7f3d0, 0 0 18px #34d399, 0 0 34px rgba(16, 185, 129, 0.95);
+                transform: scale(1.03);
+            }
+        }
+        .avatar-frame-cyber {
+            border: 2px solid #00ff88 !important;
+            animation: cyber-frame-pulse 1.6s infinite ease-in-out;
+        }
+
+        @keyframes mech-frame-pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 2px #334155, 0 0 10px rgba(251, 146, 60, 0.75), inset 0 0 8px rgba(148, 163, 184, 0.45);
+            }
+            50% {
+                box-shadow: 0 0 0 2px #fb923c, 0 0 18px rgba(249, 115, 22, 0.95), inset 0 0 10px rgba(251, 191, 36, 0.5);
+            }
+        }
+        .avatar-frame-mech {
+            border: 2px solid #f97316 !important;
+            outline: 2px dashed rgba(148, 163, 184, 0.75);
+            outline-offset: 1px;
+            animation: mech-frame-pulse 1.8s infinite ease-in-out;
+        }
+
+        @keyframes hacker-frame-pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 2px #022c22, 0 0 12px #22c55e, 0 0 22px rgba(34, 197, 94, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 2px #86efac, 0 0 20px #4ade80, 0 0 32px rgba(74, 222, 128, 0.95);
+            }
+        }
+        .avatar-frame-hacker {
+            border: 2px solid #4ade80 !important;
+            outline: 2px dotted #16a34a;
+            outline-offset: 2px;
+            animation: hacker-frame-pulse 1.2s infinite ease-in-out;
+        }
+
+        @keyframes blackgold-frame-pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 2px #1c1917, 0 0 14px rgba(251, 191, 36, 0.8), 0 0 26px rgba(245, 158, 11, 0.55);
+            }
+            50% {
+                box-shadow: 0 0 0 2px #fef08a, 0 0 22px rgba(253, 224, 71, 0.95), 0 0 36px rgba(245, 158, 11, 0.85);
+            }
+        }
+        .avatar-frame-blackgold {
+            border: 2px solid #facc15 !important;
+            outline: 2px solid #18181b;
+            outline-offset: 1px;
+            animation: blackgold-frame-pulse 2s infinite ease-in-out;
         }
 
         /* 趣玩商店五款聊天框特效 */
@@ -574,9 +629,9 @@
                 <form onsubmit="handleSendChatMessage(event)" class="p-3 sm:p-4 bg-[#1a170c] border-t border-[#594e25] flex flex-col sm:flex-row gap-2.5 shrink-0">
                     <div class="flex items-center gap-2 sm:w-56 shrink-0">
                         <input type="file" id="chat-avatar-file" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
-                        <button type="button" onclick="document.getElementById('chat-avatar-file').click()" title="點擊上傳玩家頭像（鎖定於此裝置）" class="relative w-10 h-10 rounded-full border-2 border-[#8c7b38] hover:border-amber-400 overflow-hidden shrink-0 bg-[#0d0b05] group transition">
-                            <img id="my-avatar-preview" src="" alt="我的頭像" class="w-full h-full object-cover">
-                            <span class="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-amber-300 transition">
+                        <button type="button" onclick="document.getElementById('chat-avatar-file').click()" title="點擊上傳玩家頭像（鎖定於此裝置）" class="relative w-10 h-10 rounded-full border-2 border-[#8c7b38] hover:border-amber-400 overflow-visible shrink-0 bg-[#0d0b05] group transition">
+                            <img id="my-avatar-preview" src="" alt="我的頭像" class="w-full h-full rounded-full object-cover">
+                            <span class="absolute inset-0 rounded-full bg-black/55 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-amber-300 transition">
                                 <i class="fa-solid fa-camera"></i>
                             </span>
                         </button>
@@ -696,28 +751,40 @@
         </div>
     </div>
 
-    <!-- ==================== 趣玩商店彈出視窗 ==================== -->
+    <!-- ==================== 趣玩商店彈出視窗（聊天框特效 + 機械／黑客／黑金頭像框） ==================== -->
     <div id="fun-shop-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
-        <div class="bg-[#1a170c] border-2 border-cyan-500/60 rounded-2xl w-full max-w-xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+        <div class="bg-[#1a170c] border-2 border-cyan-500/60 rounded-2xl w-full max-w-2xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
             <div class="px-6 py-4 border-b border-[#4a4122] bg-[#211d0f] flex items-center justify-between">
                 <div>
                     <h3 class="text-base sm:text-lg font-black text-[#faf2c3] flex items-center gap-2">
-                        <i class="fa-solid fa-store text-cyan-400"></i> 趣玩商店 // 聊天框特效
+                        <i class="fa-solid fa-store text-cyan-400"></i> 趣玩商店 // 特效聊天框與頭像框
                     </h3>
-                    <p class="text-xs text-[#9c9163]">使用 <span class="text-cyan-300 font-bold">能量核心</span> 解鎖聊天框特效（目前持有：<span id="shop-core-count" class="font-mono-tech text-cyan-300 font-black">0</span>）</p>
+                    <p class="text-xs text-[#9c9163]">使用 <span class="text-cyan-300 font-bold">能量核心</span> 解鎖特效（目前持有：<span id="shop-core-count" class="font-mono-tech text-cyan-300 font-black">0</span>）</p>
                 </div>
                 <button type="button" onclick="closeFunShopModal()" class="w-9 h-9 rounded-lg bg-[#2e2815] hover:bg-[#423a1f] text-[#d6c67c] flex items-center justify-center transition">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
-            <div class="p-4 overflow-y-auto space-y-2.5 flex-grow" id="fun-shop-items"></div>
+            <div class="p-4 overflow-y-auto space-y-5 flex-grow">
+                <div>
+                    <div class="text-xs font-black text-amber-300 mb-2.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-id-badge"></i> 特效頭像框（機械／黑客／黑金／賽博）
+                    </div>
+                    <div class="space-y-2.5" id="avatar-frame-shop-items"></div>
+                </div>
+
+                <div>
+                    <div class="text-xs font-black text-cyan-300 mb-2.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-comment-dots"></i> 聊天框特效
+                    </div>
+                    <div class="space-y-2.5" id="fun-shop-items"></div>
+                </div>
+            </div>
 
             <div class="px-6 py-3.5 border-t border-[#4a4122] bg-[#211d0f] flex items-center justify-between">
-                <span class="text-xs text-[#9c9163]">賽博頭像框請於賽博抽獎獲得並套用</span>
-                <button type="button" id="toggle-cyber-frame-btn" onclick="toggleEquipCyberFrame()" class="px-3.5 py-1.5 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-xs font-bold">
-                    賽博頭像框：未解鎖
-                </button>
+                <span class="text-xs text-[#9c9163]">賽博頭像框需於賽博輪盤抽獎獲得</span>
+                <button type="button" onclick="closeFunShopModal()" class="px-4 py-1.5 rounded-lg bg-[#8c7b38] hover:bg-[#a69244] text-stone-950 text-xs font-black">完成</button>
             </div>
         </div>
     </div>
@@ -734,7 +801,6 @@
                 </button>
             </div>
 
-            <!-- 階段 1：螢幕上方掉落小球至正中央（點擊或 5 秒後自動開啟） -->
             <div id="cyber-orb-stage" class="py-6 flex flex-col items-center justify-center space-y-4">
                 <button type="button" id="cyber-drop-orb-btn" onclick="openCyberWheelFromOrb()" class="cyber-drop-orb w-24 h-24 rounded-full bg-gradient-to-br from-emerald-300 via-emerald-500 to-teal-900 border-2 border-emerald-200 flex flex-col items-center justify-center text-stone-950 font-black cursor-pointer">
                     <i class="fa-solid fa-atom text-2xl animate-spin"></i>
@@ -745,7 +811,6 @@
                 </div>
             </div>
 
-            <!-- 階段 2：輪盤抽獎區 -->
             <div id="cyber-wheel-stage" class="hidden flex-col items-center space-y-4 py-2">
                 <div class="relative w-52 h-52 flex items-center justify-center">
                     <div class="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[20px] border-t-amber-300 absolute -top-2 z-20 drop-shadow-[0_0_8px_#fbbf24]"></div>
@@ -830,6 +895,13 @@
     <script>
         const ADMIN_SECRET_CODE = 'MEG2026';
 
+        const AVATAR_FRAMES_DB = [
+            { id: 'cyber', name: '賽博頭像框', cost: 0, cssClass: 'avatar-frame-cyber', badge: '霓虹脈動特效', fromLottery: true },
+            { id: 'mech', name: '機械頭像框', cost: 35, cssClass: 'avatar-frame-mech', badge: '鋼鐵齒輪掃描特效', fromLottery: false },
+            { id: 'hacker', name: '黑客頭像框', cost: 40, cssClass: 'avatar-frame-hacker', badge: '矩陣光波特效', fromLottery: false },
+            { id: 'blackgold', name: '黑金頭像框', cost: 50, cssClass: 'avatar-frame-blackgold', badge: '尊爵流金光暈特效', fromLottery: false }
+        ];
+
         const CHAT_EFFECT_SHOP = [
             { id: 'gold', name: '金色聊天框', cost: 30, cssClass: 'bubble-fx-gold', badge: '奢華金光' },
             { id: 'silver', name: '銀色聊天框', cost: 25, cssClass: 'bubble-fx-silver', badge: '合金銀輝' },
@@ -890,8 +962,8 @@
             energyCores: 0,
             ownedEffects: [],
             equippedEffect: '',
-            hasCyberFrame: false,
-            equippedCyberFrame: false,
+            ownedAvatarFrames: [],
+            equippedAvatarFrame: '',
             cyberEventEndsAt: 0,
             lastSeenRedPacketWaveId: '',
             lastSpunSlotKey: '',
@@ -907,6 +979,19 @@
             activeDmRoomId: '',
             dmMessages: []
         };
+
+        function getAvatarFrameClass(frameId) {
+            if (!frameId) return '';
+            const found = AVATAR_FRAMES_DB.find(f => f.id === frameId);
+            return found ? found.cssClass : '';
+        }
+
+        function applyFrameClassToElement(el, frameId) {
+            if (!el) return;
+            AVATAR_FRAMES_DB.forEach(f => el.classList.remove(f.cssClass));
+            const cls = getAvatarFrameClass(frameId);
+            if (cls) el.classList.add(cls);
+        }
 
         function getTodayDateKey() {
             const now = new Date();
@@ -930,8 +1015,8 @@
                 localStorage.setItem('backrooms_energy_cores', String(window.state.energyCores));
                 localStorage.setItem('backrooms_owned_effects', JSON.stringify(window.state.ownedEffects));
                 localStorage.setItem('backrooms_equipped_effect', window.state.equippedEffect || '');
-                localStorage.setItem('backrooms_has_cyber_frame', window.state.hasCyberFrame ? '1' : '0');
-                localStorage.setItem('backrooms_equipped_cyber_frame', window.state.equippedCyberFrame ? '1' : '0');
+                localStorage.setItem('backrooms_owned_avatar_frames', JSON.stringify(window.state.ownedAvatarFrames));
+                localStorage.setItem('backrooms_equipped_avatar_frame', window.state.equippedAvatarFrame || '');
                 localStorage.setItem('backrooms_last_spun_slot', window.state.lastSpunSlotKey || '');
             } catch (e) {}
         }
@@ -943,27 +1028,7 @@
             if (shopCoreEl) shopCoreEl.textContent = window.state.energyCores;
 
             const previewEl = document.getElementById('my-avatar-preview');
-            if (previewEl) {
-                if (window.state.equippedCyberFrame && window.state.hasCyberFrame) {
-                    previewEl.classList.add('cyber-avatar-frame');
-                } else {
-                    previewEl.classList.remove('cyber-avatar-frame');
-                }
-            }
-
-            const frameBtn = document.getElementById('toggle-cyber-frame-btn');
-            if (frameBtn) {
-                if (!window.state.hasCyberFrame) {
-                    frameBtn.textContent = '賽博頭像框：未解鎖（賽博抽獎獲得）';
-                    frameBtn.className = 'px-3.5 py-1.5 rounded-lg bg-emerald-950/60 text-emerald-400/70 border border-emerald-700/40 text-xs font-bold';
-                } else if (window.state.equippedCyberFrame) {
-                    frameBtn.textContent = '賽博頭像框：使用中（點此卸下）';
-                    frameBtn.className = 'px-3.5 py-1.5 rounded-lg bg-emerald-400 text-stone-950 border border-emerald-300 text-xs font-black';
-                } else {
-                    frameBtn.textContent = '賽博頭像框：已擁有（點此穿戴）';
-                    frameBtn.className = 'px-3.5 py-1.5 rounded-lg bg-emerald-900 text-emerald-200 border border-emerald-400 text-xs font-black';
-                }
-            }
+            applyFrameClassToElement(previewEl, window.state.equippedAvatarFrame);
         }
 
         function initUserProfile() {
@@ -989,8 +1054,19 @@
                 const parsedEffects = JSON.parse(localStorage.getItem('backrooms_owned_effects') || '[]');
                 window.state.ownedEffects = Array.isArray(parsedEffects) ? parsedEffects : [];
                 window.state.equippedEffect = localStorage.getItem('backrooms_equipped_effect') || '';
-                window.state.hasCyberFrame = localStorage.getItem('backrooms_has_cyber_frame') === '1';
-                window.state.equippedCyberFrame = localStorage.getItem('backrooms_equipped_cyber_frame') === '1';
+
+                const parsedFrames = JSON.parse(localStorage.getItem('backrooms_owned_avatar_frames') || '[]');
+                window.state.ownedAvatarFrames = Array.isArray(parsedFrames) ? parsedFrames : [];
+                window.state.equippedAvatarFrame = localStorage.getItem('backrooms_equipped_avatar_frame') || '';
+
+                // 相容舊版賽博頭像框旗標
+                if (localStorage.getItem('backrooms_has_cyber_frame') === '1' && !window.state.ownedAvatarFrames.includes('cyber')) {
+                    window.state.ownedAvatarFrames.push('cyber');
+                }
+                if (localStorage.getItem('backrooms_equipped_cyber_frame') === '1' && !window.state.equippedAvatarFrame) {
+                    window.state.equippedAvatarFrame = 'cyber';
+                }
+
                 window.state.lastSpunSlotKey = localStorage.getItem('backrooms_last_spun_slot') || '';
             } catch (e) {
                 const suffix = window.currentUserUid.replace('user-', '').slice(0, 4).toUpperCase();
@@ -1010,9 +1086,10 @@
             updateCurrencyAndFrameUI();
         }
 
-        // 趣玩商店功能
+        // 趣玩商店功能（頭像框 + 聊天框特效）
         window.openFunShopModal = function() {
             const modal = document.getElementById('fun-shop-modal');
+            renderAvatarFrameShopItems();
             renderFunShopItems();
             updateCurrencyAndFrameUI();
             if (modal) {
@@ -1027,6 +1104,73 @@
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             }
+        };
+
+        function renderAvatarFrameShopItems() {
+            const container = document.getElementById('avatar-frame-shop-items');
+            if (!container) return;
+            const safeAvatar = (window.state.userAvatar && window.state.userAvatar.startsWith('data:image/'))
+                ? window.state.userAvatar
+                : DEFAULT_AVATAR_URL;
+
+            container.innerHTML = AVATAR_FRAMES_DB.map(frame => {
+                const owned = window.state.ownedAvatarFrames.includes(frame.id);
+                const equipped = window.state.equippedAvatarFrame === frame.id;
+                let btnHtml = '';
+                if (equipped) {
+                    btnHtml = `<button type="button" onclick="toggleEquipAvatarFrame('${frame.id}')" class="px-3 py-1.5 rounded-lg bg-amber-400 text-stone-950 text-xs font-black">使用中（卸下）</button>`;
+                } else if (owned) {
+                    btnHtml = `<button type="button" onclick="toggleEquipAvatarFrame('${frame.id}')" class="px-3 py-1.5 rounded-lg bg-[#2e2815] hover:bg-[#3f3619] text-[#faf2c3] border border-[#8c7b38] text-xs font-bold">套用頭像框</button>`;
+                } else if (frame.fromLottery) {
+                    btnHtml = `<span class="px-3 py-1.5 rounded-lg bg-emerald-950/70 text-emerald-400 border border-emerald-700/50 text-[11px] font-bold">賽博輪盤大獎</span>`;
+                } else {
+                    btnHtml = `<button type="button" onclick="buyAvatarFrame('${frame.id}')" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-black"><i class="fa-solid fa-bolt mr-1"></i>購買 (${frame.cost})</button>`;
+                }
+
+                return `
+                    <div class="p-3.5 rounded-xl bg-[#121008] border border-[#4a4122] flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3.5 min-w-0">
+                            <img src="${safeAvatar}" alt="預覽" class="w-11 h-11 rounded-full object-cover bg-[#1a170c] shrink-0 ${frame.cssClass}">
+                            <div class="min-w-0">
+                                <div class="text-xs sm:text-sm font-black text-[#faf2c3] truncate">${frame.name}</div>
+                                <div class="text-[11px] text-amber-300/90 mt-0.5">${frame.badge}</div>
+                            </div>
+                        </div>
+                        <div class="shrink-0">${btnHtml}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.buyAvatarFrame = function(frameId) {
+            const frame = AVATAR_FRAMES_DB.find(f => f.id === frameId);
+            if (!frame || frame.fromLottery) return;
+            if (window.state.ownedAvatarFrames.includes(frameId)) {
+                window.toggleEquipAvatarFrame(frameId);
+                return;
+            }
+            if (window.state.energyCores < frame.cost) {
+                window.showToast(`能量核心不足（需要 ${frame.cost} 能量核心）`, 'error');
+                return;
+            }
+            window.state.energyCores -= frame.cost;
+            window.state.ownedAvatarFrames.push(frameId);
+            window.state.equippedAvatarFrame = frameId;
+            saveLocalPlayerItems();
+            updateCurrencyAndFrameUI();
+            renderAvatarFrameShopItems();
+            window.renderChatMessages();
+            window.showToast(`已解鎖並套用「${frame.name}」！`, 'success');
+        };
+
+        window.toggleEquipAvatarFrame = function(frameId) {
+            if (!window.state.ownedAvatarFrames.includes(frameId)) return;
+            window.state.equippedAvatarFrame = (window.state.equippedAvatarFrame === frameId) ? '' : frameId;
+            saveLocalPlayerItems();
+            updateCurrencyAndFrameUI();
+            renderAvatarFrameShopItems();
+            window.renderChatMessages();
+            window.showToast(window.state.equippedAvatarFrame ? '已套用頭像框特效！' : '已卸下頭像框', 'info');
         };
 
         function renderFunShopItems() {
@@ -1084,18 +1228,6 @@
             saveLocalPlayerItems();
             renderFunShopItems();
             window.showToast(window.state.equippedEffect ? '已裝備聊天框特效' : '已卸下聊天框特效', 'info');
-        };
-
-        window.toggleEquipCyberFrame = function() {
-            if (!window.state.hasCyberFrame) {
-                window.showToast('尚未解鎖賽博頭像框，請把握賽博抽獎！', 'info');
-                return;
-            }
-            window.state.equippedCyberFrame = !window.state.equippedCyberFrame;
-            saveLocalPlayerItems();
-            updateCurrencyAndFrameUI();
-            window.renderChatMessages();
-            window.showToast(window.state.equippedCyberFrame ? '已穿戴賽博頭像框' : '已卸下賽博頭像框', 'info');
         };
 
         // 全體玩家同步綠色賽博模式 + 紅包活動
@@ -1358,13 +1490,15 @@
                 }
 
                 if (isBigPrize) {
-                    window.state.hasCyberFrame = true;
-                    window.state.equippedCyberFrame = true;
+                    if (!window.state.ownedAvatarFrames.includes('cyber')) {
+                        window.state.ownedAvatarFrames.push('cyber');
+                    }
+                    window.state.equippedAvatarFrame = 'cyber';
                     saveLocalPlayerItems();
                     updateCurrencyAndFrameUI();
                     window.renderChatMessages();
                     if (resultEl) {
-                        resultEl.innerHTML = `🎉 <b>輪盤停在【賽博頭像框】大獎</b>！已自動套用至頭像外框！`;
+                        resultEl.innerHTML = `🎉 <b>輪盤停在【賽博頭像框】大獎</b>！已自動套用霓虹特效頭像框！`;
                     }
                     window.showToast('恭喜抽中大獎：賽博頭像框！', 'success');
                 } else {
@@ -1645,8 +1779,7 @@
 
             if (avatarEl) {
                 avatarEl.src = (msg.avatar && msg.avatar.startsWith('data:image/')) ? msg.avatar : DEFAULT_AVATAR_URL;
-                if (msg.hasCyberFrame) avatarEl.classList.add('cyber-avatar-frame');
-                else avatarEl.classList.remove('cyber-avatar-frame');
+                applyFrameClassToElement(avatarEl, msg.avatarFrame || (msg.hasCyberFrame ? 'cyber' : ''));
             }
             nickEl.textContent = (msg.isAdmin ? '🌈 [管理員] ' : '💬 ') + (msg.nickname || '無名流浪者');
             textEl.textContent = msg.text || '';
@@ -2219,7 +2352,8 @@
                 const safeAvatar = (msg.avatar && msg.avatar.startsWith('data:image/')) ? msg.avatar : DEFAULT_AVATAR_URL;
                 const safeNick = escapeHtml(msg.nickname || '無名流浪者');
                 const effectObj = CHAT_EFFECT_SHOP.find(e => e.id === msg.chatEffect);
-                const hasFrame = Boolean(msg.hasCyberFrame);
+                const frameKey = msg.avatarFrame || (msg.hasCyberFrame ? 'cyber' : '');
+                const frameClass = getAvatarFrameClass(frameKey);
 
                 const nameHtml = isSenderAdmin
                     ? `<span class="px-1.5 py-0.5 rounded bg-gradient-to-r from-pink-500 via-amber-400 to-cyan-400 text-stone-950 text-[10px] font-black">M.E.G. 管理員</span> <span class="text-xs font-black admin-rainbow-text">${safeNick}</span>`
@@ -2252,7 +2386,7 @@
                             ? 'bg-[#362f14] border border-amber-500/50 text-[#faf2c3] rounded-tr-sm'
                             : 'bg-[#17150c] border border-[#4d4423] text-[#e6dfb8] rounded-tl-sm'));
 
-                const avatarClass = `w-9 h-9 rounded-full object-cover shrink-0 border ${hasFrame ? 'cyber-avatar-frame' : (isSenderAdmin ? 'border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.6)]' : 'border-[#594e25]')} bg-[#1a170c] mt-0.5 ${!isMine && msg.senderUid ? 'cursor-pointer hover:scale-105 transition' : ''}`;
+                const avatarClass = `w-9 h-9 rounded-full object-cover shrink-0 border ${frameClass || (isSenderAdmin ? 'border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.6)]' : 'border-[#594e25]')} bg-[#1a170c] mt-0.5 ${!isMine && msg.senderUid ? 'cursor-pointer hover:scale-105 transition' : ''}`;
                 const avatarClickAttr = (!isMine && msg.senderUid)
                     ? `onclick='openDmConfirmModal("${msg.senderUid}", "${safeNick.replace(/"/g, "&quot;")}", "${safeAvatar}")' title="點擊發起私聊"`
                     : '';
@@ -2318,13 +2452,14 @@
             if (sendBtn) sendBtn.disabled = true;
             try {
                 lastChatSentAt = now;
+                const activeFrame = window.state.equippedAvatarFrame || '';
                 await window.chatCloudAPI.sendMessage(
                     nickname,
                     text,
                     window.state.userAvatar,
                     window.state.isAdmin,
                     window.state.equippedEffect,
-                    window.state.equippedCyberFrame && window.state.hasCyberFrame
+                    activeFrame
                 );
                 if (textInput) textInput.value = '';
             } catch (err) {
@@ -2461,7 +2596,7 @@
         setInterval(checkAndResetAtMidnight, 30000);
 
         window.chatCloudAPI = {
-            sendMessage: async (nickname, text, avatar, isAdmin, chatEffect, hasCyberFrame) => {
+            sendMessage: async (nickname, text, avatar, isAdmin, chatEffect, avatarFrame) => {
                 await checkAndResetAtMidnight();
                 await push(ref(db, "messages"), {
                     nickname: nickname || "無名流浪者",
@@ -2469,7 +2604,8 @@
                     avatar: (avatar && avatar.startsWith("data:image/")) ? avatar : "",
                     isAdmin: Boolean(isAdmin),
                     chatEffect: chatEffect || "",
-                    hasCyberFrame: Boolean(hasCyberFrame),
+                    avatarFrame: avatarFrame || "",
+                    hasCyberFrame: avatarFrame === "cyber",
                     senderUid: window.currentUserUid,
                     createdAt: Date.now()
                 });
@@ -2631,6 +2767,7 @@
                         avatar: typeof val.avatar === "string" ? val.avatar : "",
                         isAdmin: Boolean(val.isAdmin),
                         chatEffect: typeof val.chatEffect === "string" ? val.chatEffect : "",
+                        avatarFrame: typeof val.avatarFrame === "string" ? val.avatarFrame : (val.hasCyberFrame ? "cyber" : ""),
                         hasCyberFrame: Boolean(val.hasCyberFrame),
                         senderUid: val.senderUid || "",
                         createdAt: typeof val.createdAt === "number" ? val.createdAt : Date.now()
