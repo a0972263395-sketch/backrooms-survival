@@ -25,6 +25,7 @@
                     rgba(138, 124, 62, 0.07) 32px
                 );
             background-attachment: fixed;
+            transition: background-color 0.35s ease, color 0.35s ease;
         }
         .font-mono-tech {
             font-family: 'Share Tech Mono', 'Noto Sans TC', monospace;
@@ -63,6 +64,76 @@
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
+
+        /* 整點綠色賽博風格模式 */
+        body.cyber-green-mode {
+            background-color: #04130b !important;
+            color: #bbf7d0 !important;
+            background-image:
+                radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.24) 0%, rgba(3, 15, 9, 0.96) 85%),
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(16, 185, 129, 0.06) 0px,
+                    rgba(16, 185, 129, 0.06) 2px,
+                    transparent 2px,
+                    transparent 24px
+                ) !important;
+        }
+        body.cyber-green-mode .backrooms-panel {
+            background: rgba(6, 26, 16, 0.9) !important;
+            border-color: rgba(52, 211, 153, 0.45) !important;
+            box-shadow: 0 0 28px rgba(16, 185, 129, 0.18), inset 0 1px 0 rgba(110, 231, 183, 0.12) !important;
+        }
+        body.cyber-green-mode header {
+            background-color: rgba(5, 22, 13, 0.96) !important;
+            border-bottom-color: rgba(52, 211, 153, 0.5) !important;
+        }
+
+        /* 賽博頭像框（套用在頭像外框，不影響聊天框） */
+        .cyber-avatar-frame {
+            border-color: #00ff88 !important;
+            box-shadow: 0 0 0 2px #052e16, 0 0 14px #00ff88, 0 0 24px rgba(16, 185, 129, 0.75) !important;
+        }
+
+        /* 趣玩商店五款聊天框特效 */
+        .bubble-fx-gold {
+            background: linear-gradient(135deg, rgba(69, 49, 8, 0.95), rgba(38, 26, 5, 0.95));
+            border: 2px solid #fbbf24 !important;
+            color: #fef3c7 !important;
+            box-shadow: 0 0 16px rgba(251, 191, 36, 0.45), inset 0 0 10px rgba(251, 191, 36, 0.2);
+        }
+        .bubble-fx-silver {
+            background: linear-gradient(135deg, rgba(51, 65, 85, 0.92), rgba(30, 41, 59, 0.95));
+            border: 2px solid #cbd5e1 !important;
+            color: #f8fafc !important;
+            box-shadow: 0 0 14px rgba(203, 213, 225, 0.35), inset 0 0 8px rgba(226, 232, 240, 0.18);
+        }
+        @keyframes fire-pulse {
+            0%, 100% { box-shadow: 0 0 14px rgba(249, 115, 22, 0.65), 0 -3px 12px rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 22px rgba(251, 146, 60, 0.85), 0 -5px 16px rgba(234, 179, 8, 0.55); }
+        }
+        .bubble-fx-fire {
+            background: linear-gradient(180deg, rgba(127, 29, 29, 0.92), rgba(67, 20, 7, 0.96));
+            border: 2px solid #fb923c !important;
+            color: #ffedd5 !important;
+            animation: fire-pulse 1.5s infinite ease-in-out;
+        }
+        @keyframes lightning-flash {
+            0%, 92%, 100% { box-shadow: 0 0 14px rgba(56, 189, 248, 0.55); border-color: #38bdf8; }
+            94%, 97% { box-shadow: 0 0 26px rgba(224, 242, 254, 0.95), 0 0 10px #38bdf8; border-color: #e0f2fe; }
+        }
+        .bubble-fx-lightning {
+            background: linear-gradient(135deg, rgba(12, 74, 110, 0.92), rgba(15, 23, 42, 0.96));
+            border: 2px solid #38bdf8 !important;
+            color: #e0f2fe !important;
+            animation: lightning-flash 2.6s infinite;
+        }
+        .bubble-fx-ice {
+            background: linear-gradient(135deg, rgba(22, 78, 99, 0.88), rgba(8, 47, 73, 0.92));
+            border: 2px solid #67e8f9 !important;
+            color: #ecfeff !important;
+            box-shadow: 0 0 15px rgba(103, 232, 249, 0.4), inset 0 0 12px rgba(165, 243, 252, 0.22);
+        }
 
         /* 手機／全螢幕聊天放大模式 */
         body.chat-fullscreen-active header,
@@ -141,6 +212,19 @@
                 </div>
                 <p id="top-banner-text" class="text-xs text-[#faf2c3] truncate mt-0.5">...</p>
             </div>
+        </div>
+    </div>
+
+    <!-- 整點綠色賽博免費抽獎活動橫幅（活動期間顯示，持續 1 分鐘） -->
+    <div id="cyber-event-bar" class="hidden bg-emerald-950/95 border-b border-emerald-400/70 text-emerald-200 px-4 py-2.5 shadow-[0_0_25px_rgba(16,185,129,0.3)] z-20">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+            <div class="flex items-center gap-2.5 font-black text-emerald-300">
+                <i class="fa-solid fa-microchip animate-pulse text-emerald-400"></i>
+                <span>【賽博整點空投】綠色賽博模式啟動中！剩餘 <span id="cyber-countdown" class="font-mono-tech text-white bg-emerald-800/80 px-2 py-0.5 rounded">60s</span></span>
+            </div>
+            <button type="button" onclick="openCyberLotteryModal()" class="px-3.5 py-1.5 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-stone-950 font-black text-xs shadow-md transition flex items-center gap-1.5 active:scale-95">
+                <i class="fa-solid fa-gift"></i> 免費抽獎（核心／賽博頭像框）
+            </button>
         </div>
     </div>
 
@@ -375,12 +459,29 @@
                                 <span id="chat-connection-badge" class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-600/50 text-[10px] font-mono-tech font-bold flex items-center gap-1.5">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> 雲端同步中
                                 </span>
+                                <span id="device-account-badge" class="px-2 py-0.5 rounded bg-[#2b2613] text-[#d6c67c] border border-[#574d28] text-[10px] font-mono-tech">
+                                    裝置帳號已鎖定
+                                </span>
+                                <span class="px-2 py-0.5 rounded bg-cyan-950/90 text-cyan-300 border border-cyan-600/50 text-[10px] font-mono-tech font-bold">
+                                    <i class="fa-solid fa-bolt mr-1"></i>能量核心: <span id="energy-core-display">0</span>
+                                </span>
+                                <span class="px-2 py-0.5 rounded bg-[#18150b] text-[#9c9163] border border-[#3d3518] text-[10px] font-mono-tech">
+                                    每日 00:00 重置
+                                </span>
                             </div>
-                            <p class="text-xs text-[#a39765]">免登入即時同步：所有連上本網頁的玩家都能看到與傳送訊息</p>
+                            <p class="text-xs text-[#a39765]">免登入即時同步：頭像、暱稱與歷史發言已鎖定此裝置；每 0 點自動重置聊天紀錄</p>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
+                    <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto flex-wrap">
+                        <button type="button" onclick="openFunShopModal()" class="px-3 py-1.5 rounded-lg bg-cyan-950/90 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/60 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
+                            <i class="fa-solid fa-store"></i>
+                            <span>趣玩商店</span>
+                        </button>
+                        <button type="button" id="admin-cyber-trigger-btn" onclick="adminStartCyberEvent()" class="hidden px-3 py-1.5 rounded-lg bg-emerald-950 hover:bg-emerald-800 text-emerald-300 border border-emerald-400 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>開啟賽博抽獎</span>
+                        </button>
                         <div class="text-xs font-mono-tech text-[#9c9163] bg-[#121008] px-3 py-1.5 rounded-lg border border-[#4d4423]">
                             近期訊息: <span id="chat-msg-count" class="text-[#f2e394] font-bold">0</span>
                         </div>
@@ -408,7 +509,7 @@
                     <div class="flex items-center gap-2 sm:w-56 shrink-0">
                         <!-- 自訂頭像上傳按鈕 -->
                         <input type="file" id="chat-avatar-file" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
-                        <button type="button" onclick="document.getElementById('chat-avatar-file').click()" title="點擊上傳玩家頭像" class="relative w-10 h-10 rounded-full border-2 border-[#8c7b38] hover:border-amber-400 overflow-hidden shrink-0 bg-[#0d0b05] group transition">
+                        <button type="button" onclick="document.getElementById('chat-avatar-file').click()" title="點擊上傳玩家頭像（鎖定於此裝置）" class="relative w-10 h-10 rounded-full border-2 border-[#8c7b38] hover:border-amber-400 overflow-hidden shrink-0 bg-[#0d0b05] group transition">
                             <img id="my-avatar-preview" src="" alt="我的頭像" class="w-full h-full object-cover">
                             <span class="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-amber-300 transition">
                                 <i class="fa-solid fa-camera"></i>
@@ -416,7 +517,7 @@
                         </button>
                         <div class="relative flex-grow">
                             <i class="fa-solid fa-user-astronaut absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 text-xs"></i>
-                            <input type="text" id="chat-nickname-input" maxlength="20" placeholder="您的暱稱 (選填)" 
+                            <input type="text" id="chat-nickname-input" maxlength="20" onchange="handleNicknameChange(this.value)" onblur="handleNicknameChange(this.value)" placeholder="裝置鎖定暱稱" 
                                 class="w-full bg-[#0d0b05] border border-[#594e25] focus:border-amber-400 rounded-xl pl-8 pr-3 py-2.5 text-xs sm:text-sm text-[#faf2c3] placeholder-[#5e5534] outline-none transition">
                         </div>
                     </div>
@@ -440,6 +541,58 @@
         LEVEL-0 TRADING TERMINAL // 謹慎評估每一筆物資交換，願你在後室平安生存。
     </footer>
 
+    <!-- ==================== 趣玩商店彈出視窗 ==================== -->
+    <div id="fun-shop-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+        <div class="bg-[#1a170c] border-2 border-cyan-500/60 rounded-2xl w-full max-w-xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-[#4a4122] bg-[#211d0f] flex items-center justify-between">
+                <div>
+                    <h3 class="text-base sm:text-lg font-black text-[#faf2c3] flex items-center gap-2">
+                        <i class="fa-solid fa-store text-cyan-400"></i> 趣玩商店 // 聊天框特效
+                    </h3>
+                    <p class="text-xs text-[#9c9163]">使用 <span class="text-cyan-300 font-bold">能量核心</span> 解鎖聊天框特效（目前持有：<span id="shop-core-count" class="font-mono-tech text-cyan-300 font-black">0</span>）</p>
+                </div>
+                <button type="button" onclick="closeFunShopModal()" class="w-9 h-9 rounded-lg bg-[#2e2815] hover:bg-[#423a1f] text-[#d6c67c] flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-4 overflow-y-auto space-y-2.5 flex-grow" id="fun-shop-items"></div>
+
+            <div class="px-6 py-3.5 border-t border-[#4a4122] bg-[#211d0f] flex items-center justify-between">
+                <span class="text-xs text-[#9c9163]">賽博頭像框請於整點賽博抽獎獲得並套用</span>
+                <button type="button" id="toggle-cyber-frame-btn" onclick="toggleEquipCyberFrame()" class="px-3.5 py-1.5 rounded-lg bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-xs font-bold">
+                    賽博頭像框：未解鎖
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 整點綠色賽博免費抽獎視窗 ==================== -->
+    <div id="cyber-lottery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+        <div class="bg-[#051a10] border-2 border-emerald-400 rounded-2xl w-full max-w-md p-6 shadow-[0_0_40px_rgba(16,185,129,0.35)] space-y-4 text-emerald-100">
+            <div class="flex items-center justify-between border-b border-emerald-700/60 pb-3">
+                <h3 class="text-base sm:text-lg font-black text-emerald-300 flex items-center gap-2">
+                    <i class="fa-solid fa-microchip text-emerald-400"></i> 綠色賽博整點免費抽獎
+                </h3>
+                <button type="button" onclick="closeCyberLotteryModal()" class="text-emerald-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p class="text-xs text-emerald-200/85 leading-relaxed">
+                每小時整點限時 1 分鐘免費抽獎！<br>
+                • <span class="text-cyan-300 font-bold">小獎</span>：能量核心（+10 ~ +35）<br>
+                • <span class="text-emerald-300 font-bold">大獎</span>：永久解鎖「賽博頭像框」（套用於頭像外框）
+            </p>
+            <div id="cyber-lottery-result" class="p-3.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-center text-xs font-mono-tech text-emerald-300">
+                點擊下方按鈕抽取本時段免費獎勵
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeCyberLotteryModal()" class="px-4 py-2 rounded-xl bg-emerald-950 text-emerald-300 border border-emerald-700 text-xs font-bold">關閉</button>
+                <button type="button" id="cyber-spin-btn" onclick="spinCyberLottery()" class="px-5 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-stone-950 text-xs font-black shadow-lg">立即免費抽獎</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== 管理員驗證彈出視窗 ==================== -->
     <div id="admin-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
         <div class="bg-[#1a170c] border-2 border-amber-500/70 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
@@ -451,7 +604,7 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <p class="text-xs text-[#a39765]">驗證通過後可刪除任意訊息、禁言違規玩家，且發言時自動開啟彩虹特效。</p>
+            <p class="text-xs text-[#a39765]">驗證通過後可刪除任意訊息、禁言玩家、發放能量核心、手動開啟賽博抽獎，且發言自帶彩虹特效。</p>
             <input type="password" id="admin-password-input" onkeydown="if(event.key==='Enter') verifyAdminLogin()" placeholder="輸入管理員金鑰..." 
                 class="w-full bg-[#0d0b05] border border-[#594e25] focus:border-amber-400 rounded-xl px-3.5 py-2.5 text-sm font-mono-tech text-[#faf2c3] outline-none">
             <div class="flex justify-end gap-2">
@@ -495,10 +648,19 @@
         </div>
     </div>
 
-    <!-- 交易評估與 UI 核心邏輯 -->
+    <!-- 交易評估、商店、抽獎與 UI 核心邏輯 -->
     <script>
         // ★ 管理員金鑰（可自行修改成你專屬的密碼）
         const ADMIN_SECRET_CODE = 'MEG2026';
+
+        // 趣玩商店：五款聊天框特效
+        const CHAT_EFFECT_SHOP = [
+            { id: 'gold', name: '金色聊天框', cost: 30, cssClass: 'bubble-fx-gold', badge: '奢華金光' },
+            { id: 'silver', name: '銀色聊天框', cost: 25, cssClass: 'bubble-fx-silver', badge: '合金銀輝' },
+            { id: 'fire', name: '火焰聊天框', cost: 50, cssClass: 'bubble-fx-fire', badge: '烈焰脈動' },
+            { id: 'lightning', name: '閃電聊天框', cost: 55, cssClass: 'bubble-fx-lightning', badge: '電弧閃爍' },
+            { id: 'ice', name: '冰聊天框', cost: 45, cssClass: 'bubble-fx-ice', badge: '寒冰晶透' }
+        ];
 
         // 預設後室探員 SVG 頭像
         const DEFAULT_AVATAR_URL = "data:image/svg+xml;utf8," + encodeURIComponent(
@@ -528,7 +690,6 @@
             { id: 'bager300', name: 'Bager-300', category: 'gold', min: 60000, max: 60000, priceText: '60k' }
         ];
 
-        // 產生並保存穩定的裝置玩家 ID，方便管理員針對該玩家進行禁言管理
         function getOrCreatePlayerUid() {
             try {
                 let uid = localStorage.getItem('backrooms_player_uid');
@@ -551,34 +712,357 @@
             their: { points: 0, weapons: {} },
             chatMessages: [],
             mutedUsers: {},
+            playerWallets: {},
+            energyCores: 0,
+            ownedEffects: [],
+            equippedEffect: '',
+            hasCyberFrame: false,
+            equippedCyberFrame: false,
+            cyberEventEndsAt: 0,
+            lastSpunSlotKey: '',
             chatFullscreen: false,
             isAdmin: false,
             userAvatar: DEFAULT_AVATAR_URL,
+            userNickname: '',
             activeModalSide: 'my',
             modalFilter: 'all'
         };
 
-        // 初始化本機保存的頭像與管理員狀態
+        function getTodayDateKey() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function getCurrentHourSlotKey() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            const h = String(now.getHours()).padStart(2, '0');
+            return `${y}-${m}-${d}-${h}`;
+        }
+
+        function saveLocalPlayerItems() {
+            try {
+                localStorage.setItem('backrooms_energy_cores', String(window.state.energyCores));
+                localStorage.setItem('backrooms_owned_effects', JSON.stringify(window.state.ownedEffects));
+                localStorage.setItem('backrooms_equipped_effect', window.state.equippedEffect || '');
+                localStorage.setItem('backrooms_has_cyber_frame', window.state.hasCyberFrame ? '1' : '0');
+                localStorage.setItem('backrooms_equipped_cyber_frame', window.state.equippedCyberFrame ? '1' : '0');
+                localStorage.setItem('backrooms_last_spun_slot', window.state.lastSpunSlotKey || '');
+            } catch (e) {}
+        }
+
+        function updateCurrencyAndFrameUI() {
+            const coreEl = document.getElementById('energy-core-display');
+            if (coreEl) coreEl.textContent = window.state.energyCores;
+            const shopCoreEl = document.getElementById('shop-core-count');
+            if (shopCoreEl) shopCoreEl.textContent = window.state.energyCores;
+
+            const previewEl = document.getElementById('my-avatar-preview');
+            if (previewEl) {
+                if (window.state.equippedCyberFrame && window.state.hasCyberFrame) {
+                    previewEl.classList.add('cyber-avatar-frame');
+                } else {
+                    previewEl.classList.remove('cyber-avatar-frame');
+                }
+            }
+
+            const frameBtn = document.getElementById('toggle-cyber-frame-btn');
+            if (frameBtn) {
+                if (!window.state.hasCyberFrame) {
+                    frameBtn.textContent = '賽博頭像框：未解鎖（整點抽獎獲得）';
+                    frameBtn.className = 'px-3.5 py-1.5 rounded-lg bg-emerald-950/60 text-emerald-400/70 border border-emerald-700/40 text-xs font-bold';
+                } else if (window.state.equippedCyberFrame) {
+                    frameBtn.textContent = '賽博頭像框：使用中（點此卸下）';
+                    frameBtn.className = 'px-3.5 py-1.5 rounded-lg bg-emerald-400 text-stone-950 border border-emerald-300 text-xs font-black';
+                } else {
+                    frameBtn.textContent = '賽博頭像框：已擁有（點此穿戴）';
+                    frameBtn.className = 'px-3.5 py-1.5 rounded-lg bg-emerald-900 text-emerald-200 border border-emerald-400 text-xs font-black';
+                }
+            }
+        }
+
         function initUserProfile() {
+            let savedNick = '';
             try {
                 const savedAvatar = localStorage.getItem('backrooms_user_avatar');
                 if (savedAvatar && savedAvatar.startsWith('data:image/')) {
                     window.state.userAvatar = savedAvatar;
                 }
-                const savedNick = localStorage.getItem('backrooms_user_nickname');
-                const nickEl = document.getElementById('chat-nickname-input');
-                if (savedNick && nickEl) nickEl.value = savedNick;
+                savedNick = (localStorage.getItem('backrooms_user_nickname') || '').trim().slice(0, 20);
+                if (!savedNick) {
+                    const suffix = window.currentUserUid.replace('user-', '').slice(0, 4).toUpperCase();
+                    savedNick = `流浪者-${suffix}`;
+                    localStorage.setItem('backrooms_user_nickname', savedNick);
+                }
+                window.state.userNickname = savedNick;
 
                 if (localStorage.getItem('backrooms_is_admin') === '1') {
                     window.state.isAdmin = true;
                 }
-            } catch (e) {}
+
+                window.state.energyCores = Math.max(0, parseInt(localStorage.getItem('backrooms_energy_cores') || '0', 10) || 0);
+                const parsedEffects = JSON.parse(localStorage.getItem('backrooms_owned_effects') || '[]');
+                window.state.ownedEffects = Array.isArray(parsedEffects) ? parsedEffects : [];
+                window.state.equippedEffect = localStorage.getItem('backrooms_equipped_effect') || '';
+                window.state.hasCyberFrame = localStorage.getItem('backrooms_has_cyber_frame') === '1';
+                window.state.equippedCyberFrame = localStorage.getItem('backrooms_equipped_cyber_frame') === '1';
+                window.state.lastSpunSlotKey = localStorage.getItem('backrooms_last_spun_slot') || '';
+            } catch (e) {
+                const suffix = window.currentUserUid.replace('user-', '').slice(0, 4).toUpperCase();
+                window.state.userNickname = `流浪者-${suffix}`;
+            }
+
+            const nickEl = document.getElementById('chat-nickname-input');
+            if (nickEl) nickEl.value = window.state.userNickname;
+
+            const badgeEl = document.getElementById('device-account-badge');
+            if (badgeEl) badgeEl.textContent = `帳號已鎖定 // ${window.state.userNickname}`;
+
             const previewEl = document.getElementById('my-avatar-preview');
             if (previewEl) previewEl.src = window.state.userAvatar;
+
             updateAdminUI();
+            updateCurrencyAndFrameUI();
         }
 
-        // 頭像上傳與自動壓縮成 96x96
+        // 趣玩商店功能
+        window.openFunShopModal = function() {
+            const modal = document.getElementById('fun-shop-modal');
+            renderFunShopItems();
+            updateCurrencyAndFrameUI();
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closeFunShopModal = function() {
+            const modal = document.getElementById('fun-shop-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        function renderFunShopItems() {
+            const container = document.getElementById('fun-shop-items');
+            if (!container) return;
+            container.innerHTML = CHAT_EFFECT_SHOP.map(item => {
+                const owned = window.state.ownedEffects.includes(item.id);
+                const equipped = window.state.equippedEffect === item.id;
+                let actionBtnHtml = '';
+                if (equipped) {
+                    actionBtnHtml = `<button type="button" onclick="toggleEquipEffect('${item.id}')" class="px-3 py-1.5 rounded-lg bg-amber-400 text-stone-950 text-xs font-black">使用中（卸下）</button>`;
+                } else if (owned) {
+                    actionBtnHtml = `<button type="button" onclick="toggleEquipEffect('${item.id}')" class="px-3 py-1.5 rounded-lg bg-[#2e2815] hover:bg-[#3f3619] text-[#faf2c3] border border-[#8c7b38] text-xs font-bold">裝備特效</button>`;
+                } else {
+                    actionBtnHtml = `<button type="button" onclick="buyChatEffect('${item.id}')" class="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-stone-950 text-xs font-black"><i class="fa-solid fa-bolt mr-1"></i>購買 (${item.cost})</button>`;
+                }
+                return `
+                    <div class="p-3.5 rounded-xl bg-[#121008] border border-[#4a4122] flex items-center justify-between gap-3">
+                        <div class="space-y-1.5 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs sm:text-sm font-black text-[#faf2c3]">${item.name}</span>
+                                <span class="text-[10px] font-mono-tech text-cyan-300">${item.badge}</span>
+                            </div>
+                            <div class="inline-block px-3 py-1 rounded-xl text-xs ${item.cssClass}">範例聊天框預覽</div>
+                        </div>
+                        <div class="shrink-0">${actionBtnHtml}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.buyChatEffect = function(effectId) {
+            const item = CHAT_EFFECT_SHOP.find(x => x.id === effectId);
+            if (!item) return;
+            if (window.state.ownedEffects.includes(effectId)) {
+                window.toggleEquipEffect(effectId);
+                return;
+            }
+            if (window.state.energyCores < item.cost) {
+                window.showToast(`能量核心不足（需要 ${item.cost} 能量核心）`, 'error');
+                return;
+            }
+            window.state.energyCores -= item.cost;
+            window.state.ownedEffects.push(effectId);
+            window.state.equippedEffect = effectId;
+            saveLocalPlayerItems();
+            updateCurrencyAndFrameUI();
+            renderFunShopItems();
+            window.showToast(`已購買並裝備「${item.name}」！`, 'success');
+        };
+
+        window.toggleEquipEffect = function(effectId) {
+            if (!window.state.ownedEffects.includes(effectId)) return;
+            window.state.equippedEffect = (window.state.equippedEffect === effectId) ? '' : effectId;
+            saveLocalPlayerItems();
+            renderFunShopItems();
+            window.showToast(window.state.equippedEffect ? '已裝備聊天框特效' : '已卸下聊天框特效', 'info');
+        };
+
+        window.toggleEquipCyberFrame = function() {
+            if (!window.state.hasCyberFrame) {
+                window.showToast('尚未解鎖賽博頭像框，請把握整點賽博抽獎！', 'info');
+                return;
+            }
+            window.state.equippedCyberFrame = !window.state.equippedCyberFrame;
+            saveLocalPlayerItems();
+            updateCurrencyAndFrameUI();
+            window.renderChatMessages();
+            window.showToast(window.state.equippedCyberFrame ? '已穿戴賽博頭像框' : '已卸下賽博頭像框', 'info');
+        };
+
+        // 每小時整點綠色賽博模式與 1 分鐘免費抽獎
+        let lastTriggeredHourSlot = '';
+        let cyberCountdownTimer = null;
+
+        function activateCyberEvent(durationMs = 60000) {
+            const now = Date.now();
+            window.state.cyberEventEndsAt = Math.max(window.state.cyberEventEndsAt, now + durationMs);
+            document.body.classList.add('cyber-green-mode');
+            const bar = document.getElementById('cyber-event-bar');
+            if (bar) bar.classList.remove('hidden');
+            updateCyberCountdown();
+        }
+
+        function updateCyberCountdown() {
+            const remainingMs = window.state.cyberEventEndsAt - Date.now();
+            const bar = document.getElementById('cyber-event-bar');
+            const cdEl = document.getElementById('cyber-countdown');
+            if (remainingMs > 0) {
+                document.body.classList.add('cyber-green-mode');
+                if (bar) bar.classList.remove('hidden');
+                if (cdEl) cdEl.textContent = `${Math.ceil(remainingMs / 1000)}s`;
+            } else {
+                window.state.cyberEventEndsAt = 0;
+                document.body.classList.remove('cyber-green-mode');
+                if (bar) bar.classList.add('hidden');
+                closeCyberLotteryModal();
+            }
+        }
+
+        function startHourlyCyberScheduler() {
+            if (cyberCountdownTimer) clearInterval(cyberCountdownTimer);
+            cyberCountdownTimer = setInterval(() => {
+                const now = new Date();
+                const slotKey = getCurrentHourSlotKey();
+                // 整點前 60 秒內（分鐘為 0）自動開啟 1 分鐘綠色賽博活動
+                if (now.getMinutes() === 0 && slotKey !== lastTriggeredHourSlot) {
+                    lastTriggeredHourSlot = slotKey;
+                    activateCyberEvent(60000);
+                    window.showToast('整點賽博空投啟動！網頁已切換為綠色賽博模式（持續 1 分鐘）', 'success');
+                }
+                updateCyberCountdown();
+            }, 1000);
+        }
+
+        window.adminStartCyberEvent = function() {
+            if (!window.state.isAdmin) return;
+            activateCyberEvent(60000);
+            window.showToast('管理員已手動開啟綠色賽博抽獎活動（持續 1 分鐘）！', 'success');
+        };
+
+        window.openCyberLotteryModal = function() {
+            if (window.state.cyberEventEndsAt <= Date.now()) {
+                window.showToast('目前不在賽博抽獎活動時間內', 'info');
+                return;
+            }
+            const modal = document.getElementById('cyber-lottery-modal');
+            const spinBtn = document.getElementById('cyber-spin-btn');
+            const resultEl = document.getElementById('cyber-lottery-result');
+            const currentSlot = getCurrentHourSlotKey();
+            const alreadySpunThisHour = window.state.lastSpunSlotKey === currentSlot;
+
+            if (spinBtn) {
+                spinBtn.disabled = alreadySpunThisHour;
+                spinBtn.textContent = alreadySpunThisHour ? '本時段已抽過' : '立即免費抽獎';
+            }
+            if (resultEl && alreadySpunThisHour) {
+                resultEl.textContent = '你已經領取過本時段的免費賽博抽獎囉！';
+            }
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
+        window.closeCyberLotteryModal = function() {
+            const modal = document.getElementById('cyber-lottery-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.spinCyberLottery = function() {
+            if (window.state.cyberEventEndsAt <= Date.now()) {
+                window.showToast('活動時間已結束！', 'error');
+                closeCyberLotteryModal();
+                return;
+            }
+            const currentSlot = getCurrentHourSlotKey();
+            if (window.state.lastSpunSlotKey === currentSlot) {
+                window.showToast('本時段免費抽獎已使用過！', 'info');
+                return;
+            }
+
+            window.state.lastSpunSlotKey = currentSlot;
+            const spinBtn = document.getElementById('cyber-spin-btn');
+            if (spinBtn) {
+                spinBtn.disabled = true;
+                spinBtn.textContent = '本時段已抽過';
+            }
+
+            const resultEl = document.getElementById('cyber-lottery-result');
+            const roll = Math.random();
+
+            // 20% 機率抽中大獎「賽博頭像框」，80% 抽中小獎「能量核心」
+            if (roll < 0.2) {
+                window.state.hasCyberFrame = true;
+                window.state.equippedCyberFrame = true;
+                saveLocalPlayerItems();
+                updateCurrencyAndFrameUI();
+                window.renderChatMessages();
+                if (resultEl) {
+                    resultEl.innerHTML = `🎉 <b>抽中大獎【賽博頭像框】</b>！已自動為你穿戴於頭像外框！`;
+                }
+                window.showToast('恭喜抽中大獎：賽博頭像框！', 'success');
+            } else {
+                const coresWon = [10, 15, 20, 25, 35][Math.floor(Math.random() * 5)];
+                window.state.energyCores += coresWon;
+                saveLocalPlayerItems();
+                updateCurrencyAndFrameUI();
+                if (resultEl) {
+                    resultEl.innerHTML = `⚡ <b>抽中小獎【能量核心 +${coresWon}】</b>！快去趣玩商店挑特效吧！`;
+                }
+                window.showToast(`抽中小獎：獲得 ${coresWon} 能量核心！`, 'success');
+            }
+        };
+
+        window.handleNicknameChange = function(newVal) {
+            const trimmed = (newVal || '').trim().slice(0, 20);
+            const nickEl = document.getElementById('chat-nickname-input');
+            if (!trimmed) {
+                if (nickEl) nickEl.value = window.state.userNickname;
+                return;
+            }
+            if (trimmed !== window.state.userNickname) {
+                window.state.userNickname = trimmed;
+                try {
+                    localStorage.setItem('backrooms_user_nickname', trimmed);
+                } catch (e) {}
+                const badgeEl = document.getElementById('device-account-badge');
+                if (badgeEl) badgeEl.textContent = `帳號已鎖定 // ${trimmed}`;
+                window.showToast(`已鎖定本機暱稱為「${trimmed}」`, 'info');
+            }
+        };
+
         window.handleAvatarUpload = function(event) {
             const file = event.target.files?.[0];
             if (!file) return;
@@ -606,14 +1090,13 @@
                     try {
                         localStorage.setItem('backrooms_user_avatar', compressed);
                     } catch (err) {}
-                    window.showToast('玩家頭像已更新！', 'success');
+                    window.showToast('玩家頭像已鎖定至本裝置！', 'success');
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         };
 
-        // 頂端新訊息提示橫幅
         let topBannerTimer = null;
         window.showTopMessageBanner = function(msg) {
             const banner = document.getElementById('top-msg-banner');
@@ -624,6 +1107,8 @@
 
             if (avatarEl) {
                 avatarEl.src = (msg.avatar && msg.avatar.startsWith('data:image/')) ? msg.avatar : DEFAULT_AVATAR_URL;
+                if (msg.hasCyberFrame) avatarEl.classList.add('cyber-avatar-frame');
+                else avatarEl.classList.remove('cyber-avatar-frame');
             }
             nickEl.textContent = (msg.isAdmin ? '🌈 [管理員] ' : '💬 ') + (msg.nickname || '無名流浪者');
             textEl.textContent = msg.text || '';
@@ -643,20 +1128,22 @@
             }
         };
 
-        // 管理員驗證與 UI 切換
         function updateAdminUI() {
             const btn = document.getElementById('admin-toggle-btn');
             const label = document.getElementById('admin-status-label');
             const logoutBtn = document.getElementById('admin-logout-btn');
+            const cyberBtn = document.getElementById('admin-cyber-trigger-btn');
             if (!btn) return;
             if (window.state.isAdmin) {
                 btn.className = 'px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-fuchsia-950/90 via-amber-950/90 to-cyan-950/90 text-amber-300 border border-amber-400 text-xs font-black transition flex items-center gap-1.5 shadow-[0_0_12px_rgba(251,191,36,0.35)]';
                 if (label) label.textContent = '管理員已啟用';
                 if (logoutBtn) logoutBtn.classList.remove('hidden');
+                if (cyberBtn) cyberBtn.classList.remove('hidden');
             } else {
                 btn.className = 'px-2.5 py-1.5 rounded-lg bg-[#1c180b] hover:bg-[#2e2712] text-[#a39765] hover:text-amber-300 border border-[#524926] text-xs font-bold transition flex items-center gap-1.5 active:scale-95';
                 if (label) label.textContent = '管理員';
                 if (logoutBtn) logoutBtn.classList.add('hidden');
+                if (cyberBtn) cyberBtn.classList.add('hidden');
             }
         }
 
@@ -732,6 +1219,26 @@
             } catch (err) {
                 console.error(err);
                 window.showToast('禁言操作失敗，請稍後再試', 'error');
+            }
+        };
+
+        // 管理員發放能量核心給指定玩家
+        window.adminGrantCores = async function(targetUid, nickname, amount = 20) {
+            if (!window.state.isAdmin || !targetUid) return;
+            if (targetUid === window.currentUserUid) {
+                window.state.energyCores += amount;
+                saveLocalPlayerItems();
+                updateCurrencyAndFrameUI();
+                window.showToast(`已為自己補充 +${amount} 能量核心`, 'success');
+                return;
+            }
+            if (!window.chatCloudAPI?.grantCoresToUser) return;
+            try {
+                await window.chatCloudAPI.grantCoresToUser(targetUid, amount);
+                window.showToast(`已發放 +${amount} 能量核心給「${nickname || '無名流浪者'}」`, 'success');
+            } catch (err) {
+                console.error(err);
+                window.showToast('發放能量核心失敗', 'error');
             }
         };
 
@@ -1152,7 +1659,7 @@
                 container.innerHTML = `
                     <div class="py-16 text-center text-[#7d734b]">
                         <i class="fa-solid fa-comment-dots text-3xl mb-2 opacity-40"></i>
-                        <p class="text-sm font-bold text-[#9c9163]">目前頻道尚無任何對話紀錄</p>
+                        <p class="text-sm font-bold text-[#9c9163]">目前頻道尚無任何對話紀錄（每日 00:00 自動重置）</p>
                         <p class="text-xs text-[#69603d] mt-1">成為第一位在後室公共頻道發言的流浪者吧！</p>
                     </div>`;
                 return;
@@ -1166,6 +1673,8 @@
                 const isSenderMuted = Boolean(window.state.mutedUsers[msg.senderUid]);
                 const safeAvatar = (msg.avatar && msg.avatar.startsWith('data:image/')) ? msg.avatar : DEFAULT_AVATAR_URL;
                 const safeNick = escapeHtml(msg.nickname || '無名流浪者');
+                const effectObj = CHAT_EFFECT_SHOP.find(e => e.id === msg.chatEffect);
+                const hasFrame = Boolean(msg.hasCyberFrame);
 
                 const nameHtml = isSenderAdmin
                     ? `<span class="px-1.5 py-0.5 rounded bg-gradient-to-r from-pink-500 via-amber-400 to-cyan-400 text-stone-950 text-[10px] font-black">M.E.G. 管理員</span> <span class="text-xs font-black admin-rainbow-text">${safeNick}</span>`
@@ -1180,6 +1689,10 @@
                         <button type="button" onclick="adminDeleteMessage('${msg.id}')" title="刪除此訊息" class="px-1.5 py-0.5 rounded bg-red-950/90 hover:bg-red-800 text-red-300 border border-red-700/60 text-[10px] font-bold transition">
                             <i class="fa-solid fa-trash-can"></i> 刪除
                         </button>
+                        ${msg.senderUid ? `
+                        <button type="button" onclick="adminGrantCores('${msg.senderUid}', '${safeNick.replace(/'/g, '')}', 20)" title="發放 20 能量核心" class="px-1.5 py-0.5 rounded bg-cyan-950/90 hover:bg-cyan-800 text-cyan-300 border border-cyan-600/60 text-[10px] font-bold transition">
+                            <i class="fa-solid fa-bolt"></i> +20核心
+                        </button>` : ''}
                         ${!isMine && msg.senderUid ? `
                         <button type="button" onclick="adminToggleMute('${msg.senderUid}', '${safeNick.replace(/'/g, '')}')" title="${isSenderMuted ? '解除禁言' : '禁言此玩家'}" class="px-1.5 py-0.5 rounded ${isSenderMuted ? 'bg-emerald-950 text-emerald-300 border-emerald-700/60' : 'bg-amber-950/90 text-amber-300 border-amber-700/60'} border text-[10px] font-bold transition">
                             <i class="fa-solid fa-ban"></i> ${isSenderMuted ? '解禁' : '禁言'}
@@ -1188,13 +1701,17 @@
 
                 const bubbleClass = isSenderAdmin
                     ? `admin-rainbow-bubble text-[#fff9db] ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`
-                    : (isMine
-                        ? 'bg-[#362f14] border border-amber-500/50 text-[#faf2c3] rounded-tr-sm'
-                        : 'bg-[#17150c] border border-[#4d4423] text-[#e6dfb8] rounded-tl-sm');
+                    : (effectObj
+                        ? `${effectObj.cssClass} ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`
+                        : (isMine
+                            ? 'bg-[#362f14] border border-amber-500/50 text-[#faf2c3] rounded-tr-sm'
+                            : 'bg-[#17150c] border border-[#4d4423] text-[#e6dfb8] rounded-tl-sm'));
+
+                const avatarClass = `w-9 h-9 rounded-full object-cover shrink-0 border ${hasFrame ? 'cyber-avatar-frame' : (isSenderAdmin ? 'border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.6)]' : 'border-[#594e25]')} bg-[#1a170c] mt-0.5`;
 
                 return `
                     <div class="flex items-start gap-2.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}">
-                        <img src="${safeAvatar}" alt="頭像" class="w-9 h-9 rounded-full object-cover shrink-0 border ${isSenderAdmin ? 'border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.6)]' : 'border-[#594e25]'} bg-[#1a170c] mt-0.5">
+                        <img src="${safeAvatar}" alt="頭像" class="${avatarClass}">
                         <div class="flex flex-col ${isMine ? 'items-end' : 'items-start'} max-w-[82%] sm:max-w-[70%]">
                             <div class="flex items-center flex-wrap gap-1.5 mb-1 px-1 ${isMine ? 'justify-end' : 'justify-start'}">
                                 ${nameHtml}
@@ -1217,10 +1734,13 @@
             const nickInput = document.getElementById('chat-nickname-input');
             const textInput = document.getElementById('chat-text-input');
             const sendBtn = document.getElementById('chat-send-btn');
-            const nickname = nickInput ? nickInput.value.trim().slice(0, 20) : '';
+            const rawNick = nickInput ? nickInput.value.trim().slice(0, 20) : '';
+            if (rawNick) {
+                window.handleNicknameChange(rawNick);
+            }
+            const nickname = window.state.userNickname || rawNick || '無名流浪者';
             const text = textInput ? textInput.value.trim().slice(0, 300) : '';
 
-            // 檢查目前玩家是否被管理員禁言
             if (!window.state.isAdmin && window.state.mutedUsers[window.currentUserUid]) {
                 window.showToast('你目前已被管理員禁言，暫時無法發送訊息。', 'error');
                 return;
@@ -1244,13 +1764,20 @@
             }
 
             try {
-                if (nickname) localStorage.setItem('backrooms_user_nickname', nickname);
+                localStorage.setItem('backrooms_user_nickname', nickname);
             } catch (e) {}
 
             if (sendBtn) sendBtn.disabled = true;
             try {
                 lastChatSentAt = now;
-                await window.chatCloudAPI.sendMessage(nickname, text, window.state.userAvatar, window.state.isAdmin);
+                await window.chatCloudAPI.sendMessage(
+                    nickname,
+                    text,
+                    window.state.userAvatar,
+                    window.state.isAdmin,
+                    window.state.equippedEffect,
+                    window.state.equippedCyberFrame && window.state.hasCyberFrame
+                );
                 if (textInput) textInput.value = '';
             } catch (err) {
                 console.error(err);
@@ -1283,6 +1810,7 @@
             initUserProfile();
             initReferenceTable();
             window.updateAllUI();
+            startHourlyCyberScheduler();
         });
     </script>
 
@@ -1315,14 +1843,42 @@
         const db = getDatabase(app);
         const messagesQuery = query(ref(db, "messages"), limitToLast(80));
         const mutedUsersRef = ref(db, "mutedUsers");
+        const dailyResetRef = ref(db, "dailyResetDate");
+        const myGiftCoresRef = ref(db, `coreGifts/${window.currentUserUid}`);
+
+        let checkingMidnight = false;
+        async function checkAndResetAtMidnight() {
+            if (checkingMidnight) return;
+            checkingMidnight = true;
+            try {
+                const todayKey = getTodayDateKey();
+                onValue(dailyResetRef, async (snap) => {
+                    const lastDate = snap.val();
+                    if (lastDate !== todayKey) {
+                        await set(dailyResetRef, todayKey);
+                        await remove(ref(db, "messages"));
+                    }
+                }, { onlyOnce: true });
+            } catch (e) {
+                console.error("每日 0 點重置檢查失敗：", e);
+            } finally {
+                checkingMidnight = false;
+            }
+        }
+
+        checkAndResetAtMidnight();
+        setInterval(checkAndResetAtMidnight, 30000);
 
         window.chatCloudAPI = {
-            sendMessage: async (nickname, text, avatar, isAdmin) => {
+            sendMessage: async (nickname, text, avatar, isAdmin, chatEffect, hasCyberFrame) => {
+                await checkAndResetAtMidnight();
                 await push(ref(db, "messages"), {
                     nickname: nickname || "無名流浪者",
                     text: text,
                     avatar: (avatar && avatar.startsWith("data:image/")) ? avatar : "",
                     isAdmin: Boolean(isAdmin),
+                    chatEffect: chatEffect || "",
+                    hasCyberFrame: Boolean(hasCyberFrame),
                     senderUid: window.currentUserUid,
                     createdAt: Date.now()
                 });
@@ -1339,8 +1895,27 @@
                 } else {
                     await remove(ref(db, `mutedUsers/${targetUid}`));
                 }
+            },
+            grantCoresToUser: async (targetUid, amount) => {
+                const giftRef = ref(db, `coreGifts/${targetUid}`);
+                onValue(giftRef, async (snap) => {
+                    const currentGift = Number(snap.val() || 0);
+                    await set(giftRef, currentGift + Number(amount || 0));
+                }, { onlyOnce: true });
             }
         };
+
+        // 接收管理員發放的能量核心禮物
+        onValue(myGiftCoresRef, async (snap) => {
+            const giftAmount = Number(snap.val() || 0);
+            if (giftAmount > 0) {
+                window.state.energyCores += giftAmount;
+                saveLocalPlayerItems();
+                updateCurrencyAndFrameUI();
+                window.showToast(`收到管理員發放的能量核心 +${giftAmount}！`, 'success');
+                await set(myGiftCoresRef, 0);
+            }
+        });
 
         // 監聽雲端禁言名單
         onValue(mutedUsersRef, (snapshot) => {
@@ -1364,6 +1939,8 @@
                         text: val.text,
                         avatar: typeof val.avatar === "string" ? val.avatar : "",
                         isAdmin: Boolean(val.isAdmin),
+                        chatEffect: typeof val.chatEffect === "string" ? val.chatEffect : "",
+                        hasCyberFrame: Boolean(val.hasCyberFrame),
                         senderUid: val.senderUid || "",
                         createdAt: typeof val.createdAt === "number" ? val.createdAt : Date.now()
                     });
@@ -1384,7 +1961,6 @@
                 }
             }
 
-            // 收到其他玩家的新訊息時，在螢幕頂端彈出即時提示橫幅
             if (!isFirstLoad && latestMsg && latestMsg.id !== lastKnownMsgId && latestMsg.senderUid !== window.currentUserUid) {
                 window.showTopMessageBanner(latestMsg);
             }
