@@ -63,9 +63,86 @@
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
+
+        /* 手機／全螢幕聊天放大模式 */
+        body.chat-fullscreen-active header,
+        body.chat-fullscreen-active footer {
+            display: none !important;
+        }
+        body.chat-fullscreen-active main {
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        #chat-panel-box.is-fullscreen {
+            position: fixed;
+            inset: 0;
+            z-index: 45;
+            height: 100dvh;
+            min-height: 100dvh;
+            border-radius: 0 !important;
+            border: none !important;
+        }
+        #chat-panel-box.is-fullscreen #chat-header-info {
+            display: none;
+        }
+        #chat-panel-box.is-fullscreen #chat-top-bar {
+            padding: 0.65rem 0.9rem;
+            justify-content: space-between;
+        }
+
+        /* 管理員彩虹流光特效 */
+        @keyframes rainbow-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .admin-rainbow-text {
+            background: linear-gradient(90deg, #ff595e, #ffca3a, #8ac926, #1982c4, #c77dff, #ff595e);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: rainbow-flow 3.5s linear infinite;
+        }
+        .admin-rainbow-bubble {
+            position: relative;
+            background: linear-gradient(135deg, rgba(46, 26, 54, 0.92), rgba(22, 34, 48, 0.94), rgba(43, 35, 16, 0.92));
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            box-shadow: 0 0 18px rgba(199, 125, 255, 0.35), 0 0 8px rgba(255, 202, 58, 0.25);
+        }
+        .admin-rainbow-bubble::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: inherit;
+            padding: 2px;
+            background: linear-gradient(90deg, #ff595e, #ffca3a, #8ac926, #1982c4, #c77dff, #ff595e);
+            background-size: 300% 300%;
+            animation: rainbow-flow 3.5s linear infinite;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-stone-950 scanlines">
+
+    <!-- 頂端新訊息即時廣播橫幅 -->
+    <div id="top-msg-banner" onclick="handleTopBannerClick()" class="fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[92%] max-w-md cursor-pointer transition-all duration-300 -translate-y-28 opacity-0 pointer-events-none">
+        <div class="bg-[#1c180c]/95 backdrop-blur-xl border border-amber-400/80 rounded-2xl px-4 py-3 shadow-[0_10px_35px_rgba(0,0,0,0.85)] flex items-center gap-3">
+            <img id="top-banner-avatar" src="" alt="頭像" class="w-9 h-9 rounded-full object-cover border border-amber-400 shrink-0 bg-[#2c2714]">
+            <div class="min-w-0 flex-grow">
+                <div class="flex items-center justify-between gap-2">
+                    <span id="top-banner-nick" class="text-xs font-black text-amber-300 truncate">新訊息</span>
+                    <span class="text-[10px] font-mono-tech text-emerald-400 shrink-0">點擊查看 <i class="fa-solid fa-arrow-right"></i></span>
+                </div>
+                <p id="top-banner-text" class="text-xs text-[#faf2c3] truncate mt-0.5">...</p>
+            </div>
+        </div>
+    </div>
 
     <!-- 頂部後室螢光燈管導航列 -->
     <header class="bg-[#1b180d]/95 backdrop-blur-xl border-b border-[#5e542c]/60 sticky top-0 z-30 shadow-2xl">
@@ -286,14 +363,14 @@
 
         <!-- ==================== 分頁 2：玩家討論區 (即時公共聊天室) ==================== -->
         <div id="view-chat" class="hidden">
-            <div class="backrooms-panel rounded-2xl border border-[#8c7b38]/60 overflow-hidden flex flex-col h-[72vh] min-h-[520px]">
-                <div class="bg-gradient-to-r from-[#2e2812] via-[#211d0d] to-[#1a170b] px-5 py-4 border-b border-[#594e25] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-[#3d3518] text-amber-400 flex items-center justify-center border border-[#857537]">
+            <div id="chat-panel-box" class="backrooms-panel rounded-2xl border border-[#8c7b38]/60 overflow-hidden flex flex-col h-[72vh] min-h-[520px] transition-all duration-200">
+                <div id="chat-top-bar" class="bg-gradient-to-r from-[#2e2812] via-[#211d0d] to-[#1a170b] px-5 py-4 border-b border-[#594e25] flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
+                    <div id="chat-header-info" class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#3d3518] text-amber-400 flex items-center justify-center border border-[#857537] shrink-0">
                             <i class="fa-solid fa-tower-broadcast text-lg flicker-text"></i>
                         </div>
                         <div>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 flex-wrap">
                                 <h2 class="text-base sm:text-lg font-black text-[#faf2c3]">後室流浪者公共頻道 // 玩家討論區</h2>
                                 <span id="chat-connection-badge" class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-600/50 text-[10px] font-mono-tech font-bold flex items-center gap-1.5">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> 雲端同步中
@@ -303,8 +380,20 @@
                         </div>
                     </div>
 
-                    <div class="text-xs font-mono-tech text-[#9c9163] bg-[#121008] px-3 py-1.5 rounded-lg border border-[#4d4423] self-start sm:self-center">
-                        近期訊息: <span id="chat-msg-count" class="text-[#f2e394] font-bold">0</span>
+                    <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
+                        <div class="text-xs font-mono-tech text-[#9c9163] bg-[#121008] px-3 py-1.5 rounded-lg border border-[#4d4423]">
+                            近期訊息: <span id="chat-msg-count" class="text-[#f2e394] font-bold">0</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="openAdminModal()" id="admin-toggle-btn" title="管理員權限" class="px-2.5 py-1.5 rounded-lg bg-[#1c180b] hover:bg-[#2e2712] text-[#a39765] hover:text-amber-300 border border-[#524926] text-xs font-bold transition flex items-center gap-1.5 active:scale-95">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span id="admin-status-label" class="hidden sm:inline">管理員</span>
+                            </button>
+                            <button type="button" onclick="toggleChatFullscreen()" id="chat-fullscreen-btn" class="px-3 py-1.5 rounded-lg bg-[#2e2712] hover:bg-[#3f3619] text-[#f2e394] border border-[#8c7b38] text-xs font-black transition flex items-center gap-1.5 active:scale-95">
+                                <i id="chat-fullscreen-icon" class="fa-solid fa-expand"></i>
+                                <span id="chat-fullscreen-label">全螢幕模式</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -315,9 +404,17 @@
                     </div>
                 </div>
 
-                <form onsubmit="handleSendChatMessage(event)" class="p-4 bg-[#1a170c] border-t border-[#594e25] flex flex-col sm:flex-row gap-2.5">
-                    <div class="sm:w-48 shrink-0">
-                        <div class="relative">
+                <form onsubmit="handleSendChatMessage(event)" class="p-3 sm:p-4 bg-[#1a170c] border-t border-[#594e25] flex flex-col sm:flex-row gap-2.5 shrink-0">
+                    <div class="flex items-center gap-2 sm:w-56 shrink-0">
+                        <!-- 自訂頭像上傳按鈕 -->
+                        <input type="file" id="chat-avatar-file" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+                        <button type="button" onclick="document.getElementById('chat-avatar-file').click()" title="點擊上傳玩家頭像" class="relative w-10 h-10 rounded-full border-2 border-[#8c7b38] hover:border-amber-400 overflow-hidden shrink-0 bg-[#0d0b05] group transition">
+                            <img id="my-avatar-preview" src="" alt="我的頭像" class="w-full h-full object-cover">
+                            <span class="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-amber-300 transition">
+                                <i class="fa-solid fa-camera"></i>
+                            </span>
+                        </button>
+                        <div class="relative flex-grow">
                             <i class="fa-solid fa-user-astronaut absolute left-3 top-1/2 -translate-y-1/2 text-amber-400 text-xs"></i>
                             <input type="text" id="chat-nickname-input" maxlength="20" placeholder="您的暱稱 (選填)" 
                                 class="w-full bg-[#0d0b05] border border-[#594e25] focus:border-amber-400 rounded-xl pl-8 pr-3 py-2.5 text-xs sm:text-sm text-[#faf2c3] placeholder-[#5e5534] outline-none transition">
@@ -342,6 +439,27 @@
     <footer class="border-t border-[#423a1e] py-4 text-center text-xs font-mono-tech text-[#8a7f56] bg-[#121008]">
         LEVEL-0 TRADING TERMINAL // 謹慎評估每一筆物資交換，願你在後室平安生存。
     </footer>
+
+    <!-- ==================== 管理員驗證彈出視窗 ==================== -->
+    <div id="admin-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+        <div class="bg-[#1a170c] border-2 border-amber-500/70 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-black text-[#faf2c3] flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-amber-400"></i> M.E.G. 管理員權限驗證
+                </h3>
+                <button type="button" onclick="closeAdminModal()" class="text-[#9c9163] hover:text-[#faf2c3]">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="text-xs text-[#a39765]">驗證通過後可刪除任意訊息、禁言違規玩家，且發言時自動開啟彩虹特效。</p>
+            <input type="password" id="admin-password-input" onkeydown="if(event.key==='Enter') verifyAdminLogin()" placeholder="輸入管理員金鑰..." 
+                class="w-full bg-[#0d0b05] border border-[#594e25] focus:border-amber-400 rounded-xl px-3.5 py-2.5 text-sm font-mono-tech text-[#faf2c3] outline-none">
+            <div class="flex justify-end gap-2">
+                <button type="button" id="admin-logout-btn" onclick="logoutAdmin()" class="hidden px-3.5 py-2 rounded-xl bg-red-950 text-red-300 border border-red-700/60 text-xs font-bold">登出管理員</button>
+                <button type="button" onclick="verifyAdminLogin()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-black">確認啟用</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ==================== 選擇武器彈出視窗 (Modal) ==================== -->
     <div id="weapon-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4 transition-all">
@@ -379,6 +497,14 @@
 
     <!-- 交易評估與 UI 核心邏輯 -->
     <script>
+        // ★ 管理員金鑰（可自行修改成你專屬的密碼）
+        const ADMIN_SECRET_CODE = 'MEG2026';
+
+        // 預設後室探員 SVG 頭像
+        const DEFAULT_AVATAR_URL = "data:image/svg+xml;utf8," + encodeURIComponent(
+            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><rect width="80" height="80" fill="#241f0f"/><circle cx="40" cy="30" r="14" fill="#d6c67c"/><path d="M16 70c2-14 14-20 24-20s22 6 24 20" fill="#8c7b38"/></svg>`
+        );
+
         const WEAPONS_DB = [
             { id: 'aegis01', name: 'Aegis-01', category: 'green', min: 30000000, max: 40000000, priceText: '30m ~ 40m' },
             { id: 'n23', name: 'N-23', category: 'green', min: 15000000, max: 15000000, priceText: '15m' },
@@ -402,17 +528,242 @@
             { id: 'bager300', name: 'Bager-300', category: 'gold', min: 60000, max: 60000, priceText: '60k' }
         ];
 
+        // 產生並保存穩定的裝置玩家 ID，方便管理員針對該玩家進行禁言管理
+        function getOrCreatePlayerUid() {
+            try {
+                let uid = localStorage.getItem('backrooms_player_uid');
+                if (!uid) {
+                    uid = 'user-' + Math.random().toString(36).substring(2, 10);
+                    localStorage.setItem('backrooms_player_uid', uid);
+                }
+                return uid;
+            } catch (e) {
+                return 'user-' + Math.random().toString(36).substring(2, 10);
+            }
+        }
+
+        window.currentUserUid = getOrCreatePlayerUid();
+
         window.state = {
             activeTab: 'calculator',
             valuationMode: 'avg',
             my: { points: 0, weapons: {} },
             their: { points: 0, weapons: {} },
             chatMessages: [],
+            mutedUsers: {},
+            chatFullscreen: false,
+            isAdmin: false,
+            userAvatar: DEFAULT_AVATAR_URL,
             activeModalSide: 'my',
             modalFilter: 'all'
         };
 
-        window.currentUserUid = 'user-' + Math.random().toString(36).substring(2, 9);
+        // 初始化本機保存的頭像與管理員狀態
+        function initUserProfile() {
+            try {
+                const savedAvatar = localStorage.getItem('backrooms_user_avatar');
+                if (savedAvatar && savedAvatar.startsWith('data:image/')) {
+                    window.state.userAvatar = savedAvatar;
+                }
+                const savedNick = localStorage.getItem('backrooms_user_nickname');
+                const nickEl = document.getElementById('chat-nickname-input');
+                if (savedNick && nickEl) nickEl.value = savedNick;
+
+                if (localStorage.getItem('backrooms_is_admin') === '1') {
+                    window.state.isAdmin = true;
+                }
+            } catch (e) {}
+            const previewEl = document.getElementById('my-avatar-preview');
+            if (previewEl) previewEl.src = window.state.userAvatar;
+            updateAdminUI();
+        }
+
+        // 頭像上傳與自動壓縮成 96x96
+        window.handleAvatarUpload = function(event) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                window.showToast('請選擇圖片檔案！', 'error');
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const size = 96;
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    const minSide = Math.min(img.width, img.height);
+                    const sx = (img.width - minSide) / 2;
+                    const sy = (img.height - minSide) / 2;
+                    ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+                    const compressed = canvas.toDataURL('image/jpeg', 0.72);
+                    window.state.userAvatar = compressed;
+                    const previewEl = document.getElementById('my-avatar-preview');
+                    if (previewEl) previewEl.src = compressed;
+                    try {
+                        localStorage.setItem('backrooms_user_avatar', compressed);
+                    } catch (err) {}
+                    window.showToast('玩家頭像已更新！', 'success');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        // 頂端新訊息提示橫幅
+        let topBannerTimer = null;
+        window.showTopMessageBanner = function(msg) {
+            const banner = document.getElementById('top-msg-banner');
+            const avatarEl = document.getElementById('top-banner-avatar');
+            const nickEl = document.getElementById('top-banner-nick');
+            const textEl = document.getElementById('top-banner-text');
+            if (!banner || !nickEl || !textEl) return;
+
+            if (avatarEl) {
+                avatarEl.src = (msg.avatar && msg.avatar.startsWith('data:image/')) ? msg.avatar : DEFAULT_AVATAR_URL;
+            }
+            nickEl.textContent = (msg.isAdmin ? '🌈 [管理員] ' : '💬 ') + (msg.nickname || '無名流浪者');
+            textEl.textContent = msg.text || '';
+
+            banner.classList.remove('-translate-y-28', 'opacity-0', 'pointer-events-none');
+            if (topBannerTimer) clearTimeout(topBannerTimer);
+            topBannerTimer = setTimeout(() => {
+                banner.classList.add('-translate-y-28', 'opacity-0', 'pointer-events-none');
+            }, 4000);
+        };
+
+        window.handleTopBannerClick = function() {
+            const banner = document.getElementById('top-msg-banner');
+            if (banner) banner.classList.add('-translate-y-28', 'opacity-0', 'pointer-events-none');
+            if (window.state.activeTab !== 'chat') {
+                window.switchTab('chat');
+            }
+        };
+
+        // 管理員驗證與 UI 切換
+        function updateAdminUI() {
+            const btn = document.getElementById('admin-toggle-btn');
+            const label = document.getElementById('admin-status-label');
+            const logoutBtn = document.getElementById('admin-logout-btn');
+            if (!btn) return;
+            if (window.state.isAdmin) {
+                btn.className = 'px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-fuchsia-950/90 via-amber-950/90 to-cyan-950/90 text-amber-300 border border-amber-400 text-xs font-black transition flex items-center gap-1.5 shadow-[0_0_12px_rgba(251,191,36,0.35)]';
+                if (label) label.textContent = '管理員已啟用';
+                if (logoutBtn) logoutBtn.classList.remove('hidden');
+            } else {
+                btn.className = 'px-2.5 py-1.5 rounded-lg bg-[#1c180b] hover:bg-[#2e2712] text-[#a39765] hover:text-amber-300 border border-[#524926] text-xs font-bold transition flex items-center gap-1.5 active:scale-95';
+                if (label) label.textContent = '管理員';
+                if (logoutBtn) logoutBtn.classList.add('hidden');
+            }
+        }
+
+        window.openAdminModal = function() {
+            const modal = document.getElementById('admin-modal');
+            const input = document.getElementById('admin-password-input');
+            if (input) input.value = '';
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => input?.focus(), 50);
+            }
+        };
+
+        window.closeAdminModal = function() {
+            const modal = document.getElementById('admin-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
+
+        window.verifyAdminLogin = function() {
+            const input = document.getElementById('admin-password-input');
+            const pwd = input ? input.value.trim() : '';
+            if (pwd === ADMIN_SECRET_CODE) {
+                window.state.isAdmin = true;
+                try { localStorage.setItem('backrooms_is_admin', '1'); } catch (e) {}
+                updateAdminUI();
+                window.closeAdminModal();
+                window.renderChatMessages();
+                window.showToast('管理員權限已開啟！說話將自帶彩虹特效', 'success');
+            } else {
+                window.showToast('管理員金鑰錯誤！', 'error');
+            }
+        };
+
+        window.logoutAdmin = function() {
+            window.state.isAdmin = false;
+            try { localStorage.removeItem('backrooms_is_admin'); } catch (e) {}
+            updateAdminUI();
+            window.closeAdminModal();
+            window.renderChatMessages();
+            window.showToast('已登出管理員模式', 'info');
+        };
+
+        window.adminDeleteMessage = async function(msgId) {
+            if (!window.state.isAdmin || !msgId) return;
+            if (!window.chatCloudAPI?.deleteMessage) return;
+            try {
+                await window.chatCloudAPI.deleteMessage(msgId);
+                window.showToast('已刪除該則訊息', 'success');
+            } catch (err) {
+                console.error(err);
+                window.showToast('刪除失敗，請稍後再試', 'error');
+            }
+        };
+
+        window.adminToggleMute = async function(targetUid, nickname) {
+            if (!window.state.isAdmin || !targetUid) return;
+            if (targetUid === window.currentUserUid) {
+                window.showToast('無法禁言管理員自己', 'error');
+                return;
+            }
+            if (!window.chatCloudAPI?.setMuteUser) return;
+            const currentlyMuted = Boolean(window.state.mutedUsers[targetUid]);
+            try {
+                await window.chatCloudAPI.setMuteUser(targetUid, !currentlyMuted, nickname);
+                window.showToast(
+                    !currentlyMuted ? `已禁言玩家「${nickname || '無名流浪者'}」` : `已解除「${nickname || '無名流浪者'}」的禁言`,
+                    'info'
+                );
+            } catch (err) {
+                console.error(err);
+                window.showToast('禁言操作失敗，請稍後再試', 'error');
+            }
+        };
+
+        window.setChatFullscreen = function(enable) {
+            window.state.chatFullscreen = Boolean(enable);
+            const panel = document.getElementById('chat-panel-box');
+            const label = document.getElementById('chat-fullscreen-label');
+            const icon = document.getElementById('chat-fullscreen-icon');
+            const container = document.getElementById('chat-messages-container');
+
+            if (window.state.chatFullscreen) {
+                document.body.classList.add('chat-fullscreen-active');
+                if (panel) panel.classList.add('is-fullscreen');
+                if (label) label.textContent = '退出放大';
+                if (icon) icon.className = 'fa-solid fa-compress';
+            } else {
+                document.body.classList.remove('chat-fullscreen-active');
+                if (panel) panel.classList.remove('is-fullscreen');
+                if (label) label.textContent = '全螢幕模式';
+                if (icon) icon.className = 'fa-solid fa-expand';
+            }
+
+            if (container) {
+                requestAnimationFrame(() => {
+                    container.scrollTop = container.scrollHeight;
+                });
+            }
+        };
+
+        window.toggleChatFullscreen = function() {
+            window.setChatFullscreen(!window.state.chatFullscreen);
+        };
 
         window.formatValue = function(num) {
             if (num === 0) return '0';
@@ -475,6 +826,9 @@
         };
 
         window.switchTab = function(tabName) {
+            if (tabName !== 'chat' && window.state.chatFullscreen) {
+                window.setChatFullscreen(false);
+            }
             window.state.activeTab = tabName;
             ['calculator', 'chat'].forEach(t => {
                 const view = document.getElementById(`view-${t}`);
@@ -804,19 +1158,54 @@
                 return;
             }
             const myUid = window.currentUserUid;
+            const isAdminViewer = window.state.isAdmin;
+
             container.innerHTML = messages.map(msg => {
                 const isMine = msg.senderUid === myUid;
+                const isSenderAdmin = Boolean(msg.isAdmin);
+                const isSenderMuted = Boolean(window.state.mutedUsers[msg.senderUid]);
+                const safeAvatar = (msg.avatar && msg.avatar.startsWith('data:image/')) ? msg.avatar : DEFAULT_AVATAR_URL;
+                const safeNick = escapeHtml(msg.nickname || '無名流浪者');
+
+                const nameHtml = isSenderAdmin
+                    ? `<span class="px-1.5 py-0.5 rounded bg-gradient-to-r from-pink-500 via-amber-400 to-cyan-400 text-stone-950 text-[10px] font-black">M.E.G. 管理員</span> <span class="text-xs font-black admin-rainbow-text">${safeNick}</span>`
+                    : `<span class="text-xs font-black ${isMine ? 'text-amber-400' : 'text-emerald-400'}">${isMine ? '我 (' + safeNick + ')' : safeNick}</span>`;
+
+                const mutedTagHtml = isSenderMuted
+                    ? `<span class="px-1.5 py-0.5 rounded bg-red-950 text-red-400 border border-red-700/60 text-[10px] font-bold">已禁言</span>`
+                    : '';
+
+                const adminActionsHtml = isAdminViewer ? `
+                    <div class="flex items-center gap-1 opacity-85 hover:opacity-100">
+                        <button type="button" onclick="adminDeleteMessage('${msg.id}')" title="刪除此訊息" class="px-1.5 py-0.5 rounded bg-red-950/90 hover:bg-red-800 text-red-300 border border-red-700/60 text-[10px] font-bold transition">
+                            <i class="fa-solid fa-trash-can"></i> 刪除
+                        </button>
+                        ${!isMine && msg.senderUid ? `
+                        <button type="button" onclick="adminToggleMute('${msg.senderUid}', '${safeNick.replace(/'/g, '')}')" title="${isSenderMuted ? '解除禁言' : '禁言此玩家'}" class="px-1.5 py-0.5 rounded ${isSenderMuted ? 'bg-emerald-950 text-emerald-300 border-emerald-700/60' : 'bg-amber-950/90 text-amber-300 border-amber-700/60'} border text-[10px] font-bold transition">
+                            <i class="fa-solid fa-ban"></i> ${isSenderMuted ? '解禁' : '禁言'}
+                        </button>` : ''}
+                    </div>` : '';
+
+                const bubbleClass = isSenderAdmin
+                    ? `admin-rainbow-bubble text-[#fff9db] ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`
+                    : (isMine
+                        ? 'bg-[#362f14] border border-amber-500/50 text-[#faf2c3] rounded-tr-sm'
+                        : 'bg-[#17150c] border border-[#4d4423] text-[#e6dfb8] rounded-tl-sm');
+
                 return `
-                    <div class="flex flex-col ${isMine ? 'items-end' : 'items-start'}">
-                        <div class="flex items-center gap-2 mb-1 px-1">
-                            <span class="text-xs font-black ${isMine ? 'text-amber-400' : 'text-emerald-400'}">
-                                ${isMine ? '我 (' + escapeHtml(msg.nickname) + ')' : escapeHtml(msg.nickname)}
-                            </span>
-                            <span class="text-[10px] font-mono-tech text-[#8a7f56]">${formatChatTime(msg.createdAt)}</span>
+                    <div class="flex items-start gap-2.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}">
+                        <img src="${safeAvatar}" alt="頭像" class="w-9 h-9 rounded-full object-cover shrink-0 border ${isSenderAdmin ? 'border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.6)]' : 'border-[#594e25]'} bg-[#1a170c] mt-0.5">
+                        <div class="flex flex-col ${isMine ? 'items-end' : 'items-start'} max-w-[82%] sm:max-w-[70%]">
+                            <div class="flex items-center flex-wrap gap-1.5 mb-1 px-1 ${isMine ? 'justify-end' : 'justify-start'}">
+                                ${nameHtml}
+                                ${mutedTagHtml}
+                                <span class="text-[10px] font-mono-tech text-[#8a7f56]">${formatChatTime(msg.createdAt)}</span>
+                                ${adminActionsHtml}
+                            </div>
+                            <div class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed break-words shadow-md ${bubbleClass}">
+                                ${escapeHtml(msg.text)}
+                            </div>
                         </div>
-                        <div class="max-w-[85%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed break-words shadow-md ${
-                            isMine ? 'bg-[#362f14] border border-amber-500/50 text-[#faf2c3] rounded-tr-sm' : 'bg-[#17150c] border border-[#4d4423] text-[#e6dfb8] rounded-tl-sm'
-                        }">${escapeHtml(msg.text)}</div>
                     </div>`;
             }).join('');
             container.scrollTop = container.scrollHeight;
@@ -830,6 +1219,12 @@
             const sendBtn = document.getElementById('chat-send-btn');
             const nickname = nickInput ? nickInput.value.trim().slice(0, 20) : '';
             const text = textInput ? textInput.value.trim().slice(0, 300) : '';
+
+            // 檢查目前玩家是否被管理員禁言
+            if (!window.state.isAdmin && window.state.mutedUsers[window.currentUserUid]) {
+                window.showToast('你目前已被管理員禁言，暫時無法發送訊息。', 'error');
+                return;
+            }
 
             if (!text) {
                 window.showToast('請輸入要發送的訊息內容！', 'error');
@@ -848,10 +1243,14 @@
                 return;
             }
 
+            try {
+                if (nickname) localStorage.setItem('backrooms_user_nickname', nickname);
+            } catch (e) {}
+
             if (sendBtn) sendBtn.disabled = true;
             try {
                 lastChatSentAt = now;
-                await window.chatCloudAPI.sendMessage(nickname, text);
+                await window.chatCloudAPI.sendMessage(nickname, text, window.state.userAvatar, window.state.isAdmin);
                 if (textInput) textInput.value = '';
             } catch (err) {
                 console.error(err);
@@ -881,6 +1280,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            initUserProfile();
             initReferenceTable();
             window.updateAllUI();
         });
@@ -893,6 +1293,8 @@
             getDatabase,
             ref,
             push,
+            remove,
+            set,
             onValue,
             query,
             limitToLast
@@ -912,19 +1314,45 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const messagesQuery = query(ref(db, "messages"), limitToLast(80));
+        const mutedUsersRef = ref(db, "mutedUsers");
 
         window.chatCloudAPI = {
-            sendMessage: async (nickname, text) => {
+            sendMessage: async (nickname, text, avatar, isAdmin) => {
                 await push(ref(db, "messages"), {
                     nickname: nickname || "無名流浪者",
                     text: text,
+                    avatar: (avatar && avatar.startsWith("data:image/")) ? avatar : "",
+                    isAdmin: Boolean(isAdmin),
                     senderUid: window.currentUserUid,
                     createdAt: Date.now()
                 });
+            },
+            deleteMessage: async (msgId) => {
+                await remove(ref(db, `messages/${msgId}`));
+            },
+            setMuteUser: async (targetUid, shouldMute, nickname) => {
+                if (shouldMute) {
+                    await set(ref(db, `mutedUsers/${targetUid}`), {
+                        nickname: nickname || "無名流浪者",
+                        mutedAt: Date.now()
+                    });
+                } else {
+                    await remove(ref(db, `mutedUsers/${targetUid}`));
+                }
             }
         };
 
+        // 監聽雲端禁言名單
+        onValue(mutedUsersRef, (snapshot) => {
+            window.state.mutedUsers = snapshot.val() || {};
+            if (window.state.activeTab === "chat") {
+                window.renderChatMessages();
+            }
+        });
+
         let isFirstLoad = true;
+        let lastKnownMsgId = null;
+
         onValue(messagesQuery, (snapshot) => {
             const list = [];
             snapshot.forEach((childSnap) => {
@@ -934,13 +1362,15 @@
                         id: childSnap.key,
                         nickname: typeof val.nickname === "string" ? val.nickname : "無名流浪者",
                         text: val.text,
+                        avatar: typeof val.avatar === "string" ? val.avatar : "",
+                        isAdmin: Boolean(val.isAdmin),
                         senderUid: val.senderUid || "",
                         createdAt: typeof val.createdAt === "number" ? val.createdAt : Date.now()
                     });
                 }
             });
 
-            const prevCount = window.state.chatMessages.length;
+            const latestMsg = list.length > 0 ? list[list.length - 1] : null;
             window.state.chatMessages = list;
 
             if (window.state.activeTab === "chat") {
@@ -948,11 +1378,18 @@
             } else {
                 const countEl = document.getElementById("chat-msg-count");
                 if (countEl) countEl.textContent = list.length;
-                if (!isFirstLoad && list.length > prevCount) {
+                if (!isFirstLoad && latestMsg && latestMsg.id !== lastKnownMsgId && latestMsg.senderUid !== window.currentUserUid) {
                     const badge = document.getElementById("unread-chat-badge");
                     if (badge) badge.classList.remove("hidden");
                 }
             }
+
+            // 收到其他玩家的新訊息時，在螢幕頂端彈出即時提示橫幅
+            if (!isFirstLoad && latestMsg && latestMsg.id !== lastKnownMsgId && latestMsg.senderUid !== window.currentUserUid) {
+                window.showTopMessageBanner(latestMsg);
+            }
+
+            if (latestMsg) lastKnownMsgId = latestMsg.id;
             isFirstLoad = false;
         }, (error) => {
             console.error("Firebase Realtime Database 讀取錯誤：", error);
