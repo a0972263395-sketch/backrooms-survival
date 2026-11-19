@@ -583,10 +583,10 @@
                                     <i class="fa-solid fa-bolt mr-1"></i>能量核心: <span id="energy-core-display">0</span>
                                 </span>
                                 <span class="px-2 py-0.5 rounded bg-[#18150b] text-[#9c9163] border border-[#3d3518] text-[10px] font-mono-tech">
-                                    每日 00:00 重置
+                                    每月 1 日重置
                                 </span>
                             </div>
-                            <p class="text-xs text-[#a39765]">點擊他人頭像可發起私聊請求；每日 00:00 自動重置聊天紀錄</p>
+                            <p class="text-xs text-[#a39765]">點擊他人頭像可發起私聊請求；每月 1 日 00:00 自動清空公共聊天</p>
                         </div>
                     </div>
 
@@ -993,12 +993,11 @@
             if (cls) el.classList.add(cls);
         }
 
-        function getTodayDateKey() {
+        function getCurrentMonthKey() {
             const now = new Date();
             const y = now.getFullYear();
             const m = String(now.getMonth() + 1).padStart(2, '0');
-            const d = String(now.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
+            return `${y}-${m}`;
         }
 
         function getCurrentHourSlotKey() {
@@ -1059,7 +1058,6 @@
                 window.state.ownedAvatarFrames = Array.isArray(parsedFrames) ? parsedFrames : [];
                 window.state.equippedAvatarFrame = localStorage.getItem('backrooms_equipped_avatar_frame') || '';
 
-                // 相容舊版賽博頭像框旗標
                 if (localStorage.getItem('backrooms_has_cyber_frame') === '1' && !window.state.ownedAvatarFrames.includes('cyber')) {
                     window.state.ownedAvatarFrames.push('cyber');
                 }
@@ -2337,7 +2335,7 @@
                 container.innerHTML = `
                     <div class="py-16 text-center text-[#7d734b]">
                         <i class="fa-solid fa-comment-dots text-3xl mb-2 opacity-40"></i>
-                        <p class="text-sm font-bold text-[#9c9163]">目前頻道尚無任何對話紀錄（每日 00:00 自動重置）</p>
+                        <p class="text-sm font-bold text-[#9c9163]">目前頻道尚無任何對話紀錄（每月 1 日 00:00 自動重置）</p>
                         <p class="text-xs text-[#69603d] mt-1">成為第一位在後室公共頻道發言的流浪者吧！</p>
                     </div>`;
                 return;
@@ -2528,7 +2526,7 @@
         const db = getDatabase(app);
         const messagesQuery = query(ref(db, "messages"), limitToLast(80));
         const mutedUsersRef = ref(db, "mutedUsers");
-        const dailyResetRef = ref(db, "dailyResetDate");
+        const monthlyResetRef = ref(db, "monthlyResetMonth");
         const myGiftCoresRef = ref(db, `coreGifts/${window.currentUserUid}`);
         const dmRequestsRef = ref(db, "dmRequests");
         const dmRoomsRef = ref(db, "dmRooms");
@@ -2572,32 +2570,37 @@
             }
         });
 
-        let checkingMidnight = false;
-        async function checkAndResetAtMidnight() {
-            if (checkingMidnight) return;
-            checkingMidnight = true;
+        // 每月 1 日 00:00 自動清空公共聊天（非 1 號不清空；現有訊息保留至下個月 1 號）
+        let checkingMonthlyReset = false;
+        async function checkAndResetOnFirstOfMonth() {
+            if (checkingMonthlyReset) return;
+            checkingMonthlyReset = true;
             try {
-                const todayKey = getTodayDateKey();
-                onValue(dailyResetRef, async (snap) => {
-                    const lastDate = snap.val();
-                    if (lastDate !== todayKey) {
-                        await set(dailyResetRef, todayKey);
-                        await remove(ref(db, "messages"));
-                    }
-                }, { onlyOnce: true });
+                const now = new Date();
+                const monthKey = getCurrentMonthKey();
+                const snap = await get(monthlyResetRef);
+                const lastMonth = snap.val();
+                if (!lastMonth) {
+                    await set(monthlyResetRef, monthKey);
+                    return;
+                }
+                if (now.getDate() === 1 && lastMonth !== monthKey) {
+                    await set(monthlyResetRef, monthKey);
+                    await remove(ref(db, "messages"));
+                }
             } catch (e) {
-                console.error("每日 0 點重置檢查失敗：", e);
+                console.error("每月 1 號重置檢查失敗：", e);
             } finally {
-                checkingMidnight = false;
+                checkingMonthlyReset = false;
             }
         }
 
-        checkAndResetAtMidnight();
-        setInterval(checkAndResetAtMidnight, 30000);
+        checkAndResetOnFirstOfMonth();
+        setInterval(checkAndResetOnFirstOfMonth, 60000);
 
         window.chatCloudAPI = {
             sendMessage: async (nickname, text, avatar, isAdmin, chatEffect, avatarFrame) => {
-                await checkAndResetAtMidnight();
+                await checkAndResetOnFirstOfMonth();
                 await push(ref(db, "messages"), {
                     nickname: nickname || "無名流浪者",
                     text: text,
