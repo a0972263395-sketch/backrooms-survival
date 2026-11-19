@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1b180d">
+    <link rel="manifest" href="./manifest.json">
     <title>LEVEL-0 交易終端 | 後室物資價值評估與玩家討論系統</title>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -65,7 +67,6 @@
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* 綠色賽博風格模式 */
         body.cyber-green-mode {
             background-color: #04130b !important;
             color: #bbf7d0 !important;
@@ -89,7 +90,6 @@
             border-bottom-color: rgba(52, 211, 153, 0.5) !important;
         }
 
-        /* ==================== 頭像框特效樣式（賽博 / 機械 / 黑客 / 黑金） ==================== */
         @keyframes cyber-frame-pulse {
             0%, 100% {
                 box-shadow: 0 0 0 2px #052e16, 0 0 12px #00ff88, 0 0 24px rgba(0, 255, 136, 0.75);
@@ -150,7 +150,6 @@
             animation: blackgold-frame-pulse 2s infinite ease-in-out;
         }
 
-        /* 趣玩商店五款聊天框特效 */
         .bubble-fx-gold {
             background: linear-gradient(135deg, rgba(69, 49, 8, 0.95), rgba(38, 26, 5, 0.95));
             border: 2px solid #fbbf24 !important;
@@ -190,7 +189,6 @@
             box-shadow: 0 0 15px rgba(103, 232, 249, 0.4), inset 0 0 12px rgba(165, 243, 252, 0.22);
         }
 
-        /* 賽博掉落小球與輪盤特效 */
         @keyframes cyber-drop-center {
             0% { transform: translateY(-65vh) scale(0.55) rotate(0deg); opacity: 0.2; }
             75% { transform: translateY(14px) scale(1.08) rotate(240deg); opacity: 1; }
@@ -220,7 +218,6 @@
             transition: transform 3.8s cubic-bezier(0.14, 0.88, 0.22, 1);
         }
 
-        /* 紅包從上方飄落到下方 */
         @keyframes red-packet-drift {
             0% {
                 transform: translateY(-80px) translateX(0px) rotate(-6deg);
@@ -244,7 +241,6 @@
             user-select: none;
         }
 
-        /* 手機／全螢幕聊天放大模式 */
         body.chat-fullscreen-active header,
         body.chat-fullscreen-active footer {
             display: none !important;
@@ -271,7 +267,6 @@
             justify-content: space-between;
         }
 
-        /* 管理員彩虹流光特效 */
         @keyframes rainbow-flow {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -306,14 +301,78 @@
             mask-composite: exclude;
             pointer-events: none;
         }
+
+        @keyframes diamond-shimmer {
+            0%, 100% {
+                box-shadow:
+                    0 0 16px rgba(186, 230, 253, 0.55),
+                    0 0 28px rgba(244, 114, 182, 0.22),
+                    0 0 36px rgba(167, 243, 208, 0.2),
+                    inset 0 0 14px rgba(255, 255, 255, 0.32);
+            }
+            50% {
+                box-shadow:
+                    0 0 22px rgba(224, 242, 254, 0.82),
+                    0 0 34px rgba(192, 132, 252, 0.32),
+                    0 0 42px rgba(253, 224, 71, 0.26),
+                    inset 0 0 20px rgba(255, 255, 255, 0.48);
+            }
+        }
+        .coadmin-diamond-bubble {
+            position: relative;
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(186, 230, 253, 0.14) 35%, rgba(245, 208, 254, 0.14) 70%, rgba(167, 243, 208, 0.16) 100%),
+                linear-gradient(160deg, rgba(18, 29, 46, 0.94), rgba(34, 24, 48, 0.94));
+            border: 2px solid #e0f2fe !important;
+            color: #f8fafc !important;
+            animation: diamond-shimmer 2.4s infinite ease-in-out;
+        }
+        .coadmin-diamond-bubble::after {
+            content: "✦";
+            position: absolute;
+            top: -8px;
+            right: 10px;
+            font-size: 12px;
+            color: #ffffff;
+            text-shadow: 0 0 8px #7dd3fc, 0 0 14px #f0abfc;
+            pointer-events: none;
+        }
+
+        /* 黃金 VIP 徽章 */
+        .vip-gold-badge {
+            background: linear-gradient(90deg, #f59e0b, #fde047, #eab308, #fef08a, #d97706);
+            background-size: 250% 250%;
+            animation: rainbow-flow 3s linear infinite;
+            color: #1c1404;
+            box-shadow: 0 0 10px rgba(250, 204, 21, 0.55);
+        }
+
+        /* 滾動彈幕動畫 */
+        @keyframes danmaku-scroll {
+            0% {
+                transform: translateX(100vw);
+            }
+            100% {
+                transform: translateX(-140%);
+            }
+        }
+        .danmaku-item {
+            position: fixed;
+            left: 0;
+            z-index: 58;
+            pointer-events: none;
+            white-space: nowrap;
+            font-weight: 900;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 0 16px rgba(250, 204, 21, 0.65);
+            animation: danmaku-scroll var(--danmaku-duration, 7.5s) linear forwards;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-stone-950 scanlines">
 
-    <!-- 飄落紅包容器 -->
     <div id="red-packet-layer" class="fixed inset-0 pointer-events-none z-50 overflow-hidden"></div>
+    <div id="danmaku-layer" class="fixed inset-0 pointer-events-none z-[58] overflow-hidden"></div>
 
-    <!-- 頂端新訊息即時廣播橫幅 -->
     <div id="top-msg-banner" onclick="handleTopBannerClick()" class="fixed top-3 left-1/2 -translate-x-1/2 z-[60] w-[92%] max-w-md cursor-pointer transition-all duration-300 -translate-y-28 opacity-0 pointer-events-none">
         <div class="bg-[#1c180c]/95 backdrop-blur-xl border border-amber-400/80 rounded-2xl px-4 py-3 shadow-[0_10px_35px_rgba(0,0,0,0.85)] flex items-center gap-3">
             <img id="top-banner-avatar" src="" alt="頭像" class="w-9 h-9 rounded-full object-cover border border-amber-400 shrink-0 bg-[#2c2714]">
@@ -327,7 +386,6 @@
         </div>
     </div>
 
-    <!-- 全體玩家同步綠色賽博抽獎活動橫幅 -->
     <div id="cyber-event-bar" class="hidden bg-emerald-950/95 border-b border-emerald-400/70 text-emerald-200 px-4 py-2.5 shadow-[0_0_25px_rgba(16,185,129,0.3)] z-20">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
             <div class="flex items-center gap-2.5 font-black text-emerald-300">
@@ -340,7 +398,6 @@
         </div>
     </div>
 
-    <!-- 頂部後室螢光燈管導航列 -->
     <header class="bg-[#1b180d]/95 backdrop-blur-xl border-b border-[#5e542c]/60 sticky top-0 z-30 shadow-2xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-3.5">
@@ -358,7 +415,6 @@
                 </div>
             </div>
 
-            <!-- 功能分頁導航 & 估價基準切換器 -->
             <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
                 <div class="bg-[#121008] p-1 rounded-xl border border-[#524926] flex items-center text-xs sm:text-sm font-bold shadow-inner">
                     <button type="button" onclick="switchTab('calculator')" id="tab-calculator" class="px-3.5 py-1.5 rounded-lg transition-all bg-[#8c7b38] text-[#141208] shadow-md font-black flex items-center gap-1.5">
@@ -393,7 +449,6 @@
         </div>
     </header>
 
-    <!-- 主要內容區 -->
     <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow">
 
         <!-- ==================== 分頁 1：交易評估系統 ==================== -->
@@ -440,10 +495,8 @@
                 </div>
             </section>
 
-            <!-- 橫向並排交易配置區 -->
             <div class="overflow-x-auto pb-2">
                 <div class="grid grid-cols-2 gap-4 sm:gap-6 min-w-[680px]">
-                    <!-- 左欄：我方交易欄位 -->
                     <div class="backrooms-panel rounded-2xl border border-[#8c7b38]/60 flex flex-col overflow-hidden">
                         <div class="bg-gradient-to-r from-[#2e2812] via-[#211d0d] to-[#1a170b] px-5 py-4 border-b border-[#594e25] flex items-center justify-between">
                             <div class="flex items-center gap-3">
@@ -489,7 +542,6 @@
                         </div>
                     </div>
 
-                    <!-- 右欄：對方交易欄位 -->
                     <div class="backrooms-panel rounded-2xl border border-[#2a5945]/80 flex flex-col overflow-hidden">
                         <div class="bg-gradient-to-r from-[#13261e] via-[#182118] to-[#1a170b] px-5 py-4 border-b border-[#2a5945] flex items-center justify-between">
                             <div class="flex items-center gap-3">
@@ -537,7 +589,6 @@
                 </div>
             </div>
 
-            <!-- M.E.G. 官方市價資料庫參考表 -->
             <section class="backrooms-panel rounded-2xl p-5 sm:p-6">
                 <div class="flex items-center justify-between pb-3 mb-4 border-b border-[#4a4122]">
                     <h3 class="text-sm sm:text-base font-black text-[#faf2c3] flex items-center gap-2">
@@ -562,7 +613,7 @@
             </section>
         </div>
 
-        <!-- ==================== 分頁 2：玩家討論區 (即時公共聊天室) ==================== -->
+        <!-- ==================== 分頁 2：玩家討論區 ==================== -->
         <div id="view-chat" class="hidden">
             <div id="chat-panel-box" class="backrooms-panel rounded-2xl border border-[#8c7b38]/60 overflow-hidden flex flex-col h-[72vh] min-h-[520px] transition-all duration-200">
                 <div id="chat-top-bar" class="bg-gradient-to-r from-[#2e2812] via-[#211d0d] to-[#1a170b] px-5 py-4 border-b border-[#594e25] flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
@@ -582,15 +633,22 @@
                                 <span class="px-2 py-0.5 rounded bg-cyan-950/90 text-cyan-300 border border-cyan-600/50 text-[10px] font-mono-tech font-bold">
                                     <i class="fa-solid fa-bolt mr-1"></i>能量核心: <span id="energy-core-display">0</span>
                                 </span>
+                                <span id="vip-status-pill" class="hidden px-2 py-0.5 rounded vip-gold-badge text-[10px] font-black">
+                                    ★ VIP 尊榮
+                                </span>
                                 <span class="px-2 py-0.5 rounded bg-[#18150b] text-[#9c9163] border border-[#3d3518] text-[10px] font-mono-tech">
                                     每月 1 日重置
                                 </span>
                             </div>
-                            <p class="text-xs text-[#a39765]">點擊他人頭像可發起私聊請求；每月 1 日 00:00 自動清空公共聊天</p>
+                            <p class="text-xs text-[#a39765]">點擊他人頭像可私聊（VIP 可轉贈能量核心）；每月 1 日 00:00 自動清空公共聊天</p>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto flex-wrap">
+                        <button type="button" onclick="enableSystemNotifications()" id="notify-perm-btn" class="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/70 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
+                            <i class="fa-solid fa-bell"></i>
+                            <span id="notify-perm-label">開啟通知</span>
+                        </button>
                         <button type="button" onclick="openFunShopModal()" class="px-3 py-1.5 rounded-lg bg-cyan-950/90 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/60 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
                             <i class="fa-solid fa-store"></i>
                             <span>趣玩商店</span>
@@ -644,6 +702,10 @@
                     <div class="flex-grow flex gap-2">
                         <input type="text" id="chat-text-input" maxlength="300" placeholder="輸入要傳送給所有玩家的訊息（例如：收 Aegis-01、出 ASH-12...）" 
                             class="w-full bg-[#0d0b05] border border-[#594e25] focus:border-amber-400 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-[#faf2c3] placeholder-[#5e5534] outline-none transition">
+                        <button type="button" id="vip-danmaku-btn" onclick="handleSendVipDanmaku()" class="hidden px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 hover:brightness-105 text-stone-950 font-black text-xs sm:text-sm shadow-lg transition flex items-center gap-1.5 shrink-0 active:scale-95" title="VIP 專屬：發送滾動彈幕">
+                            <i class="fa-solid fa-meteor"></i>
+                            <span>發送彈幕</span>
+                        </button>
                         <button type="submit" id="chat-send-btn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-stone-950 font-black text-xs sm:text-sm shadow-lg transition flex items-center gap-2 shrink-0 active:scale-95">
                             <i class="fa-solid fa-paper-plane"></i>
                             <span>發送</span>
@@ -653,10 +715,9 @@
             </div>
         </div>
 
-        <!-- ==================== 分頁 3：私訊頁面 (獨立私聊空間) ==================== -->
+        <!-- ==================== 分頁 3：私訊頁面 ==================== -->
         <div id="view-dm" class="hidden">
             <div class="backrooms-panel rounded-2xl border border-cyan-500/40 overflow-hidden grid grid-cols-1 md:grid-cols-12 h-[72vh] min-h-[520px]">
-                <!-- 左側：私聊請求與已建立私聊列表 -->
                 <div class="md:col-span-4 border-b md:border-b-0 md:border-r border-[#4a4122] bg-[#121008]/90 flex flex-col overflow-hidden">
                     <div class="px-4 py-3.5 border-b border-[#4a4122] bg-[#1a170c] flex items-center justify-between">
                         <span class="text-xs sm:text-sm font-black text-cyan-300 flex items-center gap-2">
@@ -688,7 +749,6 @@
                     </div>
                 </div>
 
-                <!-- 右側：獨立私聊對話區 -->
                 <div class="md:col-span-8 flex flex-col bg-[#0d0b05]/80 overflow-hidden">
                     <div id="dm-active-header" class="px-5 py-3.5 border-b border-[#4a4122] bg-[#1a170c] flex items-center justify-between shrink-0">
                         <div class="flex items-center gap-2.5">
@@ -725,12 +785,12 @@
         LEVEL-0 TRADING TERMINAL // 謹慎評估每一筆物資交換，願你在後室平安生存。
     </footer>
 
-    <!-- ==================== 點擊頭像：確認私聊彈窗 ==================== -->
+    <!-- ==================== 點擊頭像：私聊 & VIP 轉贈能量核心彈窗 ==================== -->
     <div id="dm-confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
         <div class="bg-[#1a170c] border-2 border-cyan-500/70 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between border-b border-[#4a4122] pb-3">
                 <h3 class="text-base font-black text-[#faf2c3] flex items-center gap-2">
-                    <i class="fa-solid fa-user-plus text-cyan-400"></i> 發起私人聊天請求
+                    <i class="fa-solid fa-user-plus text-cyan-400"></i> 流浪者互動操作
                 </h3>
                 <button type="button" onclick="closeDmConfirmModal()" class="text-[#9c9163] hover:text-[#faf2c3]">
                     <i class="fa-solid fa-xmark"></i>
@@ -739,11 +799,26 @@
             <div class="flex items-center gap-3 bg-[#121008] p-3.5 rounded-xl border border-[#4a4122]">
                 <img id="dm-target-avatar" src="" alt="對象頭像" class="w-12 h-12 rounded-full object-cover border-2 border-cyan-400 bg-[#241f0f]">
                 <div>
-                    <div class="text-xs text-[#9c9163]">私聊對象</div>
+                    <div class="text-xs text-[#9c9163]">目標玩家</div>
                     <div id="dm-target-name" class="text-sm font-black text-cyan-300">流浪者</div>
                 </div>
             </div>
-            <p class="text-xs text-[#a39765]">送出請求後，需等待對方同意，雙方即可在獨立私聊空間對話。</p>
+
+            <div id="vip-gift-core-box" class="hidden p-3.5 rounded-xl bg-amber-950/35 border border-amber-400/60 space-y-2.5">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-black text-amber-300"><i class="fa-solid fa-crown mr-1"></i>VIP 轉贈能量核心</span>
+                    <span class="font-mono-tech text-cyan-300">持有: <span id="gift-my-cores">0</span></span>
+                </div>
+                <div class="flex gap-2">
+                    <input type="number" id="vip-gift-amount-input" min="1" placeholder="輸入贈送數量..." 
+                        class="w-full bg-[#0d0b05] border border-amber-500/50 focus:border-amber-300 rounded-lg px-3 py-1.5 text-xs font-mono-tech text-[#faf2c3] outline-none">
+                    <button type="button" onclick="submitVipGiftCores()" class="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-400 to-yellow-500 hover:brightness-105 text-stone-950 text-xs font-black shrink-0">
+                        贈送
+                    </button>
+                </div>
+            </div>
+
+            <p class="text-xs text-[#a39765]">送出私聊請求後，需等待對方同意，雙方即可在獨立私聊空間對話。</p>
             <div class="flex justify-end gap-2">
                 <button type="button" onclick="closeDmConfirmModal()" class="px-4 py-2 rounded-xl bg-[#262111] text-[#d6c67c] border border-[#574d28] text-xs font-bold">取消</button>
                 <button type="button" onclick="submitDmRequest()" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-stone-950 text-xs font-black">確認私聊</button>
@@ -751,13 +826,13 @@
         </div>
     </div>
 
-    <!-- ==================== 趣玩商店彈出視窗（聊天框特效 + 機械／黑客／黑金頭像框） ==================== -->
+    <!-- ==================== 趣玩商店彈出視窗 ==================== -->
     <div id="fun-shop-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
         <div class="bg-[#1a170c] border-2 border-cyan-500/60 rounded-2xl w-full max-w-2xl max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
             <div class="px-6 py-4 border-b border-[#4a4122] bg-[#211d0f] flex items-center justify-between">
                 <div>
                     <h3 class="text-base sm:text-lg font-black text-[#faf2c3] flex items-center gap-2">
-                        <i class="fa-solid fa-store text-cyan-400"></i> 趣玩商店 // 特效聊天框與頭像框
+                        <i class="fa-solid fa-store text-cyan-400"></i> 趣玩商店 // VIP、特效聊天框與頭像框
                     </h3>
                     <p class="text-xs text-[#9c9163]">使用 <span class="text-cyan-300 font-bold">能量核心</span> 解鎖特效（目前持有：<span id="shop-core-count" class="font-mono-tech text-cyan-300 font-black">0</span>）</p>
                 </div>
@@ -767,6 +842,17 @@
             </div>
 
             <div class="p-4 overflow-y-auto space-y-5 flex-grow">
+                <div id="vip-shop-card" class="p-4 rounded-xl bg-gradient-to-r from-amber-950/60 via-[#2a2109] to-amber-950/50 border-2 border-amber-400/70 flex items-center justify-between gap-3">
+                    <div class="space-y-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="px-2 py-0.5 rounded vip-gold-badge text-[11px] font-black">VIP</span>
+                            <span class="text-sm sm:text-base font-black text-amber-200">VIP 尊榮資格</span>
+                        </div>
+                        <p class="text-xs text-amber-100/85">解鎖黃金 VIP 標籤、全螢幕滾動彈幕、轉贈能量核心給他人；可與管理員或共同管理員疊加。</p>
+                    </div>
+                    <div id="vip-shop-action" class="shrink-0"></div>
+                </div>
+
                 <div>
                     <div class="text-xs font-black text-amber-300 mb-2.5 flex items-center gap-1.5">
                         <i class="fa-solid fa-id-badge"></i> 特效頭像框（機械／黑客／黑金／賽博）
@@ -789,7 +875,7 @@
         </div>
     </div>
 
-    <!-- ==================== 綠色賽博抽獎視窗（掉落小球 + 5秒自動開啟 + 輪盤） ==================== -->
+    <!-- ==================== 綠色賽博抽獎視窗 ==================== -->
     <div id="cyber-lottery-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
         <div class="bg-[#051a10] border-2 border-emerald-400 rounded-2xl w-full max-w-md p-6 shadow-[0_0_50px_rgba(16,185,129,0.45)] space-y-4 text-emerald-100 relative overflow-hidden">
             <div class="flex items-center justify-between border-b border-emerald-700/60 pb-3">
@@ -848,8 +934,8 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <p class="text-xs text-[#a39765]">驗證通過後可刪除任意訊息、禁言玩家、發放能量核心、開啟全體賽博／搶紅包活動，且發言自帶彩虹特效。</p>
-            <input type="password" id="admin-password-input" onkeydown="if(event.key==='Enter') verifyAdminLogin()" placeholder="輸入管理員金鑰..." 
+            <p class="text-xs text-[#a39765]">輸入管理員或共同管理員金鑰（兩者互斥不疊加，但可與 VIP 疊加）；共同管理員不可刪除或禁言主管理員的訊息。</p>
+            <input type="password" id="admin-password-input" onkeydown="if(event.key==='Enter') verifyAdminLogin()" placeholder="輸入管理員 / 共同管理員金鑰..." 
                 class="w-full bg-[#0d0b05] border border-[#594e25] focus:border-amber-400 rounded-xl px-3.5 py-2.5 text-sm font-mono-tech text-[#faf2c3] outline-none">
             <div class="flex justify-end gap-2">
                 <button type="button" id="admin-logout-btn" onclick="logoutAdmin()" class="hidden px-3.5 py-2 rounded-xl bg-red-950 text-red-300 border border-red-700/60 text-xs font-bold">登出管理員</button>
@@ -858,7 +944,7 @@
         </div>
     </div>
 
-    <!-- ==================== 選擇武器彈出視窗 (Modal) ==================== -->
+    <!-- ==================== 選擇武器彈出視窗 ==================== -->
     <div id="weapon-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4 transition-all">
         <div class="bg-[#1a170c] border-2 border-[#756733] rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden">
             <div class="px-6 py-4 border-b border-[#4a4122] flex items-center justify-between bg-[#211d0f]">
@@ -894,6 +980,84 @@
 
     <script>
         const ADMIN_SECRET_CODE = 'MEG2026';
+        const CO_ADMIN_SECRET_CODE = 'admin666';
+        const VIP_COST_CORES = 199;
+
+        let swRegistration = null;
+
+        function updateNotifyButtonUI() {
+            const labelEl = document.getElementById('notify-perm-label');
+            const btnEl = document.getElementById('notify-perm-btn');
+            if (!labelEl || !btnEl) return;
+            if (!('Notification' in window)) {
+                labelEl.textContent = '不支援通知';
+                return;
+            }
+            if (Notification.permission === 'granted') {
+                labelEl.textContent = '通知已開啟';
+                btnEl.className = 'px-3 py-1.5 rounded-lg bg-emerald-950/90 text-emerald-300 border border-emerald-500/70 text-xs font-black transition flex items-center gap-1.5';
+            } else if (Notification.permission === 'denied') {
+                labelEl.textContent = '通知已封鎖';
+            } else {
+                labelEl.textContent = '開啟通知';
+            }
+        }
+
+        window.enableSystemNotifications = async function() {
+            if (!('Notification' in window)) {
+                window.showToast('此瀏覽器不支援系統通知', 'error');
+                return;
+            }
+            if (Notification.permission === 'denied') {
+                window.showToast('通知權限已被封鎖，請到瀏覽器網站設定開啟通知', 'error');
+                return;
+            }
+            try {
+                const permission = await Notification.requestPermission();
+                updateNotifyButtonUI();
+                if (permission === 'granted') {
+                    window.showToast('系統通知已開啟！', 'success');
+                    window.pushSystemNotification('LEVEL-0 交易終端', '系統通知已開啟，有新訊息時會通知你！');
+                } else {
+                    window.showToast('尚未允許通知權限', 'info');
+                }
+            } catch (err) {
+                console.error(err);
+                window.showToast('無法請求通知權限', 'error');
+            }
+        };
+
+        window.pushSystemNotification = async function(title, body) {
+            if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            try {
+                if (swRegistration && swRegistration.showNotification) {
+                    await swRegistration.showNotification(title, {
+                        body: body,
+                        icon: 'https://cdn-icons-png.flaticon.com/512/1067/1067357.png',
+                        tag: 'backrooms-terminal-msg',
+                        renotify: true
+                    });
+                } else {
+                    new Notification(title, {
+                        body: body,
+                        icon: 'https://cdn-icons-png.flaticon.com/512/1067/1067357.png'
+                    });
+                }
+            } catch (e) {
+                console.warn('推播通知發送失敗：', e);
+            }
+        };
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    swRegistration = await navigator.serviceWorker.register('./sw.js', { scope: '/backrooms-survival/' });
+                } catch (e) {
+                    console.warn('Service Worker 註冊失敗：', e);
+                }
+                updateNotifyButtonUI();
+            });
+        }
 
         const AVATAR_FRAMES_DB = [
             { id: 'cyber', name: '賽博頭像框', cost: 0, cssClass: 'avatar-frame-cyber', badge: '霓虹脈動特效', fromLottery: true },
@@ -960,6 +1124,9 @@
             chatMessages: [],
             mutedUsers: {},
             energyCores: 0,
+            hasVip: false,
+            vipBadgeEnabled: true,
+            lastSeenDanmakuId: '',
             ownedEffects: [],
             equippedEffect: '',
             ownedAvatarFrames: [],
@@ -969,6 +1136,7 @@
             lastSpunSlotKey: '',
             chatFullscreen: false,
             isAdmin: false,
+            adminRole: '',
             userAvatar: DEFAULT_AVATAR_URL,
             userNickname: '',
             activeModalSide: 'my',
@@ -1012,6 +1180,8 @@
         function saveLocalPlayerItems() {
             try {
                 localStorage.setItem('backrooms_energy_cores', String(window.state.energyCores));
+                localStorage.setItem('backrooms_has_vip', window.state.hasVip ? '1' : '0');
+                localStorage.setItem('backrooms_vip_badge_enabled', window.state.vipBadgeEnabled ? '1' : '0');
                 localStorage.setItem('backrooms_owned_effects', JSON.stringify(window.state.ownedEffects));
                 localStorage.setItem('backrooms_equipped_effect', window.state.equippedEffect || '');
                 localStorage.setItem('backrooms_owned_avatar_frames', JSON.stringify(window.state.ownedAvatarFrames));
@@ -1020,11 +1190,26 @@
             } catch (e) {}
         }
 
-        function updateCurrencyAndFrameUI() {
+        function updateVipAndCurrencyUI() {
             const coreEl = document.getElementById('energy-core-display');
             if (coreEl) coreEl.textContent = window.state.energyCores;
             const shopCoreEl = document.getElementById('shop-core-count');
             if (shopCoreEl) shopCoreEl.textContent = window.state.energyCores;
+            const giftCoresEl = document.getElementById('gift-my-cores');
+            if (giftCoresEl) giftCoresEl.textContent = window.state.energyCores;
+
+            const vipPill = document.getElementById('vip-status-pill');
+            const danmakuBtn = document.getElementById('vip-danmaku-btn');
+            const vipActive = window.state.hasVip && window.state.vipBadgeEnabled;
+
+            if (vipPill) {
+                if (vipActive) vipPill.classList.remove('hidden');
+                else vipPill.classList.add('hidden');
+            }
+            if (danmakuBtn) {
+                if (window.state.hasVip) danmakuBtn.classList.remove('hidden');
+                else danmakuBtn.classList.add('hidden');
+            }
 
             const previewEl = document.getElementById('my-avatar-preview');
             applyFrameClassToElement(previewEl, window.state.equippedAvatarFrame);
@@ -1045,9 +1230,15 @@
                 }
                 window.state.userNickname = savedNick;
 
-                if (localStorage.getItem('backrooms_is_admin') === '1') {
+                const savedAdminFlag = localStorage.getItem('backrooms_is_admin');
+                const savedAdminRole = localStorage.getItem('backrooms_admin_role') || '';
+                if (savedAdminFlag === '1' || savedAdminRole === 'main' || savedAdminRole === 'co') {
                     window.state.isAdmin = true;
+                    window.state.adminRole = (savedAdminRole === 'co') ? 'co' : 'main';
                 }
+
+                window.state.hasVip = localStorage.getItem('backrooms_has_vip') === '1';
+                window.state.vipBadgeEnabled = localStorage.getItem('backrooms_vip_badge_enabled') !== '0';
 
                 window.state.energyCores = Math.max(0, parseInt(localStorage.getItem('backrooms_energy_cores') || '0', 10) || 0);
                 const parsedEffects = JSON.parse(localStorage.getItem('backrooms_owned_effects') || '[]');
@@ -1081,15 +1272,126 @@
             if (previewEl) previewEl.src = window.state.userAvatar;
 
             updateAdminUI();
-            updateCurrencyAndFrameUI();
+            updateVipAndCurrencyUI();
+            updateNotifyButtonUI();
         }
 
-        // 趣玩商店功能（頭像框 + 聊天框特效）
+        function renderVipShopCard() {
+            const actionEl = document.getElementById('vip-shop-action');
+            if (!actionEl) return;
+            if (window.state.hasVip) {
+                actionEl.innerHTML = `
+                    <div class="flex flex-col items-end gap-1.5">
+                        <span class="px-2.5 py-1 rounded-lg bg-amber-400/20 text-amber-200 border border-amber-400/60 text-[11px] font-black">已擁有 VIP</span>
+                        <button type="button" onclick="toggleVipBadge()" class="px-3 py-1.5 rounded-lg bg-[#2e2815] hover:bg-[#3f3619] text-amber-200 border border-amber-400/60 text-xs font-bold">
+                            ${window.state.vipBadgeEnabled ? '隱藏 VIP 標籤' : '顯示 VIP 標籤'}
+                        </button>
+                    </div>
+                `;
+            } else {
+                actionEl.innerHTML = `
+                    <button type="button" onclick="buyVipPass()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:brightness-105 text-stone-950 text-xs font-black shadow-lg flex items-center gap-1.5 active:scale-95">
+                        <i class="fa-solid fa-crown"></i> 購買 (${VIP_COST_CORES} 核心)
+                    </button>
+                `;
+            }
+        }
+
+        window.buyVipPass = function() {
+            if (window.state.hasVip) {
+                window.showToast('你已經擁有 VIP 資格了！', 'info');
+                return;
+            }
+            if (window.state.energyCores < VIP_COST_CORES) {
+                window.showToast(`能量核心不足（需要 ${VIP_COST_CORES} 能量核心）`, 'error');
+                return;
+            }
+            window.state.energyCores -= VIP_COST_CORES;
+            window.state.hasVip = true;
+            window.state.vipBadgeEnabled = true;
+            saveLocalPlayerItems();
+            updateVipAndCurrencyUI();
+            renderVipShopCard();
+            window.renderChatMessages();
+            window.showToast('🎉 已購買 VIP 尊榮資格！黃金 VIP 標籤與彈幕／轉贈功能已解鎖', 'success');
+        };
+
+        window.toggleVipBadge = function() {
+            if (!window.state.hasVip) return;
+            window.state.vipBadgeEnabled = !window.state.vipBadgeEnabled;
+            saveLocalPlayerItems();
+            updateVipAndCurrencyUI();
+            renderVipShopCard();
+            window.renderChatMessages();
+            window.showToast(window.state.vipBadgeEnabled ? '已顯示黃金 VIP 標籤' : '已隱藏 VIP 標籤', 'info');
+        };
+
+        window.spawnDanmaku = function(danmakuId, nickname, text, isVip, isAdmin, adminRole) {
+            if (!text) return;
+            if (danmakuId && window.state.lastSeenDanmakuId === danmakuId) return;
+            if (danmakuId) window.state.lastSeenDanmakuId = danmakuId;
+
+            const layer = document.getElementById('danmaku-layer');
+            if (!layer) return;
+
+            const el = document.createElement('div');
+            const topPercent = Math.floor(10 + Math.random() * 65);
+            const duration = (6.8 + Math.random() * 2.4).toFixed(2) + 's';
+            const prefix = isVip ? '★ VIP ' : (adminRole === 'co' ? '💎 ' : (isAdmin ? '🌈 ' : ''));
+
+            el.className = `danmaku-item text-sm sm:text-lg px-4 py-1.5 rounded-full bg-black/65 border ${isVip ? 'border-amber-300 text-amber-200' : 'border-white/30 text-white'}`;
+            el.style.top = `${topPercent}%`;
+            el.style.setProperty('--danmaku-duration', duration);
+            el.textContent = `${prefix}${nickname || 'VIP'}: ${text}`;
+
+            el.addEventListener('animationend', () => {
+                el.remove();
+            });
+
+            layer.appendChild(el);
+        };
+
+        window.handleSendVipDanmaku = async function() {
+            if (!window.state.hasVip) {
+                window.showToast('請先在趣玩商店花費 199 能量核心購買 VIP！', 'error');
+                return;
+            }
+            const input = document.getElementById('chat-text-input');
+            const text = input ? input.value.trim().slice(0, 120) : '';
+            if (!text) {
+                window.showToast('請先在輸入框打字再發送彈幕！', 'error');
+                input?.focus();
+                return;
+            }
+
+            const dmId = 'dm-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
+            const nick = window.state.userNickname || 'VIP 流浪者';
+            window.spawnDanmaku(dmId, nick, text, true, window.state.isAdmin, window.state.adminRole);
+
+            if (window.eventsCloudAPI?.broadcastDanmaku) {
+                try {
+                    await window.eventsCloudAPI.broadcastDanmaku(
+                        dmId,
+                        nick,
+                        text,
+                        true,
+                        window.state.isAdmin,
+                        window.state.adminRole
+                    );
+                } catch (e) {
+                    console.warn('彈幕廣播失敗：', e);
+                }
+            }
+            if (input) input.value = '';
+            window.showToast('已發送 VIP 滾動彈幕！', 'success');
+        };
+
         window.openFunShopModal = function() {
             const modal = document.getElementById('fun-shop-modal');
+            renderVipShopCard();
             renderAvatarFrameShopItems();
             renderFunShopItems();
-            updateCurrencyAndFrameUI();
+            updateVipAndCurrencyUI();
             if (modal) {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
@@ -1155,7 +1457,7 @@
             window.state.ownedAvatarFrames.push(frameId);
             window.state.equippedAvatarFrame = frameId;
             saveLocalPlayerItems();
-            updateCurrencyAndFrameUI();
+            updateVipAndCurrencyUI();
             renderAvatarFrameShopItems();
             window.renderChatMessages();
             window.showToast(`已解鎖並套用「${frame.name}」！`, 'success');
@@ -1165,7 +1467,7 @@
             if (!window.state.ownedAvatarFrames.includes(frameId)) return;
             window.state.equippedAvatarFrame = (window.state.equippedAvatarFrame === frameId) ? '' : frameId;
             saveLocalPlayerItems();
-            updateCurrencyAndFrameUI();
+            updateVipAndCurrencyUI();
             renderAvatarFrameShopItems();
             window.renderChatMessages();
             window.showToast(window.state.equippedAvatarFrame ? '已套用頭像框特效！' : '已卸下頭像框', 'info');
@@ -1215,7 +1517,7 @@
             window.state.ownedEffects.push(effectId);
             window.state.equippedEffect = effectId;
             saveLocalPlayerItems();
-            updateCurrencyAndFrameUI();
+            updateVipAndCurrencyUI();
             renderFunShopItems();
             window.showToast(`已購買並裝備「${item.name}」！`, 'success');
         };
@@ -1228,7 +1530,6 @@
             window.showToast(window.state.equippedEffect ? '已裝備聊天框特效' : '已卸下聊天框特效', 'info');
         };
 
-        // 全體玩家同步綠色賽博模式 + 紅包活動
         let lastTriggeredHourSlot = '';
         let cyberCountdownTimer = null;
         let orbAutoOpenTimer = null;
@@ -1361,7 +1662,7 @@
                         claimed = true;
                         window.state.energyCores += coresReward;
                         saveLocalPlayerItems();
-                        updateCurrencyAndFrameUI();
+                        updateVipAndCurrencyUI();
                         window.showToast(`搶到紅包！獲得 ${coresReward} 能量核心`, 'success');
                         pkt.remove();
                     });
@@ -1493,7 +1794,7 @@
                     }
                     window.state.equippedAvatarFrame = 'cyber';
                     saveLocalPlayerItems();
-                    updateCurrencyAndFrameUI();
+                    updateVipAndCurrencyUI();
                     window.renderChatMessages();
                     if (resultEl) {
                         resultEl.innerHTML = `🎉 <b>輪盤停在【賽博頭像框】大獎</b>！已自動套用霓虹特效頭像框！`;
@@ -1502,7 +1803,7 @@
                 } else {
                     window.state.energyCores += coresWon;
                     saveLocalPlayerItems();
-                    updateCurrencyAndFrameUI();
+                    updateVipAndCurrencyUI();
                     if (resultEl) {
                         resultEl.innerHTML = `⚡ <b>輪盤停在【能量核心 +${coresWon}】</b>！快去趣玩商店挑特效吧！`;
                     }
@@ -1511,7 +1812,6 @@
             }, 3900);
         };
 
-        // 私聊請求與獨立私聊空間邏輯
         function getDmRoomId(uidA, uidB) {
             return [uidA, uidB].sort().join('__');
         }
@@ -1526,8 +1826,18 @@
             const modal = document.getElementById('dm-confirm-modal');
             const nameEl = document.getElementById('dm-target-name');
             const avatarEl = document.getElementById('dm-target-avatar');
+            const giftBox = document.getElementById('vip-gift-core-box');
+            const giftInput = document.getElementById('vip-gift-amount-input');
+            const giftCoresEl = document.getElementById('gift-my-cores');
+
             if (nameEl) nameEl.textContent = window.state.dmTargetCandidate.nickname;
             if (avatarEl) avatarEl.src = window.state.dmTargetCandidate.avatar;
+            if (giftCoresEl) giftCoresEl.textContent = window.state.energyCores;
+            if (giftInput) giftInput.value = '';
+            if (giftBox) {
+                if (window.state.hasVip) giftBox.classList.remove('hidden');
+                else giftBox.classList.add('hidden');
+            }
             if (modal) {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
@@ -1540,6 +1850,44 @@
             if (modal) {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
+            }
+        };
+
+        window.submitVipGiftCores = async function() {
+            if (!window.state.hasVip) {
+                window.showToast('只有 VIP 才能贈送能量核心！', 'error');
+                return;
+            }
+            const target = window.state.dmTargetCandidate;
+            const input = document.getElementById('vip-gift-amount-input');
+            const amount = Math.floor(Number(input?.value || 0));
+            if (!target || !target.uid) return;
+            if (!amount || amount <= 0) {
+                window.showToast('請輸入大於 0 的能量核心數量！', 'error');
+                return;
+            }
+            if (amount > window.state.energyCores) {
+                window.showToast(`你的能量核心不足（目前只有 ${window.state.energyCores}）！`, 'error');
+                return;
+            }
+            if (!window.chatCloudAPI?.grantCoresToUser) {
+                window.showToast('雲端轉贈服務尚未就緒', 'error');
+                return;
+            }
+
+            try {
+                window.state.energyCores -= amount;
+                saveLocalPlayerItems();
+                updateVipAndCurrencyUI();
+                await window.chatCloudAPI.grantCoresToUser(target.uid, amount);
+                window.closeDmConfirmModal();
+                window.showToast(`已贈送 ${amount} 能量核心給「${target.nickname}」！`, 'success');
+            } catch (err) {
+                console.error(err);
+                window.state.energyCores += amount;
+                saveLocalPlayerItems();
+                updateVipAndCurrencyUI();
+                window.showToast('贈送能量核心失敗', 'error');
             }
         };
 
@@ -1779,7 +2127,9 @@
                 avatarEl.src = (msg.avatar && msg.avatar.startsWith('data:image/')) ? msg.avatar : DEFAULT_AVATAR_URL;
                 applyFrameClassToElement(avatarEl, msg.avatarFrame || (msg.hasCyberFrame ? 'cyber' : ''));
             }
-            nickEl.textContent = (msg.isAdmin ? '🌈 [管理員] ' : '💬 ') + (msg.nickname || '無名流浪者');
+            const vipTag = msg.isVip ? '[VIP] ' : '';
+            const rolePrefix = msg.adminRole === 'co' ? '💎 [共同管理員] ' : (msg.isAdmin ? '🌈 [管理員] ' : '💬 ');
+            nickEl.textContent = rolePrefix + vipTag + (msg.nickname || '無名流浪者');
             textEl.textContent = msg.text || '';
 
             banner.classList.remove('-translate-y-28', 'opacity-0', 'pointer-events-none');
@@ -1805,8 +2155,11 @@
             const redPacketBtn = document.getElementById('admin-redpacket-trigger-btn');
             if (!btn) return;
             if (window.state.isAdmin) {
-                btn.className = 'px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-fuchsia-950/90 via-amber-950/90 to-cyan-950/90 text-amber-300 border border-amber-400 text-xs font-black transition flex items-center gap-1.5 shadow-[0_0_12px_rgba(251,191,36,0.35)]';
-                if (label) label.textContent = '管理員已啟用';
+                const isCo = window.state.adminRole === 'co';
+                btn.className = isCo
+                    ? 'px-2.5 py-1.5 rounded-lg bg-sky-950/90 text-sky-200 border border-sky-300 text-xs font-black transition flex items-center gap-1.5 shadow-[0_0_12px_rgba(125,211,252,0.4)]'
+                    : 'px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-fuchsia-950/90 via-amber-950/90 to-cyan-950/90 text-amber-300 border border-amber-400 text-xs font-black transition flex items-center gap-1.5 shadow-[0_0_12px_rgba(251,191,36,0.35)]';
+                if (label) label.textContent = isCo ? '共同管理員' : '管理員已啟用';
                 if (logoutBtn) logoutBtn.classList.remove('hidden');
                 if (cyberBtn) cyberBtn.classList.remove('hidden');
                 if (redPacketBtn) redPacketBtn.classList.remove('hidden');
@@ -1843,11 +2196,26 @@
             const pwd = input ? input.value.trim() : '';
             if (pwd === ADMIN_SECRET_CODE) {
                 window.state.isAdmin = true;
-                try { localStorage.setItem('backrooms_is_admin', '1'); } catch (e) {}
+                window.state.adminRole = 'main';
+                try {
+                    localStorage.setItem('backrooms_is_admin', '1');
+                    localStorage.setItem('backrooms_admin_role', 'main');
+                } catch (e) {}
                 updateAdminUI();
                 window.closeAdminModal();
                 window.renderChatMessages();
-                window.showToast('管理員權限已開啟！說話將自帶彩虹特效', 'success');
+                window.showToast('管理員權限已開啟（已自動與共同管理員互斥切換）！', 'success');
+            } else if (pwd === CO_ADMIN_SECRET_CODE) {
+                window.state.isAdmin = true;
+                window.state.adminRole = 'co';
+                try {
+                    localStorage.setItem('backrooms_is_admin', '1');
+                    localStorage.setItem('backrooms_admin_role', 'co');
+                } catch (e) {}
+                updateAdminUI();
+                window.closeAdminModal();
+                window.renderChatMessages();
+                window.showToast('共同管理員權限已開啟（已自動與主管理員互斥切換）！', 'success');
             } else {
                 window.showToast('管理員金鑰錯誤！', 'error');
             }
@@ -1855,15 +2223,23 @@
 
         window.logoutAdmin = function() {
             window.state.isAdmin = false;
-            try { localStorage.removeItem('backrooms_is_admin'); } catch (e) {}
+            window.state.adminRole = '';
+            try {
+                localStorage.removeItem('backrooms_is_admin');
+                localStorage.removeItem('backrooms_admin_role');
+            } catch (e) {}
             updateAdminUI();
             window.closeAdminModal();
             window.renderChatMessages();
             window.showToast('已登出管理員模式', 'info');
         };
 
-        window.adminDeleteMessage = async function(msgId) {
+        window.adminDeleteMessage = async function(msgId, targetIsMainAdmin) {
             if (!window.state.isAdmin || !msgId) return;
+            if (window.state.adminRole === 'co' && targetIsMainAdmin) {
+                window.showToast('共同管理員無法刪除主管理員的訊息！', 'error');
+                return;
+            }
             if (!window.chatCloudAPI?.deleteMessage) return;
             try {
                 await window.chatCloudAPI.deleteMessage(msgId);
@@ -1874,10 +2250,14 @@
             }
         };
 
-        window.adminToggleMute = async function(targetUid, nickname) {
+        window.adminToggleMute = async function(targetUid, nickname, targetIsMainAdmin) {
             if (!window.state.isAdmin || !targetUid) return;
             if (targetUid === window.currentUserUid) {
-                window.showToast('無法禁言管理員自己', 'error');
+                window.showToast('無法禁言自己', 'error');
+                return;
+            }
+            if (window.state.adminRole === 'co' && targetIsMainAdmin) {
+                window.showToast('共同管理員無法封禁主管理員！', 'error');
                 return;
             }
             if (!window.chatCloudAPI?.setMuteUser) return;
@@ -1899,7 +2279,7 @@
             if (targetUid === window.currentUserUid) {
                 window.state.energyCores += amount;
                 saveLocalPlayerItems();
-                updateCurrencyAndFrameUI();
+                updateVipAndCurrencyUI();
                 window.showToast(`已為自己補充 +${amount} 能量核心`, 'success');
                 return;
             }
@@ -2342,10 +2722,14 @@
             }
             const myUid = window.currentUserUid;
             const isAdminViewer = window.state.isAdmin;
+            const viewerIsCoAdmin = window.state.adminRole === 'co';
 
             container.innerHTML = messages.map(msg => {
                 const isMine = msg.senderUid === myUid;
                 const isSenderAdmin = Boolean(msg.isAdmin);
+                const isSenderCoAdmin = isSenderAdmin && msg.adminRole === 'co';
+                const isSenderMainAdmin = isSenderAdmin && !isSenderCoAdmin;
+                const isSenderVip = Boolean(msg.isVip);
                 const isSenderMuted = Boolean(window.state.mutedUsers[msg.senderUid]);
                 const safeAvatar = (msg.avatar && msg.avatar.startsWith('data:image/')) ? msg.avatar : DEFAULT_AVATAR_URL;
                 const safeNick = escapeHtml(msg.nickname || '無名流浪者');
@@ -2353,40 +2737,51 @@
                 const frameKey = msg.avatarFrame || (msg.hasCyberFrame ? 'cyber' : '');
                 const frameClass = getAvatarFrameClass(frameKey);
 
-                const nameHtml = isSenderAdmin
-                    ? `<span class="px-1.5 py-0.5 rounded bg-gradient-to-r from-pink-500 via-amber-400 to-cyan-400 text-stone-950 text-[10px] font-black">M.E.G. 管理員</span> <span class="text-xs font-black admin-rainbow-text">${safeNick}</span>`
-                    : `<span class="text-xs font-black ${isMine ? 'text-amber-400' : 'text-emerald-400'}">${isMine ? '我 (' + safeNick + ')' : safeNick}</span>`;
+                const vipBadgeHtml = isSenderVip
+                    ? `<span class="px-1.5 py-0.5 rounded vip-gold-badge text-[10px] font-black">VIP</span>`
+                    : '';
+
+                const nameHtml = isSenderCoAdmin
+                    ? `<span class="px-1.5 py-0.5 rounded bg-gradient-to-r from-sky-200 via-fuchsia-200 to-emerald-200 text-stone-950 text-[10px] font-black">💎 共同管理員</span> ${vipBadgeHtml} <span class="text-xs font-black text-sky-200">${safeNick}</span>`
+                    : (isSenderAdmin
+                        ? `<span class="px-1.5 py-0.5 rounded bg-gradient-to-r from-pink-500 via-amber-400 to-cyan-400 text-stone-950 text-[10px] font-black">M.E.G. 管理員</span> ${vipBadgeHtml} <span class="text-xs font-black admin-rainbow-text">${safeNick}</span>`
+                        : `${vipBadgeHtml} <span class="text-xs font-black ${isMine ? 'text-amber-400' : 'text-emerald-400'}">${isMine ? '我 (' + safeNick + ')' : safeNick}</span>`);
 
                 const mutedTagHtml = isSenderMuted
                     ? `<span class="px-1.5 py-0.5 rounded bg-red-950 text-red-400 border border-red-700/60 text-[10px] font-bold">已禁言</span>`
                     : '';
 
+                const canModerateThisMsg = isAdminViewer && !(viewerIsCoAdmin && isSenderMainAdmin);
+
                 const adminActionsHtml = isAdminViewer ? `
                     <div class="flex items-center gap-1 opacity-85 hover:opacity-100">
-                        <button type="button" onclick="adminDeleteMessage('${msg.id}')" title="刪除此訊息" class="px-1.5 py-0.5 rounded bg-red-950/90 hover:bg-red-800 text-red-300 border border-red-700/60 text-[10px] font-bold transition">
+                        ${canModerateThisMsg ? `
+                        <button type="button" onclick="adminDeleteMessage('${msg.id}', ${isSenderMainAdmin})" title="刪除此訊息" class="px-1.5 py-0.5 rounded bg-red-950/90 hover:bg-red-800 text-red-300 border border-red-700/60 text-[10px] font-bold transition">
                             <i class="fa-solid fa-trash-can"></i> 刪除
-                        </button>
+                        </button>` : ''}
                         ${msg.senderUid ? `
                         <button type="button" onclick="adminGrantCores('${msg.senderUid}', '${safeNick.replace(/'/g, '')}', 20)" title="發放 20 能量核心" class="px-1.5 py-0.5 rounded bg-cyan-950/90 hover:bg-cyan-800 text-cyan-300 border border-cyan-600/60 text-[10px] font-bold transition">
                             <i class="fa-solid fa-bolt"></i> +20核心
                         </button>` : ''}
-                        ${!isMine && msg.senderUid ? `
-                        <button type="button" onclick="adminToggleMute('${msg.senderUid}', '${safeNick.replace(/'/g, '')}')" title="${isSenderMuted ? '解除禁言' : '禁言此玩家'}" class="px-1.5 py-0.5 rounded ${isSenderMuted ? 'bg-emerald-950 text-emerald-300 border-emerald-700/60' : 'bg-amber-950/90 text-amber-300 border-amber-700/60'} border text-[10px] font-bold transition">
+                        ${!isMine && msg.senderUid && canModerateThisMsg ? `
+                        <button type="button" onclick="adminToggleMute('${msg.senderUid}', '${safeNick.replace(/'/g, '')}', ${isSenderMainAdmin})" title="${isSenderMuted ? '解除禁言' : '禁言此玩家'}" class="px-1.5 py-0.5 rounded ${isSenderMuted ? 'bg-emerald-950 text-emerald-300 border-emerald-700/60' : 'bg-amber-950/90 text-amber-300 border-amber-700/60'} border text-[10px] font-bold transition">
                             <i class="fa-solid fa-ban"></i> ${isSenderMuted ? '解禁' : '禁言'}
                         </button>` : ''}
                     </div>` : '';
 
-                const bubbleClass = isSenderAdmin
-                    ? `admin-rainbow-bubble text-[#fff9db] ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`
-                    : (effectObj
-                        ? `${effectObj.cssClass} ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`
-                        : (isMine
-                            ? 'bg-[#362f14] border border-amber-500/50 text-[#faf2c3] rounded-tr-sm'
-                            : 'bg-[#17150c] border border-[#4d4423] text-[#e6dfb8] rounded-tl-sm'));
+                const bubbleClass = isSenderCoAdmin
+                    ? `coadmin-diamond-bubble ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`
+                    : (isSenderAdmin
+                        ? `admin-rainbow-bubble text-[#fff9db] ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`
+                        : (effectObj
+                            ? `${effectObj.cssClass} ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`
+                            : (isMine
+                                ? 'bg-[#362f14] border border-amber-500/50 text-[#faf2c3] rounded-tr-sm'
+                                : 'bg-[#17150c] border border-[#4d4423] text-[#e6dfb8] rounded-tl-sm')));
 
                 const avatarClass = `w-9 h-9 rounded-full object-cover shrink-0 border ${frameClass || (isSenderAdmin ? 'border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.6)]' : 'border-[#594e25]')} bg-[#1a170c] mt-0.5 ${!isMine && msg.senderUid ? 'cursor-pointer hover:scale-105 transition' : ''}`;
                 const avatarClickAttr = (!isMine && msg.senderUid)
-                    ? `onclick='openDmConfirmModal("${msg.senderUid}", "${safeNick.replace(/"/g, "&quot;")}", "${safeAvatar}")' title="點擊發起私聊"`
+                    ? `onclick='openDmConfirmModal("${msg.senderUid}", "${safeNick.replace(/"/g, "&quot;")}", "${safeAvatar}")' title="點擊發起私聊或贈送核心"`
                     : '';
 
                 return `
@@ -2451,13 +2846,16 @@
             try {
                 lastChatSentAt = now;
                 const activeFrame = window.state.equippedAvatarFrame || '';
+                const activeVip = Boolean(window.state.hasVip && window.state.vipBadgeEnabled);
                 await window.chatCloudAPI.sendMessage(
                     nickname,
                     text,
                     window.state.userAvatar,
                     window.state.isAdmin,
                     window.state.equippedEffect,
-                    activeFrame
+                    activeFrame,
+                    window.state.adminRole,
+                    activeVip
                 );
                 if (textInput) textInput.value = '';
             } catch (err) {
@@ -2495,7 +2893,6 @@
         });
     </script>
 
-    <!-- Firebase Realtime Database 免登入多人同步聊天、私聊與全體活動模組 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import {
@@ -2532,6 +2929,7 @@
         const dmRoomsRef = ref(db, "dmRooms");
         const cyberEventRef = ref(db, "events/cyber");
         const redPacketEventRef = ref(db, "events/redPacket");
+        const danmakuEventRef = ref(db, "events/danmaku");
 
         const pageLoadedAt = Date.now();
 
@@ -2548,8 +2946,35 @@
                     packets,
                     triggeredAt: Date.now()
                 });
+            },
+            broadcastDanmaku: async (danmakuId, nickname, text, isVip, isAdmin, adminRole) => {
+                await set(danmakuEventRef, {
+                    danmakuId,
+                    nickname,
+                    text,
+                    isVip: Boolean(isVip),
+                    isAdmin: Boolean(isAdmin),
+                    adminRole: adminRole || "",
+                    triggeredAt: Date.now()
+                });
             }
         };
+
+        onValue(danmakuEventRef, (snap) => {
+            const val = snap.val();
+            if (!val || !val.text) return;
+            const triggeredAt = Number(val.triggeredAt || 0);
+            if (triggeredAt >= pageLoadedAt - 5000) {
+                window.spawnDanmaku(
+                    val.danmakuId,
+                    val.nickname,
+                    val.text,
+                    Boolean(val.isVip),
+                    Boolean(val.isAdmin),
+                    val.adminRole || ""
+                );
+            }
+        });
 
         onValue(cyberEventRef, (snap) => {
             const val = snap.val();
@@ -2570,7 +2995,6 @@
             }
         });
 
-        // 每月 1 日 00:00 自動清空公共聊天（非 1 號不清空；現有訊息保留至下個月 1 號）
         let checkingMonthlyReset = false;
         async function checkAndResetOnFirstOfMonth() {
             if (checkingMonthlyReset) return;
@@ -2599,13 +3023,15 @@
         setInterval(checkAndResetOnFirstOfMonth, 60000);
 
         window.chatCloudAPI = {
-            sendMessage: async (nickname, text, avatar, isAdmin, chatEffect, avatarFrame) => {
+            sendMessage: async (nickname, text, avatar, isAdmin, chatEffect, avatarFrame, adminRole, isVip) => {
                 await checkAndResetOnFirstOfMonth();
                 await push(ref(db, "messages"), {
                     nickname: nickname || "無名流浪者",
                     text: text,
                     avatar: (avatar && avatar.startsWith("data:image/")) ? avatar : "",
                     isAdmin: Boolean(isAdmin),
+                    adminRole: isAdmin ? (adminRole === "co" ? "co" : "main") : "",
+                    isVip: Boolean(isVip),
                     chatEffect: chatEffect || "",
                     avatarFrame: avatarFrame || "",
                     hasCyberFrame: avatarFrame === "cyber",
@@ -2742,8 +3168,8 @@
             if (giftAmount > 0) {
                 window.state.energyCores += giftAmount;
                 saveLocalPlayerItems();
-                updateCurrencyAndFrameUI();
-                window.showToast(`收到管理員發放的能量核心 +${giftAmount}！`, 'success');
+                updateVipAndCurrencyUI();
+                window.showToast(`收到能量核心 +${giftAmount}！`, 'success');
                 await set(myGiftCoresRef, 0);
             }
         });
@@ -2769,6 +3195,8 @@
                         text: val.text,
                         avatar: typeof val.avatar === "string" ? val.avatar : "",
                         isAdmin: Boolean(val.isAdmin),
+                        adminRole: typeof val.adminRole === "string" ? val.adminRole : "",
+                        isVip: Boolean(val.isVip),
                         chatEffect: typeof val.chatEffect === "string" ? val.chatEffect : "",
                         avatarFrame: typeof val.avatarFrame === "string" ? val.avatarFrame : (val.hasCyberFrame ? "cyber" : ""),
                         hasCyberFrame: Boolean(val.hasCyberFrame),
@@ -2794,6 +3222,10 @@
 
             if (!isFirstLoad && latestMsg && latestMsg.id !== lastKnownMsgId && latestMsg.senderUid !== window.currentUserUid) {
                 window.showTopMessageBanner(latestMsg);
+                window.pushSystemNotification(
+                    `LEVEL-0 終端 // ${latestMsg.nickname || '無名流浪者'}`,
+                    latestMsg.text || '收到新訊息'
+                );
             }
 
             if (latestMsg) lastKnownMsgId = latestMsg.id;
