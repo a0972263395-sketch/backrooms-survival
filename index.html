@@ -338,7 +338,6 @@
             pointer-events: none;
         }
 
-        /* 黃金 VIP 徽章 */
         .vip-gold-badge {
             background: linear-gradient(90deg, #f59e0b, #fde047, #eab308, #fef08a, #d97706);
             background-size: 250% 250%;
@@ -347,7 +346,6 @@
             box-shadow: 0 0 10px rgba(250, 204, 21, 0.55);
         }
 
-        /* 滾動彈幕動畫 */
         @keyframes danmaku-scroll {
             0% {
                 transform: translateX(100vw);
@@ -750,12 +748,18 @@
                 </div>
 
                 <div class="md:col-span-8 flex flex-col bg-[#0d0b05]/80 overflow-hidden">
-                    <div id="dm-active-header" class="px-5 py-3.5 border-b border-[#4a4122] bg-[#1a170c] flex items-center justify-between shrink-0">
-                        <div class="flex items-center gap-2.5">
-                            <i class="fa-solid fa-comments text-cyan-400"></i>
-                            <span id="dm-partner-title" class="text-sm font-black text-[#faf2c3]">請選擇或同意一個私聊對象</span>
+                    <div id="dm-active-header" class="px-5 py-3.5 border-b border-[#4a4122] bg-[#1a170c] flex items-center justify-between gap-2 shrink-0">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <i class="fa-solid fa-comments text-cyan-400 shrink-0"></i>
+                            <span id="dm-partner-title" class="text-sm font-black text-[#faf2c3] truncate">請選擇或同意一個私聊對象</span>
                         </div>
-                        <span id="dm-room-status" class="text-[10px] font-mono-tech text-[#9c9163]">PRIVATE CHANNEL</span>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <button type="button" id="voice-call-btn" onclick="startVoiceCall()" disabled class="px-3 py-1.5 rounded-lg bg-emerald-600/30 hover:bg-emerald-500/40 text-emerald-300 border border-emerald-500/60 text-xs font-black transition flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed">
+                                <i class="fa-solid fa-phone"></i>
+                                <span>撥打語音</span>
+                            </button>
+                            <span id="dm-room-status" class="text-[10px] font-mono-tech text-[#9c9163] hidden sm:inline">PRIVATE CHANNEL</span>
+                        </div>
                     </div>
 
                     <div id="dm-messages-container" class="flex-grow overflow-y-auto p-4 sm:p-5 space-y-3">
@@ -976,6 +980,45 @@
                 <button type="button" onclick="closeWeaponModal()" class="px-6 py-2 rounded-xl bg-[#9e8b3f] hover:bg-[#b5a04a] text-[#141208] text-sm font-black shadow-lg transition">確認並返回終端</button>
             </div>
         </div>
+    </div>
+
+    <!-- ==================== 語音來電提示視窗 ==================== -->
+    <div id="incoming-call-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+        <div class="bg-[#1a170c] border-2 border-emerald-400 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-5 text-center">
+            <div class="w-16 h-16 mx-auto rounded-full bg-emerald-950 border-2 border-emerald-400 flex items-center justify-center text-emerald-300 text-2xl animate-pulse">
+                <i class="fa-solid fa-phone-volume"></i>
+            </div>
+            <div>
+                <div class="text-xs font-mono-tech text-emerald-400">INCOMING VOICE CALL</div>
+                <h3 id="incoming-caller-name" class="text-lg font-black text-[#faf2c3] mt-1">流浪者來電中...</h3>
+                <p class="text-xs text-[#9c9163] mt-1">接聽後將啟用你的麥克風進行即時語音通話</p>
+            </div>
+            <div class="flex items-center justify-center gap-3">
+                <button type="button" onclick="rejectVoiceCall()" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-black flex items-center gap-1.5">
+                    <i class="fa-solid fa-phone-slash"></i> 拒接
+                </button>
+                <button type="button" onclick="acceptVoiceCall()" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-950 text-xs font-black flex items-center gap-1.5">
+                    <i class="fa-solid fa-phone"></i> 接聽
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 語音通話中控制列 ==================== -->
+    <div id="active-call-bar" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 hidden bg-[#17140a]/95 backdrop-blur-xl border-2 border-emerald-400/80 rounded-2xl px-4 py-3 shadow-2xl items-center gap-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        <div class="text-xs">
+            <div id="call-status-text" class="font-black text-emerald-300">語音通話中</div>
+            <div id="call-timer-text" class="font-mono-tech text-[11px] text-[#d6c67c]">00:00</div>
+        </div>
+        <button type="button" id="toggle-mute-btn" onclick="toggleCallMute()" class="px-3 py-1.5 rounded-xl bg-[#292311] hover:bg-[#3a3218] text-[#faf2c3] border border-[#6e602e] text-xs font-bold flex items-center gap-1.5">
+            <i id="mute-icon" class="fa-solid fa-microphone"></i>
+            <span id="mute-label">靜音</span>
+        </button>
+        <button type="button" onclick="hangupVoiceCall(true)" class="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-black flex items-center gap-1.5">
+            <i class="fa-solid fa-phone-slash"></i> 掛斷
+        </button>
+        <audio id="remote-voice-audio" autoplay playsinline></audio>
     </div>
 
     <script>
@@ -2910,6 +2953,7 @@
             set,
             update,
             onValue,
+            onChildAdded,
             query,
             limitToLast,
             get
@@ -3191,10 +3235,278 @@
             renderDmSidebar();
         });
 
+        let pc = null;
+        let localStream = null;
+        let currentCallRoomId = "";
+        let pendingIncomingCall = null;
+        let callTimerInterval = null;
+        let callSeconds = 0;
+        let isMicMuted = false;
+        let callOfferUnsub = null;
+        let callAnswerUnsub = null;
+        let callIceUnsub = null;
+        const watchedOfferRooms = new Set();
+
+        const rtcConfig = {
+            iceServers: [
+                { urls: "stun:stun.l.google.com:19302" },
+                { urls: "stun:stun1.l.google.com:19302" }
+            ]
+        };
+
+        function updateVoiceCallButtonState() {
+            const btn = document.getElementById("voice-call-btn");
+            if (!btn) return;
+            const hasRoom = Boolean(window.state.activeDmRoomId && window.state.dmRooms[window.state.activeDmRoomId]);
+            btn.disabled = !hasRoom || Boolean(currentCallRoomId);
+        }
+
+        const origSelectDmRoom = window.selectDmRoom;
+        window.selectDmRoom = function(roomId) {
+            origSelectDmRoom(roomId);
+            updateVoiceCallButtonState();
+        };
+
+        function startCallTimer() {
+            stopCallTimer();
+            callSeconds = 0;
+            const timerEl = document.getElementById("call-timer-text");
+            if (timerEl) timerEl.textContent = "00:00";
+            callTimerInterval = setInterval(() => {
+                callSeconds += 1;
+                const m = String(Math.floor(callSeconds / 60)).padStart(2, "0");
+                const s = String(callSeconds % 60).padStart(2, "0");
+                if (timerEl) timerEl.textContent = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function stopCallTimer() {
+            if (callTimerInterval) {
+                clearInterval(callTimerInterval);
+                callTimerInterval = null;
+            }
+        }
+
+        function showActiveCallBar(text) {
+            const bar = document.getElementById("active-call-bar");
+            const statusEl = document.getElementById("call-status-text");
+            if (statusEl && text) statusEl.textContent = text;
+            if (bar) {
+                bar.classList.remove("hidden");
+                bar.classList.add("flex");
+            }
+        }
+
+        function hideActiveCallBar() {
+            const bar = document.getElementById("active-call-bar");
+            if (bar) {
+                bar.classList.add("hidden");
+                bar.classList.remove("flex");
+            }
+        }
+
+        function cleanupCallListeners() {
+            if (callOfferUnsub) { callOfferUnsub(); callOfferUnsub = null; }
+            if (callAnswerUnsub) { callAnswerUnsub(); callAnswerUnsub = null; }
+            if (callIceUnsub) { callIceUnsub(); callIceUnsub = null; }
+        }
+
+        async function prepareLocalAudio() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error("此瀏覽器不支援麥克風語音通話");
+            }
+            localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+            isMicMuted = false;
+            const muteIcon = document.getElementById("mute-icon");
+            const muteLabel = document.getElementById("mute-label");
+            if (muteIcon) muteIcon.className = "fa-solid fa-microphone";
+            if (muteLabel) muteLabel.textContent = "靜音";
+        }
+
+        function createPeerConnection(roomId, role) {
+            const connection = new RTCPeerConnection(rtcConfig);
+            if (localStream) {
+                localStream.getTracks().forEach(track => connection.addTrack(track, localStream));
+            }
+            connection.ontrack = (event) => {
+                const audioEl = document.getElementById("remote-voice-audio");
+                if (audioEl && event.streams && event.streams[0]) {
+                    audioEl.srcObject = event.streams[0];
+                }
+            };
+            connection.onicecandidate = async (event) => {
+                if (event.candidate) {
+                    await push(ref(db, `voiceCalls/${roomId}/candidates/${role}`), event.candidate.toJSON());
+                }
+            };
+            connection.onconnectionstatechange = () => {
+                if (connection.connectionState === "connected") {
+                    showActiveCallBar("語音通話已連線");
+                    startCallTimer();
+                } else if (["disconnected", "failed", "closed"].includes(connection.connectionState)) {
+                    window.hangupVoiceCall(false);
+                }
+            };
+            const remoteRole = role === "caller" ? "callee" : "caller";
+            callIceUnsub = onChildAdded(ref(db, `voiceCalls/${roomId}/candidates/${remoteRole}`), async (snap) => {
+                const cand = snap.val();
+                if (cand && connection.remoteDescription) {
+                    try {
+                        await connection.addIceCandidate(new RTCIceCandidate(cand));
+                    } catch (e) {
+                        console.warn("加入 ICE 候選位址失敗：", e);
+                    }
+                }
+            });
+            return connection;
+        }
+
+        window.startVoiceCall = async function() {
+            const roomId = window.state.activeDmRoomId;
+            if (!roomId || currentCallRoomId) return;
+            try {
+                await prepareLocalAudio();
+                currentCallRoomId = roomId;
+                updateVoiceCallButtonState();
+                showActiveCallBar("正在撥號等待對方接聽...");
+                await remove(ref(db, `voiceCalls/${roomId}`));
+                pc = createPeerConnection(roomId, "caller");
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                await set(ref(db, `voiceCalls/${roomId}/offer`), {
+                    fromUid: window.currentUserUid,
+                    fromNickname: window.state.userNickname || "流浪者",
+                    sdp: offer.sdp,
+                    type: offer.type,
+                    createdAt: Date.now()
+                });
+                callAnswerUnsub = onValue(ref(db, `voiceCalls/${roomId}/answer`), async (snap) => {
+                    const ans = snap.val();
+                    if (!ans || !pc || pc.currentRemoteDescription) return;
+                    await pc.setRemoteDescription(new RTCSessionDescription({ type: ans.type, sdp: ans.sdp }));
+                    showActiveCallBar("語音通話中");
+                    startCallTimer();
+                });
+            } catch (err) {
+                console.error(err);
+                window.showToast("無法啟動語音通話，請確認已允許麥克風權限", "error");
+                window.hangupVoiceCall(false);
+            }
+        };
+
+        window.acceptVoiceCall = async function() {
+            const modal = document.getElementById("incoming-call-modal");
+            if (modal) {
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+            }
+            if (!pendingIncomingCall) return;
+            const { roomId, offer } = pendingIncomingCall;
+            pendingIncomingCall = null;
+            try {
+                await prepareLocalAudio();
+                currentCallRoomId = roomId;
+                window.switchTab("dm");
+                window.selectDmRoom(roomId);
+                showActiveCallBar("正在建立語音連線...");
+                pc = createPeerConnection(roomId, "callee");
+                await pc.setRemoteDescription(new RTCSessionDescription({ type: offer.type, sdp: offer.sdp }));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                await set(ref(db, `voiceCalls/${roomId}/answer`), {
+                    sdp: answer.sdp,
+                    type: answer.type,
+                    createdAt: Date.now()
+                });
+                showActiveCallBar("語音通話中");
+                startCallTimer();
+            } catch (err) {
+                console.error(err);
+                window.showToast("接聽失敗，請確認麥克風權限", "error");
+                window.hangupVoiceCall(false);
+            }
+        };
+
+        window.rejectVoiceCall = async function() {
+            const modal = document.getElementById("incoming-call-modal");
+            if (modal) {
+                modal.classList.add("hidden");
+                modal.classList.remove("flex");
+            }
+            if (pendingIncomingCall?.roomId) {
+                await remove(ref(db, `voiceCalls/${pendingIncomingCall.roomId}`));
+            }
+            pendingIncomingCall = null;
+            window.showToast("已拒接語音來電", "info");
+        };
+
+        window.toggleCallMute = function() {
+            if (!localStream) return;
+            isMicMuted = !isMicMuted;
+            localStream.getAudioTracks().forEach(track => {
+                track.enabled = !isMicMuted;
+            });
+            const muteIcon = document.getElementById("mute-icon");
+            const muteLabel = document.getElementById("mute-label");
+            if (muteIcon) muteIcon.className = isMicMuted ? "fa-solid fa-microphone-slash text-red-400" : "fa-solid fa-microphone";
+            if (muteLabel) muteLabel.textContent = isMicMuted ? "已靜音" : "靜音";
+        };
+
+        window.hangupVoiceCall = async function(notifyRemote = true) {
+            stopCallTimer();
+            cleanupCallListeners();
+            const targetRoom = currentCallRoomId;
+            currentCallRoomId = "";
+            if (pc) {
+                pc.close();
+                pc = null;
+            }
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+            const audioEl = document.getElementById("remote-voice-audio");
+            if (audioEl) audioEl.srcObject = null;
+            hideActiveCallBar();
+            updateVoiceCallButtonState();
+            if (notifyRemote && targetRoom) {
+                try {
+                    await remove(ref(db, `voiceCalls/${targetRoom}`));
+                } catch (e) {}
+                window.showToast("已結束語音通話", "info");
+            }
+        };
+
         onValue(dmRoomsRef, (snap) => {
-            window.state.dmRooms = snap.val() || {};
+            const rooms = snap.val() || {};
+            window.state.dmRooms = rooms;
             renderDmSidebar();
             renderDmActiveHeader();
+            updateVoiceCallButtonState();
+
+            Object.entries(rooms).forEach(([roomId, room]) => {
+                if (!room || (room.uidA !== window.currentUserUid && room.uidB !== window.currentUserUid)) return;
+                if (watchedOfferRooms.has(roomId)) return;
+                watchedOfferRooms.add(roomId);
+
+                onValue(ref(db, `voiceCalls/${roomId}/offer`), (offerSnap) => {
+                    const offer = offerSnap.val();
+                    if (!offer || offer.fromUid === window.currentUserUid || currentCallRoomId) return;
+                    if (Date.now() - Number(offer.createdAt || 0) > 45000) return;
+                    pendingIncomingCall = { roomId, offer };
+                    const nameEl = document.getElementById("incoming-caller-name");
+                    const modal = document.getElementById("incoming-call-modal");
+                    if (nameEl) nameEl.textContent = `${offer.fromNickname || "流浪者"} 語音來電中...`;
+                    if (modal) {
+                        modal.classList.remove("hidden");
+                        modal.classList.add("flex");
+                    }
+                    window.pushSystemNotification(
+                        "LEVEL-0 語音來電",
+                        `${offer.fromNickname || "流浪者"} 正在撥打語音通話！`
+                    );
+                });
+            });
         });
 
         onValue(myGiftCoresRef, async (snap) => {
