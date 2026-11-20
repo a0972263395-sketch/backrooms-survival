@@ -219,18 +219,9 @@
         }
 
         @keyframes red-packet-drift {
-            0% {
-                transform: translateY(-80px) translateX(0px) rotate(-6deg);
-                opacity: 1;
-            }
-            50% {
-                transform: translateY(50vh) translateX(18px) rotate(6deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(108vh) translateX(-10px) rotate(-4deg);
-                opacity: 0.95;
-            }
+            0% { transform: translateY(-80px) translateX(0px) rotate(-6deg); opacity: 1; }
+            50% { transform: translateY(50vh) translateX(18px) rotate(6deg); opacity: 1; }
+            100% { transform: translateY(108vh) translateX(-10px) rotate(-4deg); opacity: 0.95; }
         }
         .falling-red-packet {
             position: fixed;
@@ -242,14 +233,8 @@
         }
 
         body.chat-fullscreen-active header,
-        body.chat-fullscreen-active footer {
-            display: none !important;
-        }
-        body.chat-fullscreen-active main {
-            max-width: 100% !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
+        body.chat-fullscreen-active footer { display: none !important; }
+        body.chat-fullscreen-active main { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
         #chat-panel-box.is-fullscreen {
             position: fixed;
             inset: 0;
@@ -259,13 +244,8 @@
             border-radius: 0 !important;
             border: none !important;
         }
-        #chat-panel-box.is-fullscreen #chat-header-info {
-            display: none;
-        }
-        #chat-panel-box.is-fullscreen #chat-top-bar {
-            padding: 0.65rem 0.9rem;
-            justify-content: space-between;
-        }
+        #chat-panel-box.is-fullscreen #chat-header-info { display: none; }
+        #chat-panel-box.is-fullscreen #chat-top-bar { padding: 0.65rem 0.9rem; justify-content: space-between; }
 
         @keyframes rainbow-flow {
             0% { background-position: 0% 50%; }
@@ -347,12 +327,8 @@
         }
 
         @keyframes danmaku-scroll {
-            0% {
-                transform: translateX(100vw);
-            }
-            100% {
-                transform: translateX(-140%);
-            }
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-140%); }
         }
         .danmaku-item {
             position: fixed;
@@ -364,9 +340,126 @@
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9), 0 0 16px rgba(250, 204, 21, 0.65);
             animation: danmaku-scroll var(--danmaku-duration, 7.5s) linear forwards;
         }
+
+        /* 右上角齒輪設定按鈕與選單 */
+        #gear-settings-btn {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            z-index: 9998;
+            width: 38px;
+            height: 38px;
+            border-radius: 9999px;
+            border: 1px solid rgba(212, 196, 118, 0.7);
+            background: rgba(24, 21, 12, 0.92);
+            color: #f5e68c;
+            font-size: 17px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.65);
+            transition: transform 0.25s ease, border-color 0.2s ease;
+        }
+        #gear-settings-btn:hover {
+            transform: rotate(45deg);
+            border-color: #fde047;
+        }
+        #gear-settings-panel {
+            display: none;
+            position: fixed;
+            top: 60px;
+            right: 14px;
+            z-index: 9999;
+            width: 286px;
+            background: #1a170c;
+            border: 1px solid rgba(212, 196, 118, 0.75);
+            border-radius: 14px;
+            padding: 14px;
+            color: #faf2c3;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.85);
+            font-size: 13px;
+        }
+        #gear-settings-panel.open {
+            display: block;
+        }
+        .gear-section {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(212, 196, 118, 0.22);
+        }
+        .gear-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .gear-action-btn {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(212, 196, 118, 0.55);
+            background: #292311;
+            color: #faf2c3;
+            font-size: 12px;
+            font-weight: 800;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .gear-action-btn:hover {
+            background: #3a3218;
+        }
+        .gear-hint {
+            margin-top: 6px;
+            font-size: 11px;
+            color: #a39765;
+            line-height: 1.45;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-stone-950 scanlines">
+
+    <!-- 右上角齒輪設定按鈕 -->
+    <button id="gear-settings-btn" type="button" title="終端設定" aria-label="終端設定">
+        <i class="fa-solid fa-gear"></i>
+    </button>
+
+    <!-- 右上角齒輪設定選單 -->
+    <div id="gear-settings-panel">
+        <div class="flex items-center justify-between pb-1.5">
+            <span class="font-black text-amber-300 text-xs flex items-center gap-1.5">
+                <i class="fa-solid fa-sliders"></i> 終端快捷設定
+            </span>
+            <span class="text-[10px] font-mono-tech text-[#9c9163]">LEVEL-0</span>
+        </div>
+
+        <!-- 1. 下載按鈕 -->
+        <div class="gear-section">
+            <button id="gear-download-btn" type="button" class="gear-action-btn">
+                <i class="fa-solid fa-download text-emerald-400 mr-1.5"></i> 下載應用程式 / 檔案
+            </button>
+            <div id="gear-download-status" class="gear-hint">點擊後以瀏覽器原生下載方式儲存檔案。</div>
+        </div>
+
+        <!-- 2. 開啟通知 -->
+        <div class="gear-section">
+            <button id="gear-notify-btn" type="button" class="gear-action-btn">
+                <i class="fa-solid fa-bell text-amber-400 mr-1.5"></i> 開啟通知
+            </button>
+            <div id="gear-notify-status" class="gear-hint">狀態：尚未確認</div>
+        </div>
+
+        <!-- 3. 開啟發圖片功能（測試版） -->
+        <div class="gear-section">
+            <div class="flex items-center justify-between gap-2">
+                <label for="gear-img-beta-toggle" class="font-bold text-cyan-300 cursor-pointer select-none">
+                    <i class="fa-solid fa-image mr-1"></i> 開啟發圖片功能 <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-200 border border-cyan-600/50">測試版</span>
+                </label>
+                <input id="gear-img-beta-toggle" type="checkbox" class="w-4 h-4 accent-cyan-400 cursor-pointer">
+            </div>
+            <div class="gear-hint">
+                開啟後聊天欄新增傳圖按鈕；圖片 <strong>24 小時後自動刪除</strong>以節省空間。每日上限：一般 <strong>15 張</strong>、VIP <strong>30 張</strong>。
+            </div>
+        </div>
+    </div>
 
     <div id="red-packet-layer" class="fixed inset-0 pointer-events-none z-50 overflow-hidden"></div>
     <div id="danmaku-layer" class="fixed inset-0 pointer-events-none z-[58] overflow-hidden"></div>
@@ -397,7 +490,7 @@
     </div>
 
     <header class="bg-[#1b180d]/95 backdrop-blur-xl border-b border-[#5e542c]/60 sticky top-0 z-30 shadow-2xl">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 pr-14">
             <div class="flex items-center gap-3.5">
                 <div class="w-11 h-11 rounded-xl bg-[#2c2714] border border-[#a89852]/60 flex items-center justify-center shadow-[0_0_15px_rgba(235,220,130,0.2)]">
                     <i class="fa-solid fa-radiation text-[#f2e394] text-xl flicker-text"></i>
@@ -638,15 +731,11 @@
                                     每月 1 日重置
                                 </span>
                             </div>
-                            <p class="text-xs text-[#a39765]">點擊他人頭像可私聊（VIP 可轉贈能量核心）；開啟通知後切到其他畫面或遊戲也會在螢幕上方彈出橫幅</p>
+                            <p class="text-xs text-[#a39765]">點擊他人頭像可私聊（VIP 可轉贈能量核心）；右上角齒輪可開啟通知、下載或發圖片測試版</p>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto flex-wrap">
-                        <button type="button" onclick="enableSystemNotifications()" id="notify-perm-btn" class="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/70 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
-                            <i class="fa-solid fa-bell"></i>
-                            <span id="notify-perm-label">開啟通知</span>
-                        </button>
                         <button type="button" onclick="openFunShopModal()" class="px-3 py-1.5 rounded-lg bg-cyan-950/90 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/60 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
                             <i class="fa-solid fa-store"></i>
                             <span>趣玩商店</span>
@@ -700,6 +789,12 @@
                     <div class="flex-grow flex gap-2">
                         <input type="text" id="chat-text-input" maxlength="300" placeholder="輸入要傳送給所有玩家的訊息（例如：收 Aegis-01、出 ASH-12...）" 
                             class="w-full bg-[#0d0b05] border border-[#594e25] focus:border-amber-400 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-[#faf2c3] placeholder-[#5e5534] outline-none transition">
+                        <!-- 發送圖片按鈕（預設隱藏，在右上角齒輪開啟「發圖片功能（測試版）」後顯示） -->
+                        <button type="button" id="chat-send-img-btn" onclick="triggerChatImageUpload()" class="hidden px-3.5 py-2.5 rounded-xl bg-cyan-950 hover:bg-cyan-800 text-cyan-200 border border-cyan-400/70 font-black text-xs sm:text-sm shadow-lg transition items-center gap-1.5 shrink-0 active:scale-95" title="發送圖片（24小時後自動刪除）">
+                            <i class="fa-solid fa-image"></i>
+                            <span class="hidden sm:inline">發圖片</span>
+                        </button>
+                        <input type="file" id="chat-img-file-input" accept="image/*" class="hidden" onchange="handleChatImageFileChange(event)">
                         <button type="button" id="vip-danmaku-btn" onclick="handleSendVipDanmaku()" class="hidden px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 hover:brightness-105 text-stone-950 font-black text-xs sm:text-sm shadow-lg transition flex items-center gap-1.5 shrink-0 active:scale-95" title="VIP 專屬：發送滾動彈幕">
                             <i class="fa-solid fa-meteor"></i>
                             <span>發送彈幕</span>
@@ -852,7 +947,7 @@
                             <span class="px-2 py-0.5 rounded vip-gold-badge text-[11px] font-black">VIP</span>
                             <span class="text-sm sm:text-base font-black text-amber-200">VIP 尊榮資格</span>
                         </div>
-                        <p class="text-xs text-amber-100/85">解鎖黃金 VIP 標籤、全螢幕滾動彈幕、轉贈能量核心給他人；可與管理員或共同管理員疊加。</p>
+                        <p class="text-xs text-amber-100/85">解鎖黃金 VIP 標籤、全螢幕滾動彈幕、轉贈能量核心、每日 30 張傳圖額度；可與管理員或共同管理員疊加。</p>
                     </div>
                     <div id="vip-shop-action" class="shrink-0"></div>
                 </div>
@@ -1025,42 +1120,73 @@
         const ADMIN_SECRET_CODE = 'MEG2026';
         const CO_ADMIN_SECRET_CODE = 'admin666';
         const VIP_COST_CORES = 199;
+        const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+
+        // 可在此替換為 GitHub Releases 的 .apk 連結；未設定前會以瀏覽器原生下載目前檔案
+        const APP_DOWNLOAD_URL = './index.html';
+        const APP_DOWNLOAD_FILENAME = 'backrooms-terminal.html';
 
         let swRegistration = null;
+        let ringVibrateInterval = null;
 
-        function updateNotifyButtonUI() {
-            const labelEl = document.getElementById('notify-perm-label');
-            const btnEl = document.getElementById('notify-perm-btn');
-            if (!labelEl || !btnEl) return;
+        function triggerDeviceVibrate(pattern) {
+            if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+                try {
+                    navigator.vibrate(pattern);
+                } catch (e) {}
+            }
+        }
+
+        window.startIncomingCallVibration = function() {
+            window.stopIncomingCallVibration();
+            triggerDeviceVibrate([500, 200, 500, 200, 500]);
+            ringVibrateInterval = setInterval(() => {
+                triggerDeviceVibrate([500, 200, 500, 200, 500]);
+            }, 2200);
+        };
+
+        window.stopIncomingCallVibration = function() {
+            if (ringVibrateInterval) {
+                clearInterval(ringVibrateInterval);
+                ringVibrateInterval = null;
+            }
+            triggerDeviceVibrate(0);
+        };
+
+        function updateGearNotifyStatus() {
+            const statusEl = document.getElementById('gear-notify-status');
+            if (!statusEl) return;
             if (!('Notification' in window)) {
-                labelEl.textContent = '不支援通知';
+                statusEl.textContent = '狀態：此瀏覽器不支援通知';
                 return;
             }
             if (Notification.permission === 'granted') {
-                labelEl.textContent = '通知已開啟';
-                btnEl.className = 'px-3 py-1.5 rounded-lg bg-emerald-950/90 text-emerald-300 border border-emerald-500/70 text-xs font-black transition flex items-center gap-1.5';
+                statusEl.textContent = '狀態：✅ 已開啟通知';
             } else if (Notification.permission === 'denied') {
-                labelEl.textContent = '通知已封鎖';
+                statusEl.textContent = '狀態：❌ 已被封鎖（請至瀏覽器／手機設定開啟）';
             } else {
-                labelEl.textContent = '開啟通知';
+                statusEl.textContent = '狀態：尚未開啟';
             }
         }
 
         window.enableSystemNotifications = async function() {
             if (!('Notification' in window)) {
                 window.showToast('此瀏覽器不支援系統通知', 'error');
+                updateGearNotifyStatus();
                 return;
             }
             if (Notification.permission === 'denied') {
                 window.showToast('通知權限已被封鎖，請到瀏覽器網站設定開啟通知', 'error');
+                updateGearNotifyStatus();
                 return;
             }
             try {
                 const permission = await Notification.requestPermission();
-                updateNotifyButtonUI();
+                updateGearNotifyStatus();
                 if (permission === 'granted') {
-                    window.showToast('系統通知已開啟！請確認系統設定已允許「橫幅／螢幕上方彈出」', 'success');
-                    window.pushSystemNotification('LEVEL-0 交易終端', '系統橫幅通知已開啟！切到遊戲或其他視窗時也會從螢幕上方彈出。');
+                    triggerDeviceVibrate([250, 120, 250]);
+                    window.showToast('系統通知已開啟！若未懸浮彈出，請到手機設定開啟「顯示於螢幕上方」', 'success');
+                    window.pushSystemNotification('LEVEL-0 交易終端', '系統通知與震動已啟用！收到新訊息或來電時將嘗試彈出提示。');
                 } else {
                     window.showToast('尚未允許通知權限', 'info');
                 }
@@ -1070,16 +1196,20 @@
             }
         };
 
-        window.pushSystemNotification = async function(title, body, iconUrl) {
+        window.pushSystemNotification = async function(title, body, iconUrl, extraOptions = {}) {
+            const isCall = Boolean(extraOptions.isCall);
+            const vibratePattern = isCall ? [500, 200, 500, 200, 500] : [200, 100, 200];
+            triggerDeviceVibrate(vibratePattern);
+
             if (!('Notification' in window) || Notification.permission !== 'granted') return;
             const options = {
                 body: body,
                 icon: iconUrl || 'https://cdn-icons-png.flaticon.com/512/1067/1067357.png',
                 badge: 'https://cdn-icons-png.flaticon.com/512/1067/1067357.png',
-                tag: 'backrooms-msg-' + Date.now(),
+                tag: isCall ? 'backrooms-incoming-call' : ('backrooms-msg-' + Date.now()),
                 renotify: true,
-                requireInteraction: false,
-                vibrate: [200, 100, 200],
+                requireInteraction: isCall,
+                vibrate: vibratePattern,
                 silent: false
             };
             try {
@@ -1089,7 +1219,7 @@
                     const n = new Notification(title, options);
                     n.onclick = () => {
                         window.focus();
-                        window.switchTab('chat');
+                        window.switchTab(isCall ? 'dm' : 'chat');
                         n.close();
                     };
                 }
@@ -1105,9 +1235,200 @@
                 } catch (e) {
                     console.warn('Service Worker 註冊失敗：', e);
                 }
-                updateNotifyButtonUI();
+                updateGearNotifyStatus();
             });
         }
+
+        function initGearMenuControls() {
+            const gearBtn = document.getElementById('gear-settings-btn');
+            const panel = document.getElementById('gear-settings-panel');
+            const dlBtn = document.getElementById('gear-download-btn');
+            const dlStatus = document.getElementById('gear-download-status');
+            const notifyBtn = document.getElementById('gear-notify-btn');
+            const imgToggle = document.getElementById('gear-img-beta-toggle');
+            const sendImgBtn = document.getElementById('chat-send-img-btn');
+
+            if (gearBtn && panel) {
+                gearBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    panel.classList.toggle('open');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!panel.contains(e.target) && e.target !== gearBtn) {
+                        panel.classList.remove('open');
+                    }
+                });
+            }
+
+            if (dlBtn) {
+                dlBtn.addEventListener('click', () => {
+                    const link = document.createElement('a');
+                    link.href = APP_DOWNLOAD_URL;
+                    link.download = APP_DOWNLOAD_FILENAME;
+                    link.rel = 'noopener noreferrer';
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    if (dlStatus) dlStatus.textContent = '已觸發瀏覽器下載，請查看下載列。';
+                    window.showToast('已開始透過瀏覽器下載檔案', 'success');
+                });
+            }
+
+            if (notifyBtn) {
+                notifyBtn.addEventListener('click', async () => {
+                    await window.enableSystemNotifications();
+                });
+            }
+
+            const savedImgBeta = localStorage.getItem('backrooms_img_beta_enabled') === '1';
+            if (imgToggle) {
+                imgToggle.checked = savedImgBeta;
+                imgToggle.addEventListener('change', () => {
+                    const enabled = Boolean(imgToggle.checked);
+                    try {
+                        localStorage.setItem('backrooms_img_beta_enabled', enabled ? '1' : '0');
+                    } catch (e) {}
+                    if (sendImgBtn) {
+                        if (enabled) {
+                            sendImgBtn.classList.remove('hidden');
+                            sendImgBtn.classList.add('inline-flex');
+                        } else {
+                            sendImgBtn.classList.add('hidden');
+                            sendImgBtn.classList.remove('inline-flex');
+                        }
+                    }
+                    window.showToast(enabled ? '已開啟發圖片功能（測試版）' : '已關閉發圖片功能（測試版）', 'info');
+                });
+            }
+
+            if (sendImgBtn && savedImgBeta) {
+                sendImgBtn.classList.remove('hidden');
+                sendImgBtn.classList.add('inline-flex');
+            }
+        }
+
+        function getTodayKey() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function getDailyImageLimit() {
+            return window.state.hasVip ? 30 : 15;
+        }
+
+        function getUsedImagesToday() {
+            try {
+                return Math.max(0, parseInt(localStorage.getItem(`backrooms_img_used_${getTodayKey()}`) || '0', 10) || 0);
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        function incrementUsedImagesToday() {
+            const nextVal = getUsedImagesToday() + 1;
+            try {
+                localStorage.setItem(`backrooms_img_used_${getTodayKey()}`, String(nextVal));
+            } catch (e) {}
+            return nextVal;
+        }
+
+        function compressChatImageFile(file, maxWidth = 800, quality = 0.7) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = reject;
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onerror = reject;
+                    img.onload = () => {
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > maxWidth) {
+                            h = Math.round((h * maxWidth) / w);
+                            w = maxWidth;
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        window.triggerChatImageUpload = function() {
+            const toggle = document.getElementById('gear-img-beta-toggle');
+            if (!toggle || !toggle.checked) {
+                window.showToast('請先在右上角齒輪設定開啟「發圖片功能（測試版）」', 'info');
+                return;
+            }
+            const limit = getDailyImageLimit();
+            const used = getUsedImagesToday();
+            if (used >= limit) {
+                window.showToast(`今日發圖已達上限（${limit} 張）！${window.state.hasVip ? '' : '購買 VIP 可提升至每日 30 張。'}`, 'error');
+                return;
+            }
+            document.getElementById('chat-img-file-input')?.click();
+        };
+
+        window.handleChatImageFileChange = async function(event) {
+            const file = event.target.files?.[0];
+            event.target.value = '';
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                window.showToast('請選擇圖片檔案！', 'error');
+                return;
+            }
+            if (!window.state.isAdmin && window.state.mutedUsers[window.currentUserUid]) {
+                window.showToast('你目前已被管理員禁言，暫時無法發送圖片。', 'error');
+                return;
+            }
+
+            const limit = getDailyImageLimit();
+            const used = getUsedImagesToday();
+            if (used >= limit) {
+                window.showToast(`今日發圖已達上限（${limit} 張）！`, 'error');
+                return;
+            }
+
+            if (!window.chatCloudAPI?.sendImageMessage) {
+                window.showToast('雲端聊天室尚未就緒，請稍後再試', 'error');
+                return;
+            }
+
+            try {
+                const compressedImg = await compressChatImageFile(file);
+                const now = Date.now();
+                const expiresAt = now + TWENTY_FOUR_HOURS_MS;
+                const activeFrame = window.state.equippedAvatarFrame || '';
+                const activeVip = Boolean(window.state.hasVip && window.state.vipBadgeEnabled);
+
+                await window.chatCloudAPI.sendImageMessage(
+                    window.state.userNickname || '無名流浪者',
+                    compressedImg,
+                    expiresAt,
+                    window.state.userAvatar,
+                    window.state.isAdmin,
+                    window.state.equippedEffect,
+                    activeFrame,
+                    window.state.adminRole,
+                    activeVip
+                );
+
+                const newUsed = incrementUsedImagesToday();
+                window.showToast(`圖片已發送（今日剩餘 ${Math.max(0, limit - newUsed)} 張，24 小時後自動刪除）`, 'success');
+            } catch (err) {
+                console.error(err);
+                window.showToast('圖片處理或傳送失敗，請換一張圖片再試', 'error');
+            }
+        };
 
         const AVATAR_FRAMES_DB = [
             { id: 'cyber', name: '賽博頭像框', cost: 0, cssClass: 'avatar-frame-cyber', badge: '霓虹脈動特效', fromLottery: true },
@@ -1323,7 +1644,7 @@
 
             updateAdminUI();
             updateVipAndCurrencyUI();
-            updateNotifyButtonUI();
+            updateGearNotifyStatus();
         }
 
         function renderVipShopCard() {
@@ -1363,7 +1684,7 @@
             updateVipAndCurrencyUI();
             renderVipShopCard();
             window.renderChatMessages();
-            window.showToast('🎉 已購買 VIP 尊榮資格！黃金 VIP 標籤與彈幕／轉贈功能已解鎖', 'success');
+            window.showToast('🎉 已購買 VIP 尊榮資格！黃金 VIP 標籤、彈幕、轉贈與每日 30 張傳圖額度已解鎖', 'success');
         };
 
         window.toggleVipBadge = function() {
@@ -2180,7 +2501,7 @@
             const vipTag = msg.isVip ? '[VIP] ' : '';
             const rolePrefix = msg.adminRole === 'co' ? '💎 [共同管理員] ' : (msg.isAdmin ? '🌈 [管理員] ' : '💬 ');
             nickEl.textContent = rolePrefix + vipTag + (msg.nickname || '無名流浪者');
-            textEl.textContent = msg.text || '';
+            textEl.textContent = msg.text || (msg.imageUrl ? '[傳送了一張圖片]' : '');
 
             banner.classList.remove('-translate-y-28', 'opacity-0', 'pointer-events-none');
             if (topBannerTimer) clearTimeout(topBannerTimer);
@@ -2757,7 +3078,17 @@
         window.renderChatMessages = function() {
             const container = document.getElementById('chat-messages-container');
             if (!container) return;
-            const messages = window.state.chatMessages;
+            const now = Date.now();
+            const messages = (window.state.chatMessages || []).filter(msg => {
+                if (msg.imageUrl && msg.expiresAt && now >= msg.expiresAt) {
+                    if (window.chatCloudAPI?.deleteMessage && msg.id) {
+                        window.chatCloudAPI.deleteMessage(msg.id).catch(() => {});
+                    }
+                    return false;
+                }
+                return true;
+            });
+
             const countEl = document.getElementById('chat-msg-count');
             if (countEl) countEl.textContent = messages.length;
 
@@ -2834,6 +3165,13 @@
                     ? `onclick='openDmConfirmModal("${msg.senderUid}", "${safeNick.replace(/"/g, "&quot;")}", "${safeAvatar}")' title="點擊發起私聊或贈送核心"`
                     : '';
 
+                const contentHtml = msg.imageUrl && msg.imageUrl.startsWith('data:image/')
+                    ? `<div class="space-y-1">
+                           <img src="${msg.imageUrl}" alt="玩家圖片" class="max-w-[230px] sm:max-w-[280px] max-h-64 rounded-xl object-contain border border-white/15 bg-black/40">
+                           <div class="text-[10px] opacity-75 font-mono-tech">24 小時後自動刪除</div>
+                       </div>`
+                    : escapeHtml(msg.text);
+
                 return `
                     <div class="flex items-start gap-2.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}">
                         <img src="${safeAvatar}" alt="頭像" class="${avatarClass}" ${avatarClickAttr}>
@@ -2845,7 +3183,7 @@
                                 ${adminActionsHtml}
                             </div>
                             <div class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed break-words shadow-md ${bubbleClass}">
-                                ${escapeHtml(msg.text)}
+                                ${contentHtml}
                             </div>
                         </div>
                     </div>`;
@@ -2937,6 +3275,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             initUserProfile();
+            initGearMenuControls();
             initReferenceTable();
             window.updateAllUI();
             startHourlyCyberScheduler();
@@ -2983,6 +3322,29 @@
         const danmakuEventRef = ref(db, "events/danmaku");
 
         const pageLoadedAt = Date.now();
+
+        async function cleanupExpiredImagesInDb() {
+            try {
+                const snap = await get(ref(db, "messages"));
+                if (!snap.exists()) return;
+                const now = Date.now();
+                const updates = {};
+                snap.forEach((child) => {
+                    const v = child.val();
+                    if (v && v.imageUrl && v.expiresAt && now >= Number(v.expiresAt)) {
+                        updates[child.key] = null;
+                    }
+                });
+                if (Object.keys(updates).length > 0) {
+                    await update(ref(db, "messages"), updates);
+                }
+            } catch (e) {
+                console.warn("清理過期圖片失敗：", e);
+            }
+        }
+
+        cleanupExpiredImagesInDb();
+        setInterval(cleanupExpiredImagesInDb, 15 * 60 * 1000);
 
         window.eventsCloudAPI = {
             broadcastCyberEvent: async (endsAt) => {
@@ -3079,6 +3441,25 @@
                 await push(ref(db, "messages"), {
                     nickname: nickname || "無名流浪者",
                     text: text,
+                    avatar: (avatar && avatar.startsWith("data:image/")) ? avatar : "",
+                    isAdmin: Boolean(isAdmin),
+                    adminRole: isAdmin ? (adminRole === "co" ? "co" : "main") : "",
+                    isVip: Boolean(isVip),
+                    chatEffect: chatEffect || "",
+                    avatarFrame: avatarFrame || "",
+                    hasCyberFrame: avatarFrame === "cyber",
+                    senderUid: window.currentUserUid,
+                    createdAt: Date.now()
+                });
+            },
+            sendImageMessage: async (nickname, imageUrl, expiresAt, avatar, isAdmin, chatEffect, avatarFrame, adminRole, isVip) => {
+                await checkAndResetOnFirstOfMonth();
+                await cleanupExpiredImagesInDb();
+                await push(ref(db, "messages"), {
+                    nickname: nickname || "無名流浪者",
+                    text: "",
+                    imageUrl: imageUrl,
+                    expiresAt: Number(expiresAt),
                     avatar: (avatar && avatar.startsWith("data:image/")) ? avatar : "",
                     isAdmin: Boolean(isAdmin),
                     adminRole: isAdmin ? (adminRole === "co" ? "co" : "main") : "",
@@ -3341,6 +3722,7 @@
             };
             connection.onconnectionstatechange = () => {
                 if (connection.connectionState === "connected") {
+                    window.stopIncomingCallVibration();
                     showActiveCallBar("語音通話已連線");
                     startCallTimer();
                 } else if (["disconnected", "failed", "closed"].includes(connection.connectionState)) {
@@ -3395,6 +3777,7 @@
         };
 
         window.acceptVoiceCall = async function() {
+            window.stopIncomingCallVibration();
             const modal = document.getElementById("incoming-call-modal");
             if (modal) {
                 modal.classList.add("hidden");
@@ -3428,6 +3811,7 @@
         };
 
         window.rejectVoiceCall = async function() {
+            window.stopIncomingCallVibration();
             const modal = document.getElementById("incoming-call-modal");
             if (modal) {
                 modal.classList.add("hidden");
@@ -3453,6 +3837,7 @@
         };
 
         window.hangupVoiceCall = async function(notifyRemote = true) {
+            window.stopIncomingCallVibration();
             stopCallTimer();
             cleanupCallListeners();
             const targetRoom = currentCallRoomId;
@@ -3491,9 +3876,24 @@
 
                 onValue(ref(db, `voiceCalls/${roomId}/offer`), (offerSnap) => {
                     const offer = offerSnap.val();
-                    if (!offer || offer.fromUid === window.currentUserUid || currentCallRoomId) return;
+                    if (!offer) {
+                        if (pendingIncomingCall?.roomId === roomId) {
+                            window.stopIncomingCallVibration();
+                            pendingIncomingCall = null;
+                            const modal = document.getElementById("incoming-call-modal");
+                            if (modal) {
+                                modal.classList.add("hidden");
+                                modal.classList.remove("flex");
+                            }
+                        }
+                        return;
+                    }
+                    if (offer.fromUid === window.currentUserUid || currentCallRoomId) return;
                     if (Date.now() - Number(offer.createdAt || 0) > 45000) return;
+
                     pendingIncomingCall = { roomId, offer };
+                    window.startIncomingCallVibration();
+
                     const nameEl = document.getElementById("incoming-caller-name");
                     const modal = document.getElementById("incoming-call-modal");
                     if (nameEl) nameEl.textContent = `${offer.fromNickname || "流浪者"} 語音來電中...`;
@@ -3502,8 +3902,10 @@
                         modal.classList.add("flex");
                     }
                     window.pushSystemNotification(
-                        "LEVEL-0 語音來電",
-                        `${offer.fromNickname || "流浪者"} 正在撥打語音通話！`
+                        "📞 LEVEL-0 語音來電",
+                        `${offer.fromNickname || "流浪者"} 正在撥打語音通話！點此回到網頁接聽`,
+                        null,
+                        { isCall: true }
                     );
                 });
             });
@@ -3532,24 +3934,35 @@
 
         onValue(messagesQuery, (snapshot) => {
             const list = [];
+            const now = Date.now();
             snapshot.forEach((childSnap) => {
                 const val = childSnap.val();
-                if (val && typeof val.text === "string") {
-                    list.push({
-                        id: childSnap.key,
-                        nickname: typeof val.nickname === "string" ? val.nickname : "無名流浪者",
-                        text: val.text,
-                        avatar: typeof val.avatar === "string" ? val.avatar : "",
-                        isAdmin: Boolean(val.isAdmin),
-                        adminRole: typeof val.adminRole === "string" ? val.adminRole : "",
-                        isVip: Boolean(val.isVip),
-                        chatEffect: typeof val.chatEffect === "string" ? val.chatEffect : "",
-                        avatarFrame: typeof val.avatarFrame === "string" ? val.avatarFrame : (val.hasCyberFrame ? "cyber" : ""),
-                        hasCyberFrame: Boolean(val.hasCyberFrame),
-                        senderUid: val.senderUid || "",
-                        createdAt: typeof val.createdAt === "number" ? val.createdAt : Date.now()
-                    });
+                if (!val) return;
+                const hasText = typeof val.text === "string" && val.text.length > 0;
+                const hasImg = typeof val.imageUrl === "string" && val.imageUrl.startsWith("data:image/");
+                if (!hasText && !hasImg) return;
+
+                if (hasImg && val.expiresAt && now >= Number(val.expiresAt)) {
+                    remove(ref(db, `messages/${childSnap.key}`)).catch(() => {});
+                    return;
                 }
+
+                list.push({
+                    id: childSnap.key,
+                    nickname: typeof val.nickname === "string" ? val.nickname : "無名流浪者",
+                    text: typeof val.text === "string" ? val.text : "",
+                    imageUrl: hasImg ? val.imageUrl : "",
+                    expiresAt: typeof val.expiresAt === "number" ? val.expiresAt : 0,
+                    avatar: typeof val.avatar === "string" ? val.avatar : "",
+                    isAdmin: Boolean(val.isAdmin),
+                    adminRole: typeof val.adminRole === "string" ? val.adminRole : "",
+                    isVip: Boolean(val.isVip),
+                    chatEffect: typeof val.chatEffect === "string" ? val.chatEffect : "",
+                    avatarFrame: typeof val.avatarFrame === "string" ? val.avatarFrame : (val.hasCyberFrame ? "cyber" : ""),
+                    hasCyberFrame: Boolean(val.hasCyberFrame),
+                    senderUid: val.senderUid || "",
+                    createdAt: typeof val.createdAt === "number" ? val.createdAt : Date.now()
+                });
             });
 
             const latestMsg = list.length > 0 ? list[list.length - 1] : null;
@@ -3570,7 +3983,7 @@
                 window.showTopMessageBanner(latestMsg);
                 window.pushSystemNotification(
                     `LEVEL-0 終端 // ${latestMsg.nickname || '無名流浪者'}`,
-                    latestMsg.text || '收到新訊息'
+                    latestMsg.text || (latestMsg.imageUrl ? '傳送了一張圖片' : '收到新訊息')
                 );
             }
 
