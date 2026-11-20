@@ -640,7 +640,7 @@
                                     每月 1 日重置
                                 </span>
                             </div>
-                            <p class="text-xs text-[#a39765]">點擊他人頭像可私聊（VIP 可轉贈能量核心）；每月 1 日 00:00 自動清空公共聊天</p>
+                            <p class="text-xs text-[#a39765]">點擊他人頭像可私聊（VIP 可轉贈能量核心）；開啟通知後切到其他畫面或遊戲也會在螢幕上方彈出橫幅</p>
                         </div>
                     </div>
 
@@ -1016,8 +1016,8 @@
                 const permission = await Notification.requestPermission();
                 updateNotifyButtonUI();
                 if (permission === 'granted') {
-                    window.showToast('系統通知已開啟！', 'success');
-                    window.pushSystemNotification('LEVEL-0 交易終端', '系統通知已開啟，有新訊息時會通知你！');
+                    window.showToast('系統通知已開啟！請確認系統設定已允許「橫幅／螢幕上方彈出」', 'success');
+                    window.pushSystemNotification('LEVEL-0 交易終端', '系統橫幅通知已開啟！切到遊戲或其他視窗時也會從螢幕上方彈出。');
                 } else {
                     window.showToast('尚未允許通知權限', 'info');
                 }
@@ -1027,31 +1027,38 @@
             }
         };
 
-        window.pushSystemNotification = async function(title, body) {
+        window.pushSystemNotification = async function(title, body, iconUrl) {
             if (!('Notification' in window) || Notification.permission !== 'granted') return;
+            const options = {
+                body: body,
+                icon: iconUrl || 'https://cdn-icons-png.flaticon.com/512/1067/1067357.png',
+                badge: 'https://cdn-icons-png.flaticon.com/512/1067/1067357.png',
+                tag: 'backrooms-msg-' + Date.now(),
+                renotify: true,
+                requireInteraction: false,
+                vibrate: [200, 100, 200],
+                silent: false
+            };
             try {
                 if (swRegistration && swRegistration.showNotification) {
-                    await swRegistration.showNotification(title, {
-                        body: body,
-                        icon: 'https://cdn-icons-png.flaticon.com/512/1067/1067357.png',
-                        tag: 'backrooms-terminal-msg',
-                        renotify: true
-                    });
+                    await swRegistration.showNotification(title, options);
                 } else {
-                    new Notification(title, {
-                        body: body,
-                        icon: 'https://cdn-icons-png.flaticon.com/512/1067/1067357.png'
-                    });
+                    const n = new Notification(title, options);
+                    n.onclick = () => {
+                        window.focus();
+                        window.switchTab('chat');
+                        n.close();
+                    };
                 }
             } catch (e) {
-                console.warn('推播通知發送失敗：', e);
+                console.warn('系統橫幅通知發送失敗：', e);
             }
         };
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {
-                    swRegistration = await navigator.serviceWorker.register('./sw.js', { scope: '/backrooms-survival/' });
+                    swRegistration = await navigator.serviceWorker.register('./sw.js');
                 } catch (e) {
                     console.warn('Service Worker 註冊失敗：', e);
                 }
@@ -3062,6 +3069,8 @@
         };
 
         let activeDmUnsub = null;
+        let lastKnownDmMsgId = null;
+
         window.dmCloudAPI = {
             sendRequest: async (target) => {
                 const reqId = `${window.currentUserUid}_${target.uid}`;
@@ -3104,6 +3113,7 @@
                     activeDmUnsub();
                     activeDmUnsub = null;
                 }
+                lastKnownDmMsgId = null;
                 const roomMsgsQuery = query(ref(db, `dmMessages/${roomId}`), limitToLast(60));
                 activeDmUnsub = onValue(roomMsgsQuery, async (snap) => {
                     const entries = [];
@@ -3126,6 +3136,15 @@
                         }
                         return;
                     }
+                    const newestDm = entries.length > 0 ? entries[entries.length - 1] : null;
+                    if (lastKnownDmMsgId !== null && newestDm && newestDm.id !== lastKnownDmMsgId && newestDm.senderUid !== window.currentUserUid) {
+                        window.pushSystemNotification(
+                            `私訊 // ${newestDm.nickname || '流浪者'}`,
+                            newestDm.text
+                        );
+                    }
+                    if (newestDm) lastKnownDmMsgId = newestDm.id;
+
                     window.state.dmMessages = entries;
                     if (window.state.activeTab === "dm") {
                         window.renderDmMessages();
@@ -3152,8 +3171,23 @@
             }
         };
 
+        let knownIncomingReqIds = new Set();
+        let isFirstReqLoad = true;
         onValue(dmRequestsRef, (snap) => {
-            window.state.dmRequests = snap.val() || {};
+            const allReqs = snap.val() || {};
+            window.state.dmRequests = allReqs;
+            Object.entries(allReqs).forEach(([reqId, r]) => {
+                if (r && r.toUid === window.currentUserUid && r.status === "pending") {
+                    if (!isFirstReqLoad && !knownIncomingReqIds.has(reqId)) {
+                        window.pushSystemNotification(
+                            "LEVEL-0 終端 // 新的私聊請求",
+                            `${r.fromNickname || '流浪者'} 想與你開啟獨立私聊！`
+                        );
+                    }
+                    knownIncomingReqIds.add(reqId);
+                }
+            });
+            isFirstReqLoad = false;
             renderDmSidebar();
         });
 
