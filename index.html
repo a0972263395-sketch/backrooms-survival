@@ -87,7 +87,7 @@
             border-bottom-color: rgba(52, 211, 153, 0.5) !important;
         }
 
-        /* 豪華版賽博頭像框（1/0 閃爍 + 綠色雷電） */
+        /* 豪華版賽博頭像框 */
         @keyframes cyber-ultra-aura {
             0%, 100% {
                 box-shadow:
@@ -155,28 +155,35 @@
             animation: lightning-bolt-strike 1.6s infinite;
         }
 
-        /* 賽博說話 2 秒入場動畫 */
+        /* Boss 討伐專屬頭像框 */
+        @keyframes boss-slayer-aura {
+            0%, 100% {
+                box-shadow:
+                    0 0 0 2px #450a0a,
+                    0 0 14px #ff2a55,
+                    0 0 28px rgba(255, 42, 85, 0.85),
+                    0 0 42px rgba(251, 191, 36, 0.55);
+            }
+            50% {
+                box-shadow:
+                    0 0 0 2px #fde047,
+                    0 0 22px #fb7185,
+                    0 0 38px rgba(251, 113, 133, 1),
+                    0 0 54px rgba(251, 191, 36, 0.85);
+            }
+        }
+        .avatar-frame-boss {
+            border: 2px solid #fb7185 !important;
+            outline: 2px solid #facc15;
+            outline-offset: 1px;
+            animation: boss-slayer-aura 1.35s infinite ease-in-out;
+        }
+
         @keyframes cyber-crack-open {
-            0% {
-                opacity: 0;
-                clip-path: inset(48% 50% 48% 50%);
-                box-shadow: 0 0 0 rgba(0, 255, 136, 0);
-            }
-            18% {
-                opacity: 1;
-                clip-path: inset(46% 4% 46% 4%);
-                box-shadow: 0 0 24px #00ff88, inset 0 0 18px #00ff88;
-            }
-            42% {
-                opacity: 1;
-                clip-path: inset(0% 0% 0% 0%);
-                box-shadow: 0 0 28px rgba(0, 255, 136, 0.85), inset 0 0 14px rgba(0, 255, 136, 0.35);
-            }
-            100% {
-                opacity: 1;
-                clip-path: inset(0% 0% 0% 0%);
-                box-shadow: 0 0 18px rgba(0, 255, 136, 0.55);
-            }
+            0% { opacity: 0; clip-path: inset(48% 50% 48% 50%); box-shadow: 0 0 0 rgba(0, 255, 136, 0); }
+            18% { opacity: 1; clip-path: inset(46% 4% 46% 4%); box-shadow: 0 0 24px #00ff88, inset 0 0 18px #00ff88; }
+            42% { opacity: 1; clip-path: inset(0% 0% 0% 0%); box-shadow: 0 0 28px rgba(0, 255, 136, 0.85), inset 0 0 14px rgba(0, 255, 136, 0.35); }
+            100% { opacity: 1; clip-path: inset(0% 0% 0% 0%); box-shadow: 0 0 18px rgba(0, 255, 136, 0.55); }
         }
         @keyframes cyber-text-reveal {
             0%, 42% { opacity: 0; transform: translateY(6px); filter: blur(4px); }
@@ -187,10 +194,7 @@
             88% { opacity: 1; transform: scale(1.12) rotate(4deg); }
             100% { opacity: 1; transform: scale(1) rotate(0deg); }
         }
-        .cyber-msg-enter-box {
-            animation: cyber-crack-open 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-            border-color: #00ff88 !important;
-        }
+        .cyber-msg-enter-box { animation: cyber-crack-open 2s cubic-bezier(0.22, 1, 0.36, 1) forwards; border-color: #00ff88 !important; }
         .cyber-msg-enter-text { animation: cyber-text-reveal 2s ease-out forwards; }
         .cyber-msg-enter-avatar { animation: cyber-avatar-arrive 2s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
 
@@ -414,6 +418,42 @@
             animation: danmaku-scroll var(--danmaku-duration, 7.5s) linear forwards;
         }
 
+        /* Boss 音遊討伐活動樣式 */
+        #boss-rhythm-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 62;
+            pointer-events: none;
+            display: none;
+        }
+        #boss-rhythm-overlay.active {
+            display: block;
+        }
+        .rhythm-fall-tile {
+            position: fixed;
+            top: 120px;
+            width: 68px;
+            height: 68px;
+            border-radius: 14px;
+            border: 2px solid #f43f5e;
+            background: linear-gradient(145deg, rgba(244, 63, 94, 0.92), rgba(136, 19, 55, 0.95));
+            color: #fff1f2;
+            box-shadow: 0 0 18px rgba(244, 63, 94, 0.75);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            cursor: pointer;
+            pointer-events: auto;
+            user-select: none;
+            touch-action: manipulation;
+            transition: transform 0.08s ease;
+        }
+        .rhythm-fall-tile:active {
+            transform: scale(0.86);
+        }
+
         #gear-settings-btn {
             position: fixed;
             top: 14px;
@@ -514,6 +554,35 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-stone-950 scanlines">
+
+    <!-- Boss 音遊討伐活動覆蓋層（僅活動時間顯示血條與方塊） -->
+    <div id="boss-rhythm-overlay" aria-hidden="true">
+        <div id="boss-top-hud" class="pointer-events-auto fixed top-3 left-1/2 -translate-x-1/2 w-[94%] max-w-xl bg-red-950/95 border-2 border-rose-400 rounded-2xl px-4 py-3 shadow-[0_0_35px_rgba(244,63,94,0.65)] z-[65]">
+            <div class="flex items-center justify-between gap-2 text-xs font-black text-rose-200 mb-1.5">
+                <span><i class="fa-solid fa-skull-crossbones text-rose-400 mr-1.5 animate-pulse"></i>後室異常 BOSS 討伐中</span>
+                <span class="font-mono-tech text-amber-300">HP: <span id="boss-hp-text">0 / 0</span></span>
+            </div>
+            <div class="w-full h-3.5 bg-black/75 rounded-full overflow-hidden border border-rose-500/50">
+                <div id="boss-hp-bar" class="h-full bg-gradient-to-r from-red-600 via-rose-500 to-amber-400 transition-all duration-150" style="width: 100%;"></div>
+            </div>
+            <div class="flex items-center justify-between text-[10px] font-mono-tech text-rose-200/85 mt-1">
+                <span>點擊落下音遊方塊：+1 血量 / -20 Boss 血量</span>
+                <span>Boss 每 10 秒攻擊：10~20 傷害</span>
+            </div>
+        </div>
+
+        <div id="rhythm-tiles-container"></div>
+
+        <div id="player-boss-hp-hud" class="pointer-events-auto fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-md bg-[#19120b]/95 border-2 border-emerald-400 rounded-2xl px-4 py-2.5 shadow-[0_0_25px_rgba(16,185,129,0.45)] z-[65]">
+            <div class="flex items-center justify-between text-xs font-black text-emerald-300 mb-1">
+                <span><i class="fa-solid fa-heart-pulse text-rose-400 mr-1.5"></i>你的生存血條</span>
+                <span class="font-mono-tech text-white"><span id="player-boss-hp-text">100</span> / 100 HP</span>
+            </div>
+            <div class="w-full h-3 bg-black/80 rounded-full overflow-hidden border border-emerald-500/40">
+                <div id="player-boss-hp-bar" class="h-full bg-gradient-to-r from-emerald-500 to-lime-300 transition-all duration-150" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
 
     <button id="gear-settings-btn" type="button" title="終端設定" aria-label="終端設定">
         <i class="fa-solid fa-gear"></i>
@@ -639,17 +708,21 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
-                    <div class="bg-[#121008] p-1 rounded-xl border border-[#524926] flex items-center text-xs sm:text-sm font-bold shadow-inner">
-                        <button type="button" onclick="switchTab('calculator')" id="tab-calculator" class="px-3.5 py-1.5 rounded-lg transition-all bg-[#8c7b38] text-[#141208] shadow-md font-black flex items-center gap-1.5">
+                    <div class="bg-[#121008] p-1 rounded-xl border border-[#524926] flex items-center text-xs sm:text-sm font-bold shadow-inner flex-wrap">
+                        <button type="button" onclick="switchTab('calculator')" id="tab-calculator" class="px-3 py-1.5 rounded-lg transition-all bg-[#8c7b38] text-[#141208] shadow-md font-black flex items-center gap-1.5">
                             <i class="fa-solid fa-scale-balanced"></i>
                             <span>交易評估</span>
                         </button>
-                        <button type="button" onclick="switchTab('chat')" id="tab-chat" class="px-3.5 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] flex items-center gap-1.5 relative">
+                        <button type="button" onclick="switchTab('market')" id="tab-market" class="px-3 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] flex items-center gap-1.5">
+                            <i class="fa-solid fa-shop text-emerald-400"></i>
+                            <span>線上交易市場</span>
+                        </button>
+                        <button type="button" onclick="switchTab('chat')" id="tab-chat" class="px-3 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] flex items-center gap-1.5 relative">
                             <i class="fa-solid fa-comments text-amber-400"></i>
                             <span>玩家討論</span>
                             <span id="unread-chat-badge" class="hidden ml-0.5 px-1.5 py-0.2 rounded-full bg-emerald-500 text-stone-950 text-[10px] font-mono-tech font-black">NEW</span>
                         </button>
-                        <button type="button" onclick="switchTab('dm')" id="tab-dm" class="px-3.5 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] flex items-center gap-1.5 relative">
+                        <button type="button" onclick="switchTab('dm')" id="tab-dm" class="px-3 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] flex items-center gap-1.5 relative">
                             <i class="fa-solid fa-envelope text-cyan-400"></i>
                             <span>私訊</span>
                             <span id="unread-dm-badge" class="hidden ml-0.5 px-1.5 py-0.2 rounded-full bg-cyan-400 text-stone-950 text-[10px] font-mono-tech font-black">!</span>
@@ -674,6 +747,7 @@
 
         <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow">
 
+            <!-- 分頁 1：交易評估 -->
             <div id="view-calculator" class="space-y-6">
                 <section class="backrooms-panel rounded-2xl p-5 sm:p-6 transition-all duration-300" id="verdict-panel">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
@@ -835,6 +909,59 @@
                 </section>
             </div>
 
+            <!-- 分頁 2：獨立線上交易市場 -->
+            <div id="view-market" class="hidden space-y-6">
+                <section class="backrooms-panel rounded-2xl p-5 sm:p-6 border border-emerald-500/40">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-5 border-b border-[#4a4122]">
+                        <div>
+                            <h2 class="text-lg sm:text-xl font-black text-[#faf2c3] flex items-center gap-2">
+                                <i class="fa-solid fa-shop text-emerald-400"></i> 後室線上交易市場 // 掛單大廳
+                            </h2>
+                            <p class="text-xs text-[#a39765] mt-0.5">放上你的違禁品、獨家武器或積分掛單；看到心儀物資可直接點「私訊」與賣家洽談</p>
+                        </div>
+                        <div class="flex items-center gap-1.5 bg-[#121008] p-1 rounded-xl border border-[#4a4122] text-xs font-bold">
+                            <button type="button" onclick="setMarketFilter('all')" id="mkt-filter-all" class="px-3 py-1.5 rounded-lg bg-emerald-500 text-stone-950 font-black">全部</button>
+                            <button type="button" onclick="setMarketFilter('gold')" id="mkt-filter-gold" class="px-3 py-1.5 rounded-lg text-amber-400 hover:bg-[#242010]">違禁品</button>
+                            <button type="button" onclick="setMarketFilter('green')" id="mkt-filter-green" class="px-3 py-1.5 rounded-lg text-emerald-400 hover:bg-[#242010]">獨家</button>
+                            <button type="button" onclick="setMarketFilter('points')" id="mkt-filter-points" class="px-3 py-1.5 rounded-lg text-cyan-300 hover:bg-[#242010]">積分</button>
+                        </div>
+                    </div>
+
+                    <form onsubmit="handleCreateMarketListing(event)" class="grid grid-cols-1 md:grid-cols-12 gap-3 bg-[#121008]/90 p-4 rounded-xl border border-[#4a4122] mb-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-bold text-[#d6c67c] mb-1">掛單類別</label>
+                            <select id="mkt-type-select" class="w-full bg-[#0a0904] border border-[#594e25] rounded-xl px-3 py-2 text-xs text-[#faf2c3] outline-none">
+                                <option value="gold">違禁品（金色）</option>
+                                <option value="green">獨家（綠色）</option>
+                                <option value="points">積分（k / m）</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-[11px] font-bold text-[#d6c67c] mb-1">出讓物資或積分數量</label>
+                            <input type="text" id="mkt-offer-input" maxlength="60" placeholder="例如：Aegis-01、ASH-12 或 10m 積分" class="w-full bg-[#0a0904] border border-[#594e25] focus:border-emerald-400 rounded-xl px-3 py-2 text-xs text-[#faf2c3] outline-none">
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-[11px] font-bold text-[#d6c67c] mb-1">期望價格／交換條件</label>
+                            <input type="text" id="mkt-price-input" maxlength="60" placeholder="例如：換 25m 或 2 把違禁品" class="w-full bg-[#0a0904] border border-[#594e25] focus:border-emerald-400 rounded-xl px-3 py-2 text-xs text-[#faf2c3] outline-none">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-[11px] font-bold text-[#d6c67c] mb-1">備註</label>
+                            <input type="text" id="mkt-note-input" maxlength="80" placeholder="可議價、秒交易..." class="w-full bg-[#0a0904] border border-[#594e25] focus:border-emerald-400 rounded-xl px-3 py-2 text-xs text-[#faf2c3] outline-none">
+                        </div>
+                        <div class="md:col-span-2 flex items-end">
+                            <button type="submit" class="w-full py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-stone-950 font-black text-xs shadow-lg transition flex items-center justify-center gap-1.5 active:scale-95">
+                                <i class="fa-solid fa-plus"></i> 掛上市場
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="market-listings-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="col-span-full py-12 text-center text-xs text-[#7d734b]">載入線上交易市場掛單中...</div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 分頁 3：玩家討論 -->
             <div id="view-chat" class="hidden">
                 <div id="chat-panel-box" class="backrooms-panel rounded-2xl border border-[#8c7b38]/60 overflow-hidden flex flex-col h-[76vh] min-h-[540px] transition-all duration-200">
                     <div id="chat-top-bar" class="bg-gradient-to-r from-[#2e2812] via-[#211d0d] to-[#1a170b] px-5 py-4 border-b border-[#594e25] flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0">
@@ -869,6 +996,10 @@
                             <button type="button" onclick="openFunShopModal()" class="px-3 py-1.5 rounded-lg bg-cyan-950/90 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/60 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
                                 <i class="fa-solid fa-store"></i>
                                 <span>趣玩商店</span>
+                            </button>
+                            <button type="button" id="admin-boss-trigger-btn" onclick="openAdminBossModal()" class="hidden px-3 py-1.5 rounded-lg bg-rose-950 hover:bg-rose-800 text-rose-200 border border-rose-400 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
+                                <i class="fa-solid fa-skull-crossbones"></i>
+                                <span>Boss 討伐活動</span>
                             </button>
                             <button type="button" id="admin-voice-room-toggle-btn" onclick="adminToggleVoiceRoomEnabled()" class="hidden px-3 py-1.5 rounded-lg bg-indigo-950 hover:bg-indigo-800 text-indigo-200 border border-indigo-400 text-xs font-black transition flex items-center gap-1.5 active:scale-95">
                                 <i class="fa-solid fa-headset"></i>
@@ -970,6 +1101,7 @@
                 </div>
             </div>
 
+            <!-- 分頁 4：私訊 -->
             <div id="view-dm" class="hidden">
                 <div class="backrooms-panel rounded-2xl border border-cyan-500/40 overflow-hidden grid grid-cols-1 md:grid-cols-12 h-[72vh] min-h-[520px]">
                     <div class="md:col-span-4 border-b md:border-b-0 md:border-r border-[#4a4122] bg-[#121008]/90 flex flex-col overflow-hidden">
@@ -1021,7 +1153,7 @@
                         <div id="dm-messages-container" class="flex-grow overflow-y-auto p-4 sm:p-5 space-y-3">
                             <div class="h-full flex flex-col items-center justify-center text-[#7d734b] text-xs">
                                 <i class="fa-solid fa-user-lock text-2xl mb-2 opacity-50"></i>
-                                <p>在「玩家討論」點擊他人頭像並確認私聊，或於左側選擇已建立的私聊頻道。</p>
+                                <p>在「玩家討論」點擊他人頭像並確認私聊，或在「線上交易市場」點擊「私訊」與賣家洽談。</p>
                             </div>
                         </div>
 
@@ -1045,6 +1177,32 @@
     </div>
 
     <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- 管理員設定 Boss 血量與啟動活動 Modal -->
+    <div id="admin-boss-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
+        <div class="bg-[#1b1214] border-2 border-rose-400 rounded-2xl w-full max-w-sm p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-rose-500/30 pb-3">
+                <h3 class="text-base font-black text-rose-200 flex items-center gap-2">
+                    <i class="fa-solid fa-skull-crossbones text-rose-400"></i> 啟動 Boss 音遊討伐活動
+                </h3>
+                <button type="button" onclick="closeAdminBossModal()" class="text-rose-300 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-1.5">
+                <label class="block text-xs font-bold text-rose-200">設定 Boss 總血量（建議 500 ~ 10000）</label>
+                <input type="number" id="admin-boss-hp-input" min="100" max="500000" value="2000"
+                    class="w-full bg-[#0d0809] border border-rose-500/60 rounded-xl px-3.5 py-2.5 text-sm font-mono-tech text-white outline-none">
+            </div>
+            <p class="text-[11px] text-rose-200/80 leading-relaxed">
+                啟動後全體玩家會出現 Boss 血條與 100 生存血條，點擊落下音遊方塊回 1 血並對 Boss 造成 20 傷害；Boss 每 10 秒攻擊 10～20 傷害。打敗 Boss 且存活者獲得 <strong>1000 能量核心 + Boss 活動專屬頭像框</strong>。
+            </p>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="closeAdminBossModal()" class="px-4 py-2 rounded-xl bg-[#2a1c1f] text-rose-200 border border-rose-700/50 text-xs font-bold">取消</button>
+                <button type="button" onclick="confirmStartBossEvent()" class="px-4 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-stone-950 text-xs font-black">全體啟動活動</button>
+            </div>
+        </div>
+    </div>
 
     <!-- 點擊玩家頭像互動視窗（私聊 / VIP 轉贈 / 猜拳機器） -->
     <div id="dm-confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-sm p-4">
@@ -1186,7 +1344,7 @@
 
                 <div>
                     <div class="text-xs font-black text-amber-300 mb-2.5 flex items-center gap-1.5">
-                        <i class="fa-solid fa-id-badge"></i> 特效頭像框（豪華賽博 1/0＋雷電／機械／黑客／黑金）
+                        <i class="fa-solid fa-id-badge"></i> 特效頭像框（Boss 討伐專屬／賽博／機械／黑客／黑金）
                     </div>
                     <div class="space-y-2.5" id="avatar-frame-shop-items"></div>
                 </div>
@@ -1200,7 +1358,7 @@
             </div>
 
             <div class="px-6 py-3.5 border-t border-[#4a4122] bg-[#211d0f] flex items-center justify-between">
-                <span class="text-xs text-[#9c9163]">賽博頭像框需於賽博輪盤抽獎獲得</span>
+                <span class="text-xs text-[#9c9163]">Boss 討伐專屬頭像框需打敗 Boss 並存活至最後獲得</span>
                 <button type="button" onclick="closeFunShopModal()" class="px-4 py-1.5 rounded-lg bg-[#8c7b38] hover:bg-[#a69244] text-stone-950 text-xs font-black">完成</button>
             </div>
         </div>
@@ -1263,7 +1421,7 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <p class="text-xs text-[#a39765]">輸入管理員或共同管理員金鑰（啟用後可使用「小孩變聲器」並控制「公共語音房」開放與關閉）。</p>
+            <p class="text-xs text-[#a39765]">輸入管理員或共同管理員金鑰（啟用後可使用「小孩變聲器」、控制「公共語音房」及啟動「Boss 討伐活動」）。</p>
             <input type="password" id="admin-password-input" onkeydown="if(event.key==='Enter') verifyAdminLogin()" placeholder="輸入管理員 / 共同管理員金鑰..." 
                 class="w-full bg-[#0d0b05] border border-[#594e25] focus:border-amber-400 rounded-xl px-3.5 py-2.5 text-sm font-mono-tech text-[#faf2c3] outline-none">
             <div class="flex justify-end gap-2">
@@ -1702,6 +1860,7 @@
         };
 
         const AVATAR_FRAMES_DB = [
+            { id: 'boss', name: 'Boss 討伐專屬頭像框', cost: 0, cssClass: 'avatar-frame-boss', badge: '討伐 Boss 並存活專屬獎勵', fromBoss: true },
             { id: 'cyber', name: '豪華賽博頭像框', cost: 0, cssClass: 'avatar-frame-cyber', badge: '1/0 二進位閃爍＋綠色雷電＋2秒破裂入場', fromLottery: true },
             { id: 'mech', name: '機械頭像框', cost: 35, cssClass: 'avatar-frame-mech', badge: '鋼鐵齒輪掃描特效', fromLottery: false },
             { id: 'hacker', name: '黑客頭像框', cost: 40, cssClass: 'avatar-frame-hacker', badge: '矩陣光波特效', fromLottery: false },
@@ -1763,6 +1922,8 @@
             valuationMode: 'avg',
             my: { points: 0, weapons: {} },
             their: { points: 0, weapons: {} },
+            marketListings: [],
+            marketFilter: 'all',
             chatMessages: [],
             mutedUsers: {},
             energyCores: 0,
@@ -1993,6 +2154,427 @@
             updateGearNotifyStatus();
         }
 
+        /* =========================================================
+           線上交易市場（掛單建立、篩選、一鍵私訊賣家）
+        ========================================================= */
+        window.setMarketFilter = function(filter) {
+            window.state.marketFilter = filter;
+            ['all', 'gold', 'green', 'points'].forEach(f => {
+                const btn = document.getElementById(`mkt-filter-${f}`);
+                if (!btn) return;
+                if (f === filter) {
+                    btn.className = 'px-3 py-1.5 rounded-lg bg-emerald-500 text-stone-950 font-black';
+                } else {
+                    const colorMap = {
+                        all: 'text-[#9c9163]',
+                        gold: 'text-amber-400',
+                        green: 'text-emerald-400',
+                        points: 'text-cyan-300'
+                    };
+                    btn.className = `px-3 py-1.5 rounded-lg ${colorMap[f]} hover:bg-[#242010] font-bold`;
+                }
+            });
+            window.renderMarketListings();
+        };
+
+        window.handleCreateMarketListing = async function(event) {
+            event.preventDefault();
+            const typeEl = document.getElementById('mkt-type-select');
+            const offerEl = document.getElementById('mkt-offer-input');
+            const priceEl = document.getElementById('mkt-price-input');
+            const noteEl = document.getElementById('mkt-note-input');
+
+            const listingType = typeEl ? typeEl.value : 'gold';
+            const offerText = offerEl ? offerEl.value.trim().slice(0, 60) : '';
+            const priceText = priceEl ? priceEl.value.trim().slice(0, 60) : '';
+            const noteText = noteEl ? noteEl.value.trim().slice(0, 80) : '';
+
+            if (!offerText || !priceText) {
+                window.showToast('請填寫「出讓物資或積分」與「期望價格／交換條件」', 'error');
+                return;
+            }
+            if (!window.marketCloudAPI?.createListing) {
+                window.showToast('線上交易市場尚未連線完成', 'error');
+                return;
+            }
+
+            try {
+                await window.marketCloudAPI.createListing({
+                    sellerUid: window.currentUserUid,
+                    sellerName: window.getEffectiveNickname(),
+                    sellerAvatar: (window.state.userAvatar && window.state.userAvatar.startsWith('data:image/')) ? window.state.userAvatar : DEFAULT_AVATAR_URL,
+                    listingType,
+                    offerText,
+                    priceText,
+                    noteText,
+                    createdAt: Date.now()
+                });
+                if (offerEl) offerEl.value = '';
+                if (priceEl) priceEl.value = '';
+                if (noteEl) noteEl.value = '';
+                window.showToast('已將掛單上架至線上交易市場！', 'success');
+            } catch (err) {
+                console.error(err);
+                window.showToast('掛單失敗，請稍後再試', 'error');
+            }
+        };
+
+        window.deleteMarketListing = async function(listingId) {
+            if (!listingId || !window.marketCloudAPI?.deleteListing) return;
+            try {
+                await window.marketCloudAPI.deleteListing(listingId);
+                window.showToast('已移除該筆市場掛單', 'info');
+            } catch (err) {
+                window.showToast('移除掛單失敗', 'error');
+            }
+        };
+
+        window.contactSellerFromMarket = async function(sellerUid, sellerName, sellerAvatar, offerText) {
+            if (!sellerUid || sellerUid === window.currentUserUid) {
+                window.showToast('這是你自己的掛單', 'info');
+                return;
+            }
+            if (!window.dmCloudAPI?.sendRequest || !window.dmCloudAPI?.acceptRequest) {
+                window.openDmConfirmModal(sellerUid, sellerName, sellerAvatar);
+                return;
+            }
+            try {
+                await window.dmCloudAPI.sendRequest({
+                    uid: sellerUid,
+                    nickname: sellerName || '賣家',
+                    avatar: (sellerAvatar && sellerAvatar.startsWith('data:image/')) ? sellerAvatar : DEFAULT_AVATAR_URL
+                });
+                const roomId = getDmRoomId(window.currentUserUid, sellerUid);
+                window.switchTab('dm');
+                window.selectDmRoom(roomId);
+                const dmInput = document.getElementById('dm-text-input');
+                if (dmInput && !dmInput.value) {
+                    dmInput.value = `你好！我想詢問你在市場掛出的「${offerText || '物資'}」～`;
+                    dmInput.focus();
+                }
+                window.showToast(`已開啟與「${sellerName || '賣家'}」的私訊頻道`, 'success');
+            } catch (err) {
+                console.error(err);
+                window.showToast('開啟私訊失敗', 'error');
+            }
+        };
+
+        window.renderMarketListings = function() {
+            const grid = document.getElementById('market-listings-grid');
+            if (!grid) return;
+            const filter = window.state.marketFilter || 'all';
+            const list = (window.state.marketListings || []).filter(item => item && (filter === 'all' || item.listingType === filter));
+
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-xs text-[#7d734b]">目前此分類尚無掛單，立即在上方放上你想交易的物資或積分吧！</div>`;
+                return;
+            }
+
+            const typeMeta = {
+                gold: { label: '違禁品', badgeClass: 'bg-amber-950 text-amber-300 border border-amber-500/60', cardBorder: 'border-amber-600/45' },
+                green: { label: '獨家', badgeClass: 'bg-emerald-950 text-emerald-300 border border-emerald-500/60', cardBorder: 'border-emerald-600/45' },
+                points: { label: '積分', badgeClass: 'bg-cyan-950 text-cyan-300 border border-cyan-500/60', cardBorder: 'border-cyan-600/45' }
+            };
+
+            grid.innerHTML = list.map(item => {
+                const meta = typeMeta[item.listingType] || typeMeta.gold;
+                const isMine = item.sellerUid === window.currentUserUid;
+                const canDelete = isMine || window.state.isAdmin;
+                const safeSeller = escapeHtml(item.sellerName || '流浪者');
+                const safeOffer = escapeHtml(item.offerText || '');
+                const safePrice = escapeHtml(item.priceText || '');
+                const safeNote = escapeHtml(item.noteText || '');
+                const safeAv = (item.sellerAvatar && item.sellerAvatar.startsWith('data:image/')) ? item.sellerAvatar : DEFAULT_AVATAR_URL;
+
+                return `
+                    <div class="bg-[#121008]/95 border ${meta.cardBorder} rounded-2xl p-4 flex flex-col justify-between gap-3 shadow-lg">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="px-2 py-0.5 rounded text-[11px] font-black ${meta.badgeClass}">${meta.label}</span>
+                                <span class="text-[10px] font-mono-tech text-[#8a7f56]">${formatChatTime(item.createdAt)}</span>
+                            </div>
+                            <div class="text-base font-black text-[#faf2c3] break-words">${safeOffer}</div>
+                            <div class="text-xs font-bold text-emerald-300">期望交換：<span class="text-amber-300">${safePrice}</span></div>
+                            ${safeNote ? `<p class="text-[11px] text-[#a39765] break-words">備註：${safeNote}</p>` : ''}
+                        </div>
+
+                        <div class="pt-3 border-t border-[#2d2714] flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <img src="${safeAv}" alt="賣家頭像" class="w-7 h-7 rounded-full object-cover border border-[#594e25] shrink-0">
+                                <span class="text-xs font-bold text-[#d6c67c] truncate">${isMine ? '我 (' + safeSeller + ')' : safeSeller}</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                ${canDelete ? `<button type="button" onclick="deleteMarketListing('${item.id}')" class="px-2.5 py-1.5 rounded-lg bg-red-950/80 hover:bg-red-800 text-red-300 border border-red-700/60 text-xs font-bold"><i class="fa-solid fa-trash"></i></button>` : ''}
+                                ${!isMine ? `<button type="button" onclick='contactSellerFromMarket("${item.sellerUid}", "${safeSeller.replace(/"/g, "&quot;")}", "${safeAv}", "${safeOffer.replace(/"/g, "&quot;")}")' class="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-stone-950 text-xs font-black flex items-center gap-1.5 active:scale-95"><i class="fa-solid fa-message"></i> 私訊</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        /* =========================================================
+           Boss 音遊討伐活動（音效、緊湊音樂、100血條、10秒攻擊、1000核心+頭像框）
+        ========================================================= */
+        let bossAudioCtx = null;
+        let bossMusicInterval = null;
+        let bossAttackInterval = null;
+        let bossTileSpawnInterval = null;
+        let bossActive = false;
+        let bossMaxHp = 2000;
+        let bossCurrentHp = 0;
+        let playerBossHp = 100;
+        let bossRewardClaimed = false;
+
+        function ensureBossAudioCtx() {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return null;
+            if (!bossAudioCtx || bossAudioCtx.state === 'closed') {
+                bossAudioCtx = new AudioCtx();
+            }
+            if (bossAudioCtx.state === 'suspended') {
+                bossAudioCtx.resume().catch(() => {});
+            }
+            return bossAudioCtx;
+        }
+
+        function playBossHitSound() {
+            const ctx = ensureBossAudioCtx();
+            if (!ctx) return;
+            try {
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(520, now);
+                osc.frequency.exponentialRampToValueAtTime(140, now + 0.11);
+                gain.gain.setValueAtTime(0.16, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.12);
+            } catch (e) {}
+        }
+
+        function playPlayerDamageSound() {
+            const ctx = ensureBossAudioCtx();
+            if (!ctx) return;
+            try {
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(170, now);
+                osc.frequency.exponentialRampToValueAtTime(65, now + 0.22);
+                gain.gain.setValueAtTime(0.18, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.23);
+            } catch (e) {}
+        }
+
+        function startTenseBossMusic() {
+            stopTenseBossMusic();
+            const ctx = ensureBossAudioCtx();
+            if (!ctx) return;
+            const notes = [146.83, 174.61, 196.00, 220.00, 174.61, 220.00, 261.63, 293.66];
+            let step = 0;
+            bossMusicInterval = setInterval(() => {
+                if (!bossActive || !bossAudioCtx) return;
+                try {
+                    const now = bossAudioCtx.currentTime;
+                    const osc = bossAudioCtx.createOscillator();
+                    const gain = bossAudioCtx.createGain();
+                    osc.type = step % 2 === 0 ? 'triangle' : 'sawtooth';
+                    osc.frequency.setValueAtTime(notes[step % notes.length], now);
+                    gain.gain.setValueAtTime(0.075, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+                    osc.connect(gain);
+                    gain.connect(bossAudioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                    step += 1;
+                } catch (e) {}
+            }, 175);
+        }
+
+        function stopTenseBossMusic() {
+            if (bossMusicInterval) {
+                clearInterval(bossMusicInterval);
+                bossMusicInterval = null;
+            }
+        }
+
+        function updateBossBattleHud() {
+            const hpTextEl = document.getElementById('boss-hp-text');
+            const hpBarEl = document.getElementById('boss-hp-bar');
+            const pTextEl = document.getElementById('player-boss-hp-text');
+            const pBarEl = document.getElementById('player-boss-hp-bar');
+
+            const safeBossHp = Math.max(0, bossCurrentHp);
+            const pctBoss = bossMaxHp > 0 ? Math.max(0, Math.min(100, (safeBossHp / bossMaxHp) * 100)) : 0;
+            if (hpTextEl) hpTextEl.textContent = `${safeBossHp} / ${bossMaxHp}`;
+            if (hpBarEl) hpBarEl.style.width = `${pctBoss}%`;
+
+            const safePlayerHp = Math.max(0, Math.min(100, playerBossHp));
+            if (pTextEl) pTextEl.textContent = String(safePlayerHp);
+            if (pBarEl) pBarEl.style.width = `${safePlayerHp}%`;
+        }
+
+        function spawnFallingRhythmTile() {
+            if (!bossActive || playerBossHp <= 0 || bossCurrentHp <= 0) return;
+            const container = document.getElementById('rhythm-tiles-container');
+            if (!container) return;
+
+            const tile = document.createElement('button');
+            tile.type = 'button';
+            tile.className = 'rhythm-fall-tile';
+            const leftPx = Math.floor(16 + Math.random() * Math.max(40, window.innerWidth - 100));
+            tile.style.left = `${leftPx}px`;
+            tile.innerHTML = `<i class="fa-solid fa-bolt text-amber-300 text-base"></i><span class="text-[10px] font-mono-tech mt-0.5">+1HP / -20</span>`;
+
+            const fallDurationMs = 2300;
+            const startTime = performance.now();
+            const startTop = 122;
+            const endTop = window.innerHeight - 130;
+            let hit = false;
+            let rafId = null;
+
+            tile.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                if (hit || !bossActive || playerBossHp <= 0) return;
+                hit = true;
+                if (rafId) cancelAnimationFrame(rafId);
+                tile.remove();
+
+                playerBossHp = Math.min(100, playerBossHp + 1);
+                bossCurrentHp = Math.max(0, bossCurrentHp - 20);
+                playBossHitSound();
+                updateBossBattleHud();
+
+                if (window.bossCloudAPI?.dealDamage && bossCurrentHp >= 0) {
+                    window.bossCloudAPI.dealDamage(20).catch(() => {});
+                }
+                checkBossBattleOutcome();
+            });
+
+            function stepFall(now) {
+                if (hit || !bossActive) {
+                    tile.remove();
+                    return;
+                }
+                const progress = (now - startTime) / fallDurationMs;
+                if (progress >= 1) {
+                    tile.remove();
+                    return;
+                }
+                tile.style.top = `${startTop + (endTop - startTop) * progress}px`;
+                rafId = requestAnimationFrame(stepFall);
+            }
+
+            container.appendChild(tile);
+            rafId = requestAnimationFrame(stepFall);
+        }
+
+        function checkBossBattleOutcome() {
+            if (!bossActive) return;
+            if (bossCurrentHp <= 0 && playerBossHp > 0 && !bossRewardClaimed) {
+                bossRewardClaimed = true;
+                stopBossBattleLocal(true);
+                window.state.energyCores += 1000;
+                if (!window.state.ownedAvatarFrames.includes('boss')) {
+                    window.state.ownedAvatarFrames.push('boss');
+                }
+                window.state.equippedAvatarFrame = 'boss';
+                saveLocalPlayerItems();
+                updateVipAndCurrencyUI();
+                window.renderChatMessages();
+                window.showToast('🏆 成功討伐 Boss 並存活！獲得 1000 能量核心 + Boss 活動專屬頭像框！', 'success');
+                if (window.state.isAdmin && window.bossCloudAPI?.endEvent) {
+                    window.bossCloudAPI.endEvent().catch(() => {});
+                }
+            } else if (playerBossHp <= 0) {
+                stopBossBattleLocal(false);
+                window.showToast('💀 你的生存血條歸零，本次 Boss 討伐淘汰！', 'error');
+            }
+        }
+
+        function stopBossBattleLocal(clearOverlay) {
+            bossActive = false;
+            stopTenseBossMusic();
+            if (bossAttackInterval) { clearInterval(bossAttackInterval); bossAttackInterval = null; }
+            if (bossTileSpawnInterval) { clearInterval(bossTileSpawnInterval); bossTileSpawnInterval = null; }
+            const tilesBox = document.getElementById('rhythm-tiles-container');
+            if (tilesBox) tilesBox.innerHTML = '';
+            if (clearOverlay) {
+                const overlay = document.getElementById('boss-rhythm-overlay');
+                if (overlay) overlay.classList.remove('active');
+            }
+        }
+
+        window.applyCloudBossEvent = function(bossData) {
+            if (!bossData || !bossData.active) {
+                stopBossBattleLocal(true);
+                return;
+            }
+            const overlay = document.getElementById('boss-rhythm-overlay');
+            if (!bossActive) {
+                bossActive = true;
+                playerBossHp = 100;
+                bossRewardClaimed = false;
+                bossMaxHp = Math.max(100, Number(bossData.maxHp) || 2000);
+                bossCurrentHp = Math.max(0, Number(bossData.hp) ?? bossMaxHp);
+                if (overlay) overlay.classList.add('active');
+                updateBossBattleHud();
+                startTenseBossMusic();
+
+                if (bossTileSpawnInterval) clearInterval(bossTileSpawnInterval);
+                bossTileSpawnInterval = setInterval(spawnFallingRhythmTile, 680);
+
+                if (bossAttackInterval) clearInterval(bossAttackInterval);
+                bossAttackInterval = setInterval(() => {
+                    if (!bossActive || playerBossHp <= 0) return;
+                    const dmg = Math.floor(Math.random() * 11) + 10; // 10 ~ 20 傷害
+                    playerBossHp = Math.max(0, playerBossHp - dmg);
+                    playPlayerDamageSound();
+                    updateBossBattleHud();
+                    window.showToast(`⚠️ Boss 發動攻擊，對你造成 ${dmg} 點傷害！`, 'error');
+                    checkBossBattleOutcome();
+                }, 10000);
+            } else {
+                bossMaxHp = Math.max(100, Number(bossData.maxHp) || bossMaxHp);
+                bossCurrentHp = Math.max(0, Number(bossData.hp) ?? bossCurrentHp);
+                updateBossBattleHud();
+                checkBossBattleOutcome();
+            }
+        };
+
+        window.openAdminBossModal = function() {
+            if (!window.state.isAdmin) return;
+            const modal = document.getElementById('admin-boss-modal');
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        };
+
+        window.closeAdminBossModal = function() {
+            const modal = document.getElementById('admin-boss-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+
+        window.confirmStartBossEvent = async function() {
+            if (!window.state.isAdmin) return;
+            const input = document.getElementById('admin-boss-hp-input');
+            const hpVal = Math.max(100, Math.min(500000, Math.floor(Number(input?.value || 2000))));
+            window.closeAdminBossModal();
+            if (window.bossCloudAPI?.startEvent) {
+                await window.bossCloudAPI.startEvent(hpVal);
+            }
+            window.applyCloudBossEvent({ active: true, maxHp: hpVal, hp: hpVal, startedAt: Date.now() });
+            window.showToast(`已啟動 Boss 討伐活動（Boss 血量：${hpVal}）！`, 'success');
+        };
+
         window.buyRpsMachine = function() {
             if (window.state.energyCores < RPS_MACHINE_COST) {
                 window.showToast(`能量核心不足（需要 ${RPS_MACHINE_COST} 能量核心）`, 'error');
@@ -2112,6 +2694,7 @@
                 let btnHtml = '';
                 if (equipped) btnHtml = `<button type="button" onclick="toggleEquipAvatarFrame('${frame.id}')" class="px-3 py-1.5 rounded-lg bg-amber-400 text-stone-950 text-xs font-black">使用中（卸下）</button>`;
                 else if (owned) btnHtml = `<button type="button" onclick="toggleEquipAvatarFrame('${frame.id}')" class="px-3 py-1.5 rounded-lg bg-[#2e2815] hover:bg-[#3f3619] text-[#faf2c3] border border-[#8c7b38] text-xs font-bold">套用頭像框</button>`;
+                else if (frame.fromBoss) btnHtml = `<span class="px-3 py-1.5 rounded-lg bg-rose-950/80 text-rose-300 border border-rose-700/50 text-[11px] font-bold">Boss 討伐獎勵</span>`;
                 else if (frame.fromLottery) btnHtml = `<span class="px-3 py-1.5 rounded-lg bg-emerald-950/70 text-emerald-400 border border-emerald-700/50 text-[11px] font-bold">賽博輪盤大獎</span>`;
                 else btnHtml = `<button type="button" onclick="buyAvatarFrame('${frame.id}')" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-black"><i class="fa-solid fa-bolt mr-1"></i>購買 (${frame.cost})</button>`;
 
@@ -2133,7 +2716,7 @@
 
         window.buyAvatarFrame = function(frameId) {
             const frame = AVATAR_FRAMES_DB.find(f => f.id === frameId);
-            if (!frame || frame.fromLottery) return;
+            if (!frame || frame.fromLottery || frame.fromBoss) return;
             if (window.state.ownedAvatarFrames.includes(frameId)) { window.toggleEquipAvatarFrame(frameId); return; }
             if (window.state.energyCores < frame.cost) { window.showToast(`能量核心不足（需要 ${frame.cost} 能量核心）`, 'error'); return; }
             window.state.energyCores -= frame.cost;
@@ -2596,7 +3179,7 @@
                 container.innerHTML = `
                     <div class="h-full flex flex-col items-center justify-center text-[#7d734b] text-xs">
                         <i class="fa-solid fa-user-lock text-2xl mb-2 opacity-50"></i>
-                        <p>在「玩家討論」點擊他人頭像並確認私聊，或於左側選擇已建立的私聊頻道。</p>
+                        <p>在「玩家討論」點擊他人頭像並確認私聊，或在「線上交易市場」點擊「私訊」與賣家洽談。</p>
                     </div>`;
                 return;
             }
@@ -2714,6 +3297,7 @@
             const logoutBtn = document.getElementById('admin-logout-btn');
             const cyberBtn = document.getElementById('admin-cyber-trigger-btn');
             const redPacketBtn = document.getElementById('admin-redpacket-trigger-btn');
+            const bossBtn = document.getElementById('admin-boss-trigger-btn');
             const vrAdminBtn = document.getElementById('admin-voice-room-toggle-btn');
             const vrKidBtn = document.getElementById('vr-kid-voice-btn');
             const callKidBtn = document.getElementById('call-kid-voice-btn');
@@ -2728,6 +3312,7 @@
                 if (logoutBtn) logoutBtn.classList.remove('hidden');
                 if (cyberBtn) cyberBtn.classList.remove('hidden');
                 if (redPacketBtn) redPacketBtn.classList.remove('hidden');
+                if (bossBtn) bossBtn.classList.remove('hidden');
                 if (vrAdminBtn) vrAdminBtn.classList.remove('hidden');
                 if (vrKidBtn) { vrKidBtn.classList.remove('hidden'); vrKidBtn.classList.add('flex'); }
                 if (callKidBtn) { callKidBtn.classList.remove('hidden'); callKidBtn.classList.add('flex'); }
@@ -2737,6 +3322,7 @@
                 if (logoutBtn) logoutBtn.classList.add('hidden');
                 if (cyberBtn) cyberBtn.classList.add('hidden');
                 if (redPacketBtn) redPacketBtn.classList.add('hidden');
+                if (bossBtn) bossBtn.classList.add('hidden');
                 if (vrAdminBtn) vrAdminBtn.classList.add('hidden');
                 if (vrKidBtn) { vrKidBtn.classList.add('hidden'); vrKidBtn.classList.remove('flex'); }
                 if (callKidBtn) { callKidBtn.classList.add('hidden'); callKidBtn.classList.remove('flex'); }
@@ -2790,6 +3376,7 @@
                 updateAdminUI();
                 window.closeAdminModal();
                 window.renderChatMessages();
+                window.renderMarketListings();
                 window.showToast(role === 'co' ? '共同管理員權限已開啟！' : '管理員權限已開啟！', 'success');
             } else {
                 window.showToast('管理員金鑰錯誤！', 'error');
@@ -2807,6 +3394,7 @@
             updateAdminUI();
             window.closeAdminModal();
             window.renderChatMessages();
+            window.renderMarketListings();
             window.showToast('已登出管理員模式', 'info');
         };
 
@@ -2934,16 +3522,16 @@
         window.switchTab = function(tabName) {
             if (tabName !== 'chat' && window.state.chatFullscreen) window.setChatFullscreen(false);
             window.state.activeTab = tabName;
-            ['calculator', 'chat', 'dm'].forEach(t => {
+            ['calculator', 'market', 'chat', 'dm'].forEach(t => {
                 const view = document.getElementById(`view-${t}`);
                 const btn = document.getElementById(`tab-${t}`);
                 if (!view || !btn) return;
                 if (t === tabName) {
                     view.classList.remove('hidden');
-                    btn.className = 'px-3.5 py-1.5 rounded-lg transition-all bg-[#8c7b38] text-[#141208] shadow-md font-black flex items-center gap-1.5 relative';
+                    btn.className = 'px-3 py-1.5 rounded-lg transition-all bg-[#8c7b38] text-[#141208] shadow-md font-black flex items-center gap-1.5 relative';
                 } else {
                     view.classList.add('hidden');
-                    btn.className = 'px-3.5 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] font-bold flex items-center gap-1.5 relative';
+                    btn.className = 'px-3 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] font-bold flex items-center gap-1.5 relative';
                 }
             });
             const valControls = document.getElementById('valuation-controls');
@@ -2951,7 +3539,9 @@
                 valControls.classList.toggle('hidden', tabName !== 'calculator');
                 valControls.classList.toggle('flex', tabName === 'calculator');
             }
-            if (tabName === 'chat') {
+            if (tabName === 'market') {
+                window.renderMarketListings();
+            } else if (tabName === 'chat') {
                 document.getElementById('unread-chat-badge')?.classList.add('hidden');
                 window.renderChatMessages();
             } else if (tabName === 'dm') {
@@ -3061,347 +3651,302 @@
             const side = window.state.activeModalSide;
             const filtered = WEAPONS_DB.filter(w =>
                 (window.state.modalFilter === 'all' || w.category === window.state.modalFilter) &&
-                w.name.toLowerCase().includes(keyword)
+                (!keyword || w.name.toLowerCase().includes(keyword))
             );
             if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-10 text-center text-xs text-[#8a7f56]">找不到符合「${keyword}」的武器資料</div>`;
+                grid.innerHTML = `<div class="col-span-full py-10 text-center text-[#7d734b] text-sm">找不到符合條件的後室物資</div>`;
                 return;
             }
             grid.innerHTML = filtered.map(w => {
                 const isGreen = w.category === 'green';
-                const currentCount = window.state[side].weapons[w.id] || 0;
-                const unitVal = window.getWeaponUnitValue(w);
+                const qty = window.state[side].weapons[w.id] || 0;
                 return `
-                    <button type="button" onclick="addWeapon('${side}', '${w.id}')" 
-                        class="text-left p-3.5 rounded-xl bg-[#121008] hover:bg-[#211d0f] border ${isGreen ? 'border-emerald-700/50 hover:border-emerald-400' : 'border-amber-700/50 hover:border-amber-400'} transition-all flex items-center justify-between gap-3 group active:scale-95">
+                    <button type="button" onclick="addWeapon('${side}', '${w.id}')" class="text-left p-3.5 rounded-xl bg-[#121008] hover:bg-[#241f0f] border ${isGreen ? 'border-emerald-700/50 hover:border-emerald-400' : 'border-amber-700/50 hover:border-amber-400'} transition flex items-center justify-between gap-3 group">
                         <div class="min-w-0">
                             <div class="flex items-center gap-2">
-                                <span class="px-1.5 py-0.5 rounded text-[10px] font-black ${isGreen ? 'bg-emerald-950 text-emerald-400 border border-emerald-700/50' : 'bg-amber-950 text-amber-400 border border-amber-700/50'}">
-                                    ${isGreen ? '獨家' : '違禁品'}
-                                </span>
-                                <span class="font-bold text-sm text-[#faf2c3] truncate">${w.name}</span>
+                                <span class="w-2 h-2 rounded-full ${isGreen ? 'bg-emerald-400' : 'bg-amber-400'} shrink-0"></span>
+                                <span class="text-sm font-black text-[#faf2c3] truncate">${w.name}</span>
                             </div>
-                            <div class="text-xs font-mono-tech text-[#9c9163] mt-1">
-                                行情: <span class="text-[#d6c67c] font-bold">${w.priceText}</span> (當前估價: ${window.formatValue(unitVal)})
-                            </div>
+                            <div class="text-[11px] font-mono-tech ${isGreen ? 'text-emerald-300' : 'text-amber-300'} mt-1">市價區間: ${w.priceText}</div>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
-                            ${currentCount > 0 ? `<span class="px-2 py-0.5 rounded-full bg-[#8c7b38] text-[#141208] font-mono-tech font-black text-xs">x${currentCount}</span>` : ''}
-                            <div class="w-8 h-8 rounded-lg bg-[#292311] group-hover:bg-[#8c7b38] text-[#d6c67c] group-hover:text-[#141208] flex items-center justify-center transition">
-                                <i class="fa-solid fa-plus text-xs"></i>
-                            </div>
+                            ${qty > 0 ? `<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/50 text-xs font-mono-tech font-bold">x${qty}</span>` : ''}
+                            <span class="w-7 h-7 rounded-lg bg-[#292311] group-hover:bg-[#8c7b38] group-hover:text-[#141208] text-[#d6c67c] flex items-center justify-center transition"><i class="fa-solid fa-plus text-xs"></i></span>
                         </div>
                     </button>
                 `;
             }).join('');
         };
 
-        window.calculateSideTotals = function(side) {
-            const points = window.state[side].points || 0;
-            let currentTotal = points, minTotal = points, maxTotal = points, itemCount = 0;
-            Object.entries(window.state[side].weapons).forEach(([id, count]) => {
-                const w = WEAPONS_DB.find(item => item.id === id);
-                if (!w || count <= 0) return;
-                itemCount += count;
-                currentTotal += window.getWeaponUnitValue(w) * count;
-                minTotal += w.min * count;
-                maxTotal += w.max * count;
+        function calculateSideSummary(side) {
+            const sideData = window.state[side];
+            let weaponsVal = 0, minWeaponsVal = 0, maxWeaponsVal = 0, itemCount = 0;
+            Object.entries(sideData.weapons).forEach(([wId, qty]) => {
+                const w = WEAPONS_DB.find(item => item.id === wId);
+                if (w && qty > 0) {
+                    itemCount += qty;
+                    weaponsVal += window.getWeaponUnitValue(w) * qty;
+                    minWeaponsVal += w.min * qty;
+                    maxWeaponsVal += w.max * qty;
+                }
             });
-            return { points, currentTotal, minTotal, maxTotal, itemCount };
-        };
+            return {
+                total: weaponsVal + sideData.points,
+                minTotal: minWeaponsVal + sideData.points,
+                maxTotal: maxWeaponsVal + sideData.points,
+                points: sideData.points,
+                itemCount
+            };
+        }
 
-        window.renderSideWeaponsList = function(side) {
+        function renderSideWeaponsList(side) {
             const container = document.getElementById(`${side}-weapons-list`);
             if (!container) return;
-            const entries = Object.entries(window.state[side].weapons);
+            const entries = Object.entries(window.state[side].weapons).filter(([_, qty]) => qty > 0);
             if (entries.length === 0) {
-                container.innerHTML = `
-                    <div class="py-8 rounded-xl border border-dashed border-[#4d4423] text-center text-[#7d734b] bg-[#0d0b05]/60 flex flex-col items-center justify-center">
-                        <i class="fa-solid fa-box-open text-xl mb-1.5 opacity-40"></i>
-                        <p class="text-xs">尚未加入任何武器</p>
-                    </div>`;
+                container.innerHTML = `<div class="flex-grow min-h-[140px] rounded-xl border border-dashed border-[#423a1e] bg-[#121008]/50 flex flex-col items-center justify-center text-[#7d734b] text-xs p-4 text-center"><i class="fa-solid fa-box-open text-xl mb-1.5 opacity-60"></i><span>尚未加入任何物資，點擊上方「加入武器」</span></div>`;
                 return;
             }
-            container.innerHTML = entries.map(([id, count]) => {
-                const w = WEAPONS_DB.find(item => item.id === id);
+            container.innerHTML = entries.map(([wId, qty]) => {
+                const w = WEAPONS_DB.find(item => item.id === wId);
                 if (!w) return '';
                 const isGreen = w.category === 'green';
-                const unitVal = window.getWeaponUnitValue(w);
+                const subtotal = window.getWeaponUnitValue(w) * qty;
                 return `
-                    <div class="bg-[#121008]/95 border ${isGreen ? 'border-emerald-700/40' : 'border-amber-700/40'} rounded-xl p-3 flex items-center justify-between gap-2">
+                    <div class="p-3 rounded-xl bg-[#121008]/95 border ${isGreen ? 'border-emerald-700/40' : 'border-amber-700/40'} flex items-center justify-between gap-2">
                         <div class="min-w-0">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full ${isGreen ? 'bg-emerald-400' : 'bg-amber-400'} shrink-0"></span>
                                 <span class="text-xs sm:text-sm font-bold text-[#faf2c3] truncate">${w.name}</span>
                             </div>
-                            <div class="text-[11px] font-mono-tech text-[#9c9163] mt-0.5">
-                                單價 ${window.formatValue(unitVal)} × ${count} = <span class="text-[#f2e394] font-bold">${window.formatValue(unitVal * count)}</span>
-                            </div>
+                            <div class="text-[11px] font-mono-tech text-[#9c9163] mt-0.5">單價: ${w.priceText} · 小計: <span class="${isGreen ? 'text-emerald-300' : 'text-amber-300'} font-bold">${window.formatValue(subtotal)}</span></div>
                         </div>
-                        <div class="flex items-center gap-1.5 shrink-0 bg-[#0a0904] p-1 rounded-lg border border-[#3d3518]">
-                            <button type="button" onclick="updateWeaponCount('${side}', '${id}', -1)" class="w-7 h-7 rounded bg-[#241f0f] hover:bg-red-950 text-[#d6c67c] hover:text-red-300 flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-minus text-[10px]"></i></button>
-                            <span class="font-mono-tech font-black text-xs text-[#faf2c3] min-w-[24px] text-center">${count}</span>
-                            <button type="button" onclick="updateWeaponCount('${side}', '${id}', 1)" class="w-7 h-7 rounded bg-[#241f0f] hover:bg-[#383018] text-[#d6c67c] flex items-center justify-center transition active:scale-90"><i class="fa-solid fa-plus text-[10px]"></i></button>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" onclick="updateWeaponCount('${side}', '${w.id}', -1)" class="w-7 h-7 rounded-lg bg-[#241f0f] hover:bg-red-950 text-[#d6c67c] hover:text-red-300 border border-[#4d4423] text-xs font-bold flex items-center justify-center transition"><i class="fa-solid fa-minus"></i></button>
+                            <span class="w-7 text-center text-xs font-mono-tech font-bold text-[#faf2c3]">${qty}</span>
+                            <button type="button" onclick="updateWeaponCount('${side}', '${w.id}', 1)" class="w-7 h-7 rounded-lg bg-[#241f0f] hover:bg-emerald-950 text-[#d6c67c] hover:text-emerald-300 border border-[#4d4423] text-xs font-bold flex items-center justify-center transition"><i class="fa-solid fa-plus"></i></button>
                         </div>
-                    </div>`;
+                    </div>
+                `;
             }).join('');
-        };
+        }
+
+        function renderReferenceLists() {
+            const greenEl = document.getElementById('ref-green-list');
+            const goldEl = document.getElementById('ref-gold-list');
+            if (greenEl) {
+                greenEl.innerHTML = WEAPONS_DB.filter(w => w.category === 'green').map(w => `
+                    <div class="p-2 rounded-lg bg-[#1a170c] border border-emerald-800/40 flex flex-col justify-between">
+                        <span class="text-xs font-bold text-[#faf2c3] truncate">${w.name}</span>
+                        <span class="text-[11px] font-mono-tech text-emerald-400 mt-0.5">${w.priceText}</span>
+                    </div>
+                `).join('');
+            }
+            if (goldEl) {
+                goldEl.innerHTML = WEAPONS_DB.filter(w => w.category === 'gold').map(w => `
+                    <div class="p-2 rounded-lg bg-[#1a170c] border border-amber-800/40 flex flex-col justify-between">
+                        <span class="text-xs font-bold text-[#faf2c3] truncate">${w.name}</span>
+                        <span class="text-[11px] font-mono-tech text-amber-400 mt-0.5">${w.priceText}</span>
+                    </div>
+                `).join('');
+            }
+        }
 
         window.updateAllUI = function() {
-            const myTotals = window.calculateSideTotals('my');
-            const theirTotals = window.calculateSideTotals('their');
+            const mySum = calculateSideSummary('my');
+            const theirSum = calculateSideSummary('their');
+            document.getElementById('my-total-display').textContent = window.formatValue(mySum.total);
+            document.getElementById('my-item-count').textContent = `${mySum.itemCount} 件物資`;
+            document.getElementById('my-range-display').innerHTML = `<span>區間: ${window.formatValue(mySum.minTotal)} ~ ${window.formatValue(mySum.maxTotal)}</span><span class="text-[#f2e394] font-bold">含積分: ${window.formatValue(mySum.points)}</span>`;
+            document.getElementById('my-points-formatted').textContent = window.formatValue(mySum.points);
 
-            document.getElementById('my-points-formatted').textContent = window.formatValue(myTotals.points);
-            document.getElementById('my-item-count').textContent = `${myTotals.itemCount} 件物資`;
-            document.getElementById('my-total-display').textContent = window.formatValue(myTotals.currentTotal);
-            document.getElementById('my-range-display').innerHTML = `<span>區間: ${window.formatValue(myTotals.minTotal)} ~ ${window.formatValue(myTotals.maxTotal)}</span><span class="text-[#f2e394] font-bold">含積分: ${window.formatValue(myTotals.points)}</span>`;
+            document.getElementById('their-total-display').textContent = window.formatValue(theirSum.total);
+            document.getElementById('their-item-count').textContent = `${theirSum.itemCount} 件物資`;
+            document.getElementById('their-range-display').innerHTML = `<span>區間: ${window.formatValue(theirSum.minTotal)} ~ ${window.formatValue(theirSum.maxTotal)}</span><span class="text-[#6ee7b7] font-bold">含積分: ${window.formatValue(theirSum.points)}</span>`;
+            document.getElementById('their-points-formatted').textContent = window.formatValue(theirSum.points);
 
-            document.getElementById('their-points-formatted').textContent = window.formatValue(theirTotals.points);
-            document.getElementById('their-item-count').textContent = `${theirTotals.itemCount} 件物資`;
-            document.getElementById('their-total-display').textContent = window.formatValue(theirTotals.currentTotal);
-            document.getElementById('their-range-display').innerHTML = `<span>區間: ${window.formatValue(theirTotals.minTotal)} ~ ${window.formatValue(theirTotals.maxTotal)}</span><span class="text-[#6ee7b7] font-bold">含積分: ${window.formatValue(theirTotals.points)}</span>`;
-
-            window.renderSideWeaponsList('my');
-            window.renderSideWeaponsList('their');
-
-            const diff = theirTotals.currentTotal - myTotals.currentTotal;
             const verdictBox = document.getElementById('verdict-box');
             const verdictBadge = document.getElementById('verdict-badge');
             const verdictPercent = document.getElementById('verdict-percent');
             const verdictDiff = document.getElementById('verdict-diff');
-
             verdictBox.classList.remove('glow-win', 'glow-loss', 'glow-even');
 
-            if (myTotals.currentTotal === 0 && theirTotals.currentTotal === 0) {
+            if (mySum.total === 0 && theirSum.total === 0) {
                 verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-[#2b2613] text-[#c7ba81] border border-[#574d28]';
                 verdictBadge.textContent = '[ 系統待機：請輸入交易物資 ]';
                 verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-[#d6c67c] my-1';
                 verdictPercent.textContent = '0.0%';
                 verdictDiff.textContent = '淨差額: 0';
-                return;
-            }
-            if (myTotals.currentTotal === 0 && theirTotals.currentTotal > 0) {
-                verdictBox.classList.add('glow-win');
-                verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-emerald-950 text-emerald-300 border border-emerald-500';
-                verdictBadge.textContent = '▲ 絕對賺翻 (無本獲利)';
-                verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-emerald-400 my-1';
-                verdictPercent.textContent = '+∞%';
-                verdictDiff.textContent = `淨賺: +${window.formatValue(theirTotals.currentTotal)}`;
-                return;
-            }
-            const percent = (diff / myTotals.currentTotal) * 100;
-            const absPercentStr = Math.abs(percent).toFixed(1) + '%';
-            if (diff > 0) {
-                verdictBox.classList.add('glow-win');
-                verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-emerald-950 text-emerald-300 border border-emerald-500';
-                verdictBadge.textContent = `▲ 交易評估：賺了 ${absPercentStr}`;
-                verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-emerald-400 my-1';
-                verdictPercent.textContent = `+${absPercentStr}`;
-                verdictDiff.textContent = `淨賺差額: +${window.formatValue(diff)}`;
-            } else if (diff < 0) {
-                verdictBox.classList.add('glow-loss');
-                verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-red-950 text-red-300 border border-red-500';
-                verdictBadge.textContent = `▼ 交易評估：虧了 ${absPercentStr}`;
-                verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-red-400 my-1';
-                verdictPercent.textContent = `-${absPercentStr}`;
-                verdictDiff.textContent = `淨虧差額: ${window.formatValue(diff)}`;
             } else {
-                verdictBox.classList.add('glow-even');
-                verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-amber-950 text-amber-300 border border-amber-500';
-                verdictBadge.textContent = '＝ 交易評估：等價交換';
-                verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-amber-400 my-1';
-                verdictPercent.textContent = '0.0%';
-                verdictDiff.textContent = '淨差額: 0';
+                const diff = theirSum.total - mySum.total;
+                const pct = mySum.total > 0 ? (diff / mySum.total) * 100 : (theirSum.total > 0 ? 100 : 0);
+                const sign = diff > 0 ? '+' : '';
+                if (pct > 5) {
+                    verdictBox.classList.add('glow-win');
+                    verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-emerald-950 text-emerald-300 border border-emerald-500/60';
+                    verdictBadge.textContent = '▲ 賺爛了 (BIG WIN)';
+                    verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-emerald-400 my-1';
+                } else if (pct < -5) {
+                    verdictBox.classList.add('glow-loss');
+                    verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-red-950 text-red-300 border border-red-500/60';
+                    verdictBadge.textContent = '▼ 虧大了 (BIG LOSS)';
+                    verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-red-400 my-1';
+                } else {
+                    verdictBox.classList.add('glow-even');
+                    verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-amber-950 text-amber-300 border border-amber-500/60';
+                    verdictBadge.textContent = '◆ 價值持平 (FAIR TRADE)';
+                    verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-amber-300 my-1';
+                }
+                verdictPercent.textContent = `${sign}${pct.toFixed(1)}%`;
+                verdictDiff.textContent = `淨差額: ${sign}${window.formatValue(diff)}`;
             }
+            renderSideWeaponsList('my');
+            renderSideWeaponsList('their');
         };
 
         function escapeHtml(str) {
             if (!str) return '';
-            return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
 
-        function formatChatTime(ts) {
-            if (!ts) return '剛剛';
-            const d = new Date(ts);
+        function formatChatTime(timestamp) {
+            if (!timestamp) return '';
+            const d = new Date(timestamp);
             return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+
+        function getChatEffectClass(effectId) {
+            if (!effectId) return '';
+            const found = CHAT_EFFECT_SHOP.find(e => e.id === effectId);
+            return found ? found.cssClass : '';
         }
 
         window.renderChatMessages = function() {
             const container = document.getElementById('chat-messages-container');
+            const countEl = document.getElementById('chat-msg-count');
             if (!container) return;
             const now = Date.now();
-            const messages = (window.state.chatMessages || []).filter(msg => {
-                if (msg.imageUrl && msg.expiresAt && now >= msg.expiresAt) {
-                    if (window.chatCloudAPI?.deleteMessage && msg.id) window.chatCloudAPI.deleteMessage(msg.id).catch(() => {});
-                    return false;
-                }
-                return true;
-            });
+            const msgs = (window.state.chatMessages || []).filter(m => !(m && m.imageUrl && m.expiresAt && Number(m.expiresAt) <= now));
+            if (countEl) countEl.textContent = msgs.length;
 
-            const countEl = document.getElementById('chat-msg-count');
-            if (countEl) countEl.textContent = messages.length;
-
-            if (!messages || messages.length === 0) {
-                container.innerHTML = `
-                    <div class="py-16 text-center text-[#7d734b]">
-                        <i class="fa-solid fa-comment-dots text-3xl mb-2 opacity-40"></i>
-                        <p class="text-sm font-bold text-[#9c9163]">目前頻道尚無任何對話紀錄（每月 1 日 00:00 自動重置）</p>
-                        <p class="text-xs text-[#69603d] mt-1">成為第一位在後室公共頻道發言的流浪者吧！</p>
-                    </div>`;
+            if (msgs.length === 0) {
+                container.innerHTML = `<div class="py-16 text-center text-[#7d734b]"><i class="fa-solid fa-radio text-3xl mb-3 opacity-50"></i><p class="text-sm font-bold">目前尚無流浪者留言</p><p class="text-xs mt-1">在下方輸入訊息，開始與其他後室玩家交流交易吧！</p></div>`;
+                if (document.getElementById('floating-mini-window')?.classList.contains('open')) window.renderFloatingMiniWindow();
                 return;
             }
-            const myUid = window.currentUserUid;
-            const isAdminViewer = window.state.isAdmin;
-            const viewerIsCoAdmin = window.state.adminRole === 'co';
 
-            container.innerHTML = messages.map(msg => {
-                const isMine = msg.senderUid === myUid;
-                const isSenderAdmin = Boolean(msg.isAdmin);
-                const isSenderCoAdmin = isSenderAdmin && msg.adminRole === 'co';
-                const isSenderMainAdmin = isSenderAdmin && !isSenderCoAdmin;
-                const isSenderVip = Boolean(msg.isVip);
-                const isSenderMuted = Boolean(window.state.mutedUsers[msg.senderUid]);
-                const safeAvatar = (msg.avatar && msg.avatar.startsWith('data:image/')) ? msg.avatar : DEFAULT_AVATAR_URL;
+            container.innerHTML = msgs.map(msg => {
+                const isMine = msg.senderUid === window.currentUserUid;
+                const isMsgMainAdmin = Boolean(msg.isAdmin && msg.adminRole !== 'co');
+                const isMsgCoAdmin = Boolean(msg.isAdmin && msg.adminRole === 'co');
+                const isMsgVip = Boolean(msg.isVip);
+                const msgFrameId = msg.avatarFrame || (msg.hasCyberFrame ? 'cyber' : '');
+                const isCyberFrameMsg = msgFrameId === 'cyber';
+                const shouldAnimateCyber = isCyberFrameMsg && msg.id && !animatedCyberMsgIds.has(msg.id);
+                if (shouldAnimateCyber) animatedCyberMsgIds.add(msg.id);
+
                 const safeNick = escapeHtml(msg.nickname || '無名流浪者');
-                const effectObj = CHAT_EFFECT_SHOP.find(e => e.id === msg.chatEffect);
-                const frameKey = msg.avatarFrame || (msg.hasCyberFrame ? 'cyber' : '');
-                const isCyberFrame = frameKey === 'cyber';
+                const safeText = escapeHtml(msg.text || '');
+                const safeImageUrl = (msg.imageUrl && (msg.imageUrl.startsWith('data:image/') || msg.imageUrl.startsWith('https://'))) ? msg.imageUrl : '';
+                const timeStr = formatChatTime(msg.createdAt);
+                const customFxClass = getChatEffectClass(msg.chatEffect);
 
-                const isRecentCyberMsg = isCyberFrame && msg.id && !animatedCyberMsgIds.has(msg.id) && (now - Number(msg.createdAt || 0) < 12000);
-                if (isRecentCyberMsg) animatedCyberMsgIds.add(msg.id);
+                let bubbleClass = isMine
+                    ? 'bg-gradient-to-br from-[#3b3214] to-[#26200c] border border-[#a89444]/70 text-[#faf2c3] rounded-tr-sm'
+                    : 'bg-[#1a170c]/95 border border-[#4d4423] text-[#e6dfb8] rounded-tl-sm';
 
-                const vipBadgeHtml = isSenderVip ? `<span class="px-1.5 py-0.5 rounded vip-gold-badge text-[10px] font-black">VIP</span>` : '';
-                const nameHtml = isSenderCoAdmin
-                    ? `<span class="px-1.5 py-0.5 rounded bg-gradient-to-r from-sky-200 via-fuchsia-200 to-emerald-200 text-stone-950 text-[10px] font-black">💎 共同管理員</span> ${vipBadgeHtml} <span class="text-xs font-black text-sky-200">${safeNick}</span>`
-                    : (isSenderAdmin
-                        ? `<span class="px-1.5 py-0.5 rounded bg-gradient-to-r from-pink-500 via-amber-400 to-cyan-400 text-stone-950 text-[10px] font-black">M.E.G. 管理員</span> ${vipBadgeHtml} <span class="text-xs font-black admin-rainbow-text">${safeNick}</span>`
-                        : `${vipBadgeHtml} <span class="text-xs font-black ${isMine ? 'text-amber-400' : 'text-emerald-400'}">${isMine ? '我 (' + safeNick + ')' : safeNick}</span>`);
+                if (isMsgMainAdmin) bubbleClass = 'admin-rainbow-bubble text-white rounded-tl-sm';
+                else if (isMsgCoAdmin) bubbleClass = 'coadmin-diamond-bubble rounded-tl-sm';
+                if (customFxClass) bubbleClass = `${customFxClass} ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`;
+                if (shouldAnimateCyber) bubbleClass += ' cyber-msg-enter-box';
 
-                const mutedTagHtml = isSenderMuted ? `<span class="px-1.5 py-0.5 rounded bg-red-950 text-red-400 border border-red-700/60 text-[10px] font-bold">已禁言</span>` : '';
-                const canModerateThisMsg = isAdminViewer && !(viewerIsCoAdmin && isSenderMainAdmin);
+                let nickClass = isMine ? 'text-amber-300' : 'text-[#d6c67c]';
+                if (isMsgMainAdmin) nickClass = 'admin-rainbow-text font-black';
+                else if (isMsgCoAdmin) nickClass = 'text-sky-200 font-black';
 
-                const adminActionsHtml = isAdminViewer ? `
-                    <div class="flex items-center gap-1 opacity-85 hover:opacity-100">
-                        ${canModerateThisMsg ? `<button type="button" onclick="adminDeleteMessage('${msg.id}', ${isSenderMainAdmin})" class="px-1.5 py-0.5 rounded bg-red-950/90 hover:bg-red-800 text-red-300 border border-red-700/60 text-[10px] font-bold transition"><i class="fa-solid fa-trash-can"></i> 刪除</button>` : ''}
-                        ${msg.senderUid ? `<button type="button" onclick="adminGrantCores('${msg.senderUid}', '${safeNick.replace(/'/g, '')}', 20)" class="px-1.5 py-0.5 rounded bg-cyan-950/90 hover:bg-cyan-800 text-cyan-300 border border-cyan-600/60 text-[10px] font-bold transition"><i class="fa-solid fa-bolt"></i> +20核心</button>` : ''}
-                        ${!isMine && msg.senderUid && canModerateThisMsg ? `<button type="button" onclick="adminToggleMute('${msg.senderUid}', '${safeNick.replace(/'/g, '')}', ${isSenderMainAdmin})" class="px-1.5 py-0.5 rounded ${isSenderMuted ? 'bg-emerald-950 text-emerald-300 border-emerald-700/60' : 'bg-amber-950/90 text-amber-300 border-amber-700/60'} border text-[10px] font-bold transition"><i class="fa-solid fa-ban"></i> ${isSenderMuted ? '解禁' : '禁言'}</button>` : ''}
-                    </div>` : '';
+                const adminBadge = isMsgCoAdmin
+                    ? `<span class="px-1.5 py-0.2 rounded bg-sky-950/90 text-sky-200 border border-sky-300/70 text-[10px] font-mono-tech font-black">💎 共同管理員</span>`
+                    : (isMsgMainAdmin ? `<span class="px-1.5 py-0.2 rounded bg-purple-950/90 text-amber-200 border border-fuchsia-400/60 text-[10px] font-mono-tech font-black">🌈 管理員</span>` : '');
 
-                const bubbleClass = isSenderCoAdmin
-                    ? `coadmin-diamond-bubble ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`
-                    : (isSenderAdmin
-                        ? `admin-rainbow-bubble text-[#fff9db] ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`
-                        : (effectObj
-                            ? `${effectObj.cssClass} ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`
-                            : (isMine
-                                ? 'bg-[#362f14] border border-amber-500/50 text-[#faf2c3] rounded-tr-sm'
-                                : 'bg-[#17150c] border border-[#4d4423] text-[#e6dfb8] rounded-tl-sm')));
+                const vipBadge = isMsgVip ? `<span class="px-1.5 py-0.2 rounded vip-gold-badge text-[10px] font-black">★ VIP</span>` : '';
+                const isTargetMuted = Boolean(msg.senderUid && window.state.mutedUsers[msg.senderUid]);
 
-                const avatarImgClass = `w-9 h-9 rounded-full object-cover border ${!frameKey && isSenderAdmin ? 'border-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.6)]' : 'border-[#594e25]'} bg-[#1a170c] ${!isMine && msg.senderUid ? 'cursor-pointer hover:scale-105 transition' : ''}`;
-                const avatarClickAttr = (!isMine && msg.senderUid)
-                    ? `onclick='openDmConfirmModal("${msg.senderUid}", "${safeNick.replace(/"/g, "&quot;")}", "${safeAvatar}")' title="點擊發起私聊、轉贈核心或猜拳機器決鬥"`
-                    : '';
+                let adminActionsHtml = '';
+                if (window.state.isAdmin && msg.id) {
+                    const canModerateThisMsg = !(window.state.adminRole === 'co' && isMsgMainAdmin);
+                    const delBtn = canModerateThisMsg ? `<button type="button" onclick="adminDeleteMessage('${msg.id}', ${isMsgMainAdmin})" class="text-[10px] px-1.5 py-0.5 rounded bg-red-950/80 hover:bg-red-800 text-red-300 border border-red-700/50 font-bold">刪除</button>` : '';
+                    const muteBtn = (!isMine && msg.senderUid && canModerateThisMsg) ? `<button type="button" onclick="adminToggleMute('${msg.senderUid}', '${safeNick.replace(/'/g, "&#39;")}', ${isMsgMainAdmin})" class="text-[10px] px-1.5 py-0.5 rounded ${isTargetMuted ? 'bg-emerald-950 text-emerald-300 border-emerald-700/50' : 'bg-amber-950 text-amber-300 border-amber-700/50'} border font-bold">${isTargetMuted ? '解禁' : '禁言'}</button>` : '';
+                    const grantBtn = msg.senderUid ? `<button type="button" onclick="adminGrantCores('${msg.senderUid}', '${safeNick.replace(/'/g, "&#39;")}', 20)" class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950/90 hover:bg-cyan-800 text-cyan-300 border border-cyan-600/50 font-bold">+20核心</button>` : '';
+                    adminActionsHtml = `<div class="flex items-center gap-1 mt-1 ${isMine ? 'justify-end' : 'justify-start'}">${delBtn}${muteBtn}${grantBtn}</div>`;
+                }
 
-                const avatarHtml = renderAvatarWithFrameHtml(safeAvatar, frameKey, avatarImgClass, avatarClickAttr, isRecentCyberMsg ? 'cyber-msg-enter-avatar' : '');
-                const contentHtml = msg.imageUrl && msg.imageUrl.startsWith('data:image/')
-                    ? `<div class="space-y-1 ${isRecentCyberMsg ? 'cyber-msg-enter-text' : ''}"><img src="${msg.imageUrl}" alt="玩家圖片" class="max-w-[230px] sm:max-w-[280px] max-h-64 rounded-xl object-contain border border-white/15 bg-black/40"><div class="text-[10px] opacity-75 font-mono-tech">24 小時後自動刪除</div></div>`
-                    : `<span class="${isRecentCyberMsg ? 'cyber-msg-enter-text' : ''} inline-block">${escapeHtml(msg.text)}</span>`;
+                const avatarClickAttr = (!isMine && msg.senderUid) ? `onclick='openDmConfirmModal("${msg.senderUid}", "${safeNick.replace(/"/g, "&quot;")}", "${(msg.avatar && msg.avatar.startsWith("data:image/")) ? msg.avatar : DEFAULT_AVATAR_URL}")'` : '';
+                const avatarCursorClass = (!isMine && msg.senderUid) ? 'cursor-pointer hover:scale-105 transition' : '';
+                const animAvatarClass = shouldAnimateCyber ? 'cyber-msg-enter-avatar' : '';
+                const avatarHtml = renderAvatarWithFrameHtml(msg.avatar, msgFrameId, `w-9 h-9 rounded-full object-cover bg-[#241f0f] ${avatarCursorClass}`, avatarClickAttr, animAvatarClass);
+                const contentHtml = safeImageUrl
+                    ? `<div class="space-y-1.5"><img src="${safeImageUrl}" alt="玩家圖片" class="max-w-[240px] max-h-[240px] rounded-xl object-cover border border-white/15">${safeText ? `<p class="text-xs sm:text-sm leading-relaxed break-words whitespace-pre-wrap ${shouldAnimateCyber ? 'cyber-msg-enter-text' : ''}">${safeText}</p>` : ''}<div class="text-[10px] font-mono-tech opacity-75">圖片將於 24 小時後自動清除</div></div>`
+                    : `<p class="text-xs sm:text-sm leading-relaxed break-words whitespace-pre-wrap ${shouldAnimateCyber ? 'cyber-msg-enter-text' : ''}">${safeText}</p>`;
 
                 return `
                     <div class="flex items-start gap-2.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}">
                         ${avatarHtml}
-                        <div class="flex flex-col ${isMine ? 'items-end' : 'items-start'} max-w-[82%] sm:max-w-[70%]">
-                            <div class="flex items-center flex-wrap gap-1.5 mb-1 px-1 ${isMine ? 'justify-end' : 'justify-start'}">
-                                ${nameHtml}
-                                ${mutedTagHtml}
-                                <span class="text-[10px] font-mono-tech text-[#8a7f56]">${formatChatTime(msg.createdAt)}</span>
-                                ${adminActionsHtml}
+                        <div class="max-w-[78%] sm:max-w-[68%] flex flex-col ${isMine ? 'items-end' : 'items-start'}">
+                            <div class="flex items-center gap-1.5 mb-1 px-1 flex-wrap ${isMine ? 'flex-row-reverse' : 'flex-row'}">
+                                <span class="text-xs font-black ${nickClass}">${isMine ? `${safeNick} (我)` : safeNick}</span>
+                                ${adminBadge}${vipBadge}
+                                ${isTargetMuted ? `<span class="text-[10px] text-red-400 font-mono-tech">[已禁言]</span>` : ''}
+                                <span class="text-[10px] font-mono-tech text-[#8a7f56]">${timeStr}</span>
                             </div>
-                            <div class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed break-words shadow-md ${bubbleClass} ${isRecentCyberMsg ? 'cyber-msg-enter-box' : ''}">
-                                ${contentHtml}
-                            </div>
+                            <div class="px-4 py-2.5 rounded-2xl shadow-md ${bubbleClass}">${contentHtml}</div>
+                            ${adminActionsHtml}
                         </div>
-                    </div>`;
+                    </div>
+                `;
             }).join('');
+
             container.scrollTop = container.scrollHeight;
-            window.renderFloatingMiniWindow();
+            if (document.getElementById('floating-mini-window')?.classList.contains('open')) window.renderFloatingMiniWindow();
         };
 
-        let lastChatSentAt = 0;
         window.handleSendChatMessage = async function(event) {
             event.preventDefault();
-            const nickInput = document.getElementById('chat-nickname-input');
+            if (!window.state.isAdmin && window.state.mutedUsers[window.currentUserUid]) {
+                window.showToast('你目前已被管理員禁言，暫時無法在公共頻道發言。', 'error');
+                return;
+            }
             const textInput = document.getElementById('chat-text-input');
             const sendBtn = document.getElementById('chat-send-btn');
-
-            if (!window.isPigPenaltyActive()) {
-                const rawNick = nickInput ? nickInput.value.trim().slice(0, 20) : '';
-                if (rawNick && rawNick !== '我是豬') window.handleNicknameChange(rawNick);
-            }
-
             const nickname = window.getEffectiveNickname();
             const text = textInput ? textInput.value.trim().slice(0, 300) : '';
-
-            if (!window.state.isAdmin && window.state.mutedUsers[window.currentUserUid]) {
-                window.showToast('你目前已被管理員禁言，暫時無法發送訊息。', 'error');
-                return;
-            }
-            if (!text) { window.showToast('請輸入要發送的訊息內容！', 'error'); textInput?.focus(); return; }
-
-            const now = Date.now();
-            if (now - lastChatSentAt < 1200) { window.showToast('傳送太快了，請稍等 1 秒再發送', 'info'); return; }
+            if (!text) { window.showToast('請輸入要發送的訊息內容', 'error'); textInput?.focus(); return; }
             if (!window.chatCloudAPI || typeof window.chatCloudAPI.sendMessage !== 'function') {
-                window.showToast('雲端聊天室尚未初始化完成', 'error');
+                window.showToast('雲端聊天室尚未連線完成，請稍後再試', 'error');
                 return;
             }
-
-            if (sendBtn) sendBtn.disabled = true;
             try {
-                lastChatSentAt = now;
+                if (sendBtn) sendBtn.disabled = true;
                 await window.chatCloudAPI.sendMessage(
-                    nickname,
-                    text,
-                    window.state.userAvatar,
-                    window.state.isAdmin,
-                    window.state.equippedEffect,
-                    window.state.equippedAvatarFrame || '',
-                    window.state.adminRole,
-                    Boolean(window.state.hasVip && window.state.vipBadgeEnabled)
+                    nickname, text, window.state.userAvatar, window.state.isAdmin,
+                    window.state.equippedEffect, window.state.equippedAvatarFrame || '',
+                    window.state.adminRole, Boolean(window.state.hasVip && window.state.vipBadgeEnabled)
                 );
                 if (textInput) textInput.value = '';
             } catch (err) {
                 console.error(err);
-                window.showToast('訊息發送失敗', 'error');
+                window.showToast('訊息發送失敗，請檢查網路或資料庫權限', 'error');
             } finally {
                 if (sendBtn) sendBtn.disabled = false;
-                if (textInput) textInput.focus();
+                textInput?.focus();
             }
         };
 
-        function initReferenceTable() {
-            const greenContainer = document.getElementById('ref-green-list');
-            const goldContainer = document.getElementById('ref-gold-list');
-            if (!greenContainer || !goldContainer) return;
-            greenContainer.innerHTML = '';
-            goldContainer.innerHTML = '';
-            WEAPONS_DB.forEach(w => {
-                const isGreen = w.category === 'green';
-                const itemHtml = `
-                    <div class="bg-[#1a170c] border ${isGreen ? 'border-emerald-700/40' : 'border-amber-700/40'} rounded-lg p-2.5 flex flex-col justify-between">
-                        <span class="text-xs font-bold ${isGreen ? 'text-emerald-300' : 'text-amber-300'} truncate">${w.name}</span>
-                        <span class="text-[11px] font-mono-tech text-[#d6c67c] mt-1 font-bold">${w.priceText}</span>
-                    </div>`;
-                if (isGreen) greenContainer.innerHTML += itemHtml;
-                else goldContainer.innerHTML += itemHtml;
-            });
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
             initUserProfile();
-            initGearMenuControls();
-            initReferenceTable();
+            renderReferenceLists();
             window.updateAllUI();
             startHourlyCyberScheduler();
+            initGearMenuControls();
         });
     </script>
 
@@ -3414,6 +3959,7 @@
             remove,
             set,
             update,
+            runTransaction,
             onValue,
             onChildAdded,
             onDisconnect,
@@ -3436,6 +3982,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const messagesQuery = query(ref(db, "messages"), limitToLast(80));
+        const marketListingsRef = ref(db, "marketListings");
+        const bossEventRef = ref(db, "events/bossBattle");
         const mutedUsersRef = ref(db, "mutedUsers");
         const monthlyResetRef = ref(db, "monthlyResetMonth");
         const myGiftCoresRef = ref(db, `coreGifts/${window.currentUserUid}`);
@@ -3450,8 +3998,56 @@
 
         const pageLoadedAt = Date.now();
 
+        /* 線上交易市場雲端同步 */
+        window.marketCloudAPI = {
+            createListing: async (payload) => {
+                const newRef = push(marketListingsRef);
+                await set(newRef, payload);
+            },
+            deleteListing: async (listingId) => {
+                if (!listingId) return;
+                await remove(ref(db, `marketListings/${listingId}`));
+            }
+        };
+
+        onValue(marketListingsRef, (snapshot) => {
+            const raw = snapshot.val() || {};
+            const list = Object.entries(raw).map(([id, val]) => ({ id, ...val }));
+            list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            window.state.marketListings = list;
+            if (window.state.activeTab === 'market') {
+                window.renderMarketListings();
+            }
+        });
+
+        /* Boss 討伐活動雲端同步 */
+        window.bossCloudAPI = {
+            startEvent: async (maxHp) => {
+                await set(bossEventRef, {
+                    active: true,
+                    maxHp: Number(maxHp),
+                    hp: Number(maxHp),
+                    startedAt: Date.now()
+                });
+            },
+            dealDamage: async (dmg) => {
+                await runTransaction(ref(db, "events/bossBattle/hp"), (curr) => {
+                    if (curr === null || curr === undefined) return curr;
+                    return Math.max(0, Number(curr) - Number(dmg || 20));
+                });
+            },
+            endEvent: async () => {
+                await update(bossEventRef, { active: false, hp: 0 });
+            }
+        };
+
+        onValue(bossEventRef, (snapshot) => {
+            const data = snapshot.val();
+            window.applyCloudBossEvent(data);
+        });
+
         /* =========================================================
-           1. Web Audio API 小孩變聲器處理管線（管理員專屬，對方聽得到）
+           1. 穩定麥克風串流 + Web Audio API 小孩變聲器
         ========================================================= */
         let voiceAudioCtx = null;
         let voiceSourceNode = null;
@@ -3460,94 +4056,153 @@
         let formantFilter = null;
         let rawMicStream = null;
         let processedVoiceStream = null;
+        let audioKeepAliveTimer = null;
 
-        async function getProcessedVoiceStream() {
+        async function ensureRawMicStream() {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 throw new Error("此瀏覽器不支援麥克風語音通話");
             }
             if (!rawMicStream || rawMicStream.getAudioTracks().every(t => t.readyState === "ended")) {
-                rawMicStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                rawMicStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    },
+                    video: false
+                });
             }
-            if (processedVoiceStream && voiceAudioCtx && voiceAudioCtx.state !== "closed") {
-                if (voiceAudioCtx.state === "suspended") await voiceAudioCtx.resume();
-                updateKidVoiceGraphState();
-                return processedVoiceStream;
-            }
+            rawMicStream.getAudioTracks().forEach(track => {
+                track.enabled = !(currentCallRoomId ? isCallMuted : window.state.vrMuted);
+            });
+            return rawMicStream;
+        }
 
+        async function ensureVoiceChangerStream() {
+            await ensureRawMicStream();
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            voiceAudioCtx = new AudioCtx();
-            voiceSourceNode = voiceAudioCtx.createMediaStreamSource(rawMicStream);
-            voiceDestNode = voiceAudioCtx.createMediaStreamDestination();
+            if (!voiceAudioCtx || voiceAudioCtx.state === "closed") {
+                voiceAudioCtx = new AudioCtx();
+                voiceSourceNode = voiceAudioCtx.createMediaStreamSource(rawMicStream);
+                voiceDestNode = voiceAudioCtx.createMediaStreamDestination();
 
-            const bufferSize = 2048;
-            pitchShiftNode = voiceAudioCtx.createScriptProcessor(bufferSize, 1, 1);
-            const grainSize = 1024;
-            const ringBuffer = new Float32Array(grainSize * 2);
-            let writeIdx = 0;
-            let phase1 = 0;
-            let phase2 = 0.5;
+                const bufferSize = 2048;
+                pitchShiftNode = voiceAudioCtx.createScriptProcessor(bufferSize, 1, 1);
+                const grainSize = 1024;
+                const ringBuffer = new Float32Array(grainSize * 2);
+                let writeIdx = 0;
+                let phase1 = 0;
+                let phase2 = 0.5;
 
-            pitchShiftNode.onaudioprocess = (e) => {
-                const input = e.inputBuffer.getChannelData(0);
-                const output = e.outputBuffer.getChannelData(0);
-                const isKidMode = Boolean(window.state.isAdmin && window.state.kidVoiceEnabled);
+                pitchShiftNode.onaudioprocess = (e) => {
+                    const input = e.inputBuffer.getChannelData(0);
+                    const output = e.outputBuffer.getChannelData(0);
+                    const isKidMode = Boolean(window.state.isAdmin && window.state.kidVoiceEnabled);
 
-                if (!isKidMode) {
-                    output.set(input);
-                    return;
-                }
+                    if (!isKidMode) {
+                        output.set(input);
+                        return;
+                    }
 
-                const pitchRatio = 1.42;
-                const phaseInc = (pitchRatio - 1) / grainSize;
+                    const pitchRatio = 1.42;
+                    const phaseInc = (pitchRatio - 1) / grainSize;
 
-                for (let i = 0; i < input.length; i++) {
-                    ringBuffer[writeIdx] = input[i];
-                    ringBuffer[writeIdx + grainSize] = input[i];
+                    for (let i = 0; i < input.length; i++) {
+                        ringBuffer[writeIdx] = input[i];
+                        ringBuffer[writeIdx + grainSize] = input[i];
 
-                    const delay1 = phase1 * grainSize;
-                    const delay2 = phase2 * grainSize;
+                        const delay1 = phase1 * grainSize;
+                        const delay2 = phase2 * grainSize;
 
-                    let idx1 = writeIdx - delay1;
-                    if (idx1 < 0) idx1 += grainSize;
-                    const i1 = Math.floor(idx1);
-                    const f1 = idx1 - i1;
-                    const s1 = ringBuffer[i1] * (1 - f1) + ringBuffer[i1 + 1] * f1;
+                        let idx1 = writeIdx - delay1;
+                        if (idx1 < 0) idx1 += grainSize;
+                        const i1 = Math.floor(idx1);
+                        const f1 = idx1 - i1;
+                        const s1 = ringBuffer[i1] * (1 - f1) + ringBuffer[i1 + 1] * f1;
 
-                    let idx2 = writeIdx - delay2;
-                    if (idx2 < 0) idx2 += grainSize;
-                    const i2 = Math.floor(idx2);
-                    const f2 = idx2 - i2;
-                    const s2 = ringBuffer[i2] * (1 - f2) + ringBuffer[i2 + 1] * f2;
+                        let idx2 = writeIdx - delay2;
+                        if (idx2 < 0) idx2 += grainSize;
+                        const i2 = Math.floor(idx2);
+                        const f2 = idx2 - i2;
+                        const s2 = ringBuffer[i2] * (1 - f2) + ringBuffer[i2 + 1] * f2;
 
-                    const w1 = 0.5 - 0.5 * Math.cos(2 * Math.PI * phase1);
-                    const w2 = 0.5 - 0.5 * Math.cos(2 * Math.PI * phase2);
+                        const w1 = 0.5 - 0.5 * Math.cos(2 * Math.PI * phase1);
+                        const w2 = 0.5 - 0.5 * Math.cos(2 * Math.PI * phase2);
 
-                    output[i] = (s1 * w1 + s2 * w2) * 1.15;
+                        output[i] = (s1 * w1 + s2 * w2) * 1.15;
 
-                    phase1 += phaseInc;
-                    if (phase1 >= 1) phase1 -= 1;
-                    if (phase1 < 0) phase1 += 1;
+                        phase1 += phaseInc;
+                        if (phase1 >= 1) phase1 -= 1;
+                        if (phase1 < 0) phase1 += 1;
 
-                    phase2 += phaseInc;
-                    if (phase2 >= 1) phase2 -= 1;
-                    if (phase2 < 0) phase2 += 1;
+                        phase2 += phaseInc;
+                        if (phase2 >= 1) phase2 -= 1;
+                        if (phase2 < 0) phase2 += 1;
 
-                    writeIdx = (writeIdx + 1) % grainSize;
-                }
-            };
+                        writeIdx = (writeIdx + 1) % grainSize;
+                    }
+                };
 
-            formantFilter = voiceAudioCtx.createBiquadFilter();
-            formantFilter.type = "highshelf";
-            formantFilter.frequency.value = 1400;
-            formantFilter.gain.value = 0;
+                formantFilter = voiceAudioCtx.createBiquadFilter();
+                formantFilter.type = "highshelf";
+                formantFilter.frequency.value = 1400;
+                formantFilter.gain.value = 0;
 
-            voiceSourceNode.connect(pitchShiftNode);
-            pitchShiftNode.connect(formantFilter);
-            formantFilter.connect(voiceDestNode);
+                voiceSourceNode.connect(pitchShiftNode);
+                pitchShiftNode.connect(formantFilter);
+                formantFilter.connect(voiceDestNode);
+                processedVoiceStream = voiceDestNode.stream;
+            }
 
-            processedVoiceStream = voiceDestNode.stream;
+            if (voiceAudioCtx.state === "suspended") {
+                await voiceAudioCtx.resume().catch(() => {});
+            }
             updateKidVoiceGraphState();
+
+            if (!audioKeepAliveTimer) {
+                audioKeepAliveTimer = setInterval(() => {
+                    if (voiceAudioCtx && voiceAudioCtx.state === "suspended") {
+                        voiceAudioCtx.resume().catch(() => {});
+                    }
+                }, 2500);
+            }
             return processedVoiceStream;
+        }
+
+        async function getActiveOutgoingStream() {
+            const raw = await ensureRawMicStream();
+            if (window.state.isAdmin && window.state.kidVoiceEnabled) {
+                return await ensureVoiceChangerStream();
+            }
+            return raw;
+        }
+
+        async function replaceOutgoingAudioTrackOnPeers() {
+            try {
+                const stream = await getActiveOutgoingStream();
+                const newTrack = stream.getAudioTracks()[0];
+                if (!newTrack) return;
+
+                if (peerConnection) {
+                    const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === "audio");
+                    if (sender) await sender.replaceTrack(newTrack).catch(() => {});
+                }
+                for (const entry of Object.values(vrPeers)) {
+                    const sender = entry?.pc?.getSenders().find(s => s.track && s.track.kind === "audio");
+                    if (sender) await sender.replaceTrack(newTrack).catch(() => {});
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function setOutgoingAudioEnabled(enabled) {
+            if (rawMicStream) {
+                rawMicStream.getAudioTracks().forEach(t => { t.enabled = enabled; });
+            }
+            if (processedVoiceStream) {
+                processedVoiceStream.getAudioTracks().forEach(t => { t.enabled = enabled; });
+            }
         }
 
         function updateKidVoiceGraphState() {
@@ -3557,7 +4212,7 @@
             }
         }
 
-        window.toggleKidVoiceChanger = function() {
+        window.toggleKidVoiceChanger = async function() {
             if (!window.state.isAdmin) {
                 window.showToast("變聲器僅限管理員使用！", "error");
                 return;
@@ -3565,6 +4220,7 @@
             window.state.kidVoiceEnabled = !window.state.kidVoiceEnabled;
             updateKidVoiceGraphState();
             updateKidVoiceButtonsUI();
+            await replaceOutgoingAudioTrackOnPeers();
             window.showToast(
                 window.state.kidVoiceEnabled ? "🧒 小孩變聲器已開啟！對方現在會聽到小孩聲音" : "小孩變聲器已關閉（恢復原聲）",
                 "info"
@@ -3573,6 +4229,10 @@
 
         function stopAllMicIfUnused() {
             if (!currentCallRoomId && !window.state.inVoiceRoom) {
+                if (audioKeepAliveTimer) {
+                    clearInterval(audioKeepAliveTimer);
+                    audioKeepAliveTimer = null;
+                }
                 if (rawMicStream) {
                     rawMicStream.getTracks().forEach(t => t.stop());
                     rawMicStream = null;
@@ -3801,10 +4461,48 @@
         });
 
         /* =========================================================
-           3. 公共 8 人語音房（WebRTC Mesh + Firebase 信令 + 管理員開關）
+           共用 WebRTC 設定（含免費公開 TURN 伺服器 + 斷線自動重連）
+        ========================================================= */
+        const rtcConfig = {
+            iceServers: [
+                { urls: "stun:stun.l.google.com:19302" },
+                { urls: "stun:stun1.l.google.com:19302" },
+                {
+                    urls: [
+                        "turn:openrelay.metered.ca:80",
+                        "turn:openrelay.metered.ca:443",
+                        "turn:openrelay.metered.ca:443?transport=tcp"
+                    ],
+                    username: "openrelayproject",
+                    credential: "openrelayproject"
+                }
+            ],
+            iceCandidatePoolSize: 4
+        };
+
+        function attachIceRecovery(pc, onRestartOffer) {
+            if (!pc) return;
+            pc.oniceconnectionstatechange = async () => {
+                if (!pc || pc.signalingState === "closed") return;
+                if (pc.iceConnectionState === "failed" || pc.iceConnectionState === "disconnected") {
+                    try {
+                        if (typeof pc.restartIce === "function") {
+                            pc.restartIce();
+                        }
+                        if (typeof onRestartOffer === "function") {
+                            await onRestartOffer();
+                        }
+                    } catch (e) {}
+                }
+            };
+        }
+
+        /* =========================================================
+           3. 公共 8 人語音房
         ========================================================= */
         const MAX_VOICE_ROOM_USERS = 8;
         const vrPeers = {};
+        const vrSignalUnsubs = {};
         let vrLocalStream = null;
         let vrJoiningOrLeaving = false;
 
@@ -3884,19 +4582,32 @@
 
         function cleanupVrPeer(peerUid) {
             const entry = vrPeers[peerUid];
-            if (!entry) return;
-            try { entry.pc.close(); } catch (e) {}
-            if (entry.audioEl) entry.audioEl.remove();
-            delete vrPeers[peerUid];
+            if (entry) {
+                try { entry.pc.close(); } catch (e) {}
+                if (entry.audioEl) entry.audioEl.remove();
+                delete vrPeers[peerUid];
+            }
+            if (vrSignalUnsubs[peerUid]) {
+                vrSignalUnsubs[peerUid]();
+                delete vrSignalUnsubs[peerUid];
+            }
         }
 
         function cleanupAllVrPeers() {
             Object.keys(vrPeers).forEach(uid => cleanupVrPeer(uid));
+            Object.keys(vrSignalUnsubs).forEach(uid => {
+                vrSignalUnsubs[uid]();
+                delete vrSignalUnsubs[uid];
+            });
         }
 
         async function createVrPeerConnection(peerUid, isInitiator) {
             if (!vrLocalStream || peerUid === window.currentUserUid) return null;
             if (vrPeers[peerUid]) return vrPeers[peerUid].pc;
+
+            const roomKey = getDmRoomId(window.currentUserUid, peerUid);
+            const signalPath = `voiceRoom/signals/${roomKey}`;
+            const sigRef = ref(db, signalPath);
 
             const pc = new RTCPeerConnection(rtcConfig);
             const audioEl = document.createElement("audio");
@@ -3904,7 +4615,8 @@
             audioEl.playsInline = true;
             document.getElementById("vr-remote-audios")?.appendChild(audioEl);
 
-            vrPeers[peerUid] = { pc, audioEl, makingOffer: false };
+            const peerState = { pc, audioEl, appliedCandidates: new Set(), makingOffer: false };
+            vrPeers[peerUid] = peerState;
 
             vrLocalStream.getTracks().forEach(track => {
                 pc.addTrack(track, vrLocalStream);
@@ -3913,10 +4625,9 @@
             pc.ontrack = (event) => {
                 if (event.streams && event.streams[0]) {
                     audioEl.srcObject = event.streams[0];
+                    audioEl.play().catch(() => {});
                 }
             };
-
-            const signalPath = `voiceRoom/signals/${getDmRoomId(window.currentUserUid, peerUid)}`;
 
             pc.onicecandidate = async (event) => {
                 if (event.candidate) {
@@ -3925,14 +4636,62 @@
                 }
             };
 
-            if (isInitiator) {
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                await set(ref(db, `${signalPath}/offer`), {
-                    fromUid: window.currentUserUid,
-                    toUid: peerUid,
-                    sdp: offer
+            const sendOffer = async () => {
+                if (peerState.makingOffer) return;
+                peerState.makingOffer = true;
+                try {
+                    const offer = await pc.createOffer({ iceRestart: true });
+                    await pc.setLocalDescription(offer);
+                    await update(sigRef, {
+                        offer: { fromUid: window.currentUserUid, toUid: peerUid, sdp: offer, ts: Date.now() }
+                    });
+                } finally {
+                    peerState.makingOffer = false;
+                }
+            };
+
+            attachIceRecovery(pc, sendOffer);
+
+            if (!vrSignalUnsubs[peerUid]) {
+                vrSignalUnsubs[peerUid] = onValue(sigRef, async (sigSnap) => {
+                    if (!window.state.inVoiceRoom || !vrLocalStream || !vrPeers[peerUid]) return;
+                    const sig = sigSnap.val();
+                    if (!sig) return;
+
+                    if (sig.offer && sig.offer.toUid === window.currentUserUid) {
+                        const remoteOffer = new RTCSessionDescription(sig.offer.sdp);
+                        if (pc.signalingState === "stable" || pc.signalingState === "have-local-offer") {
+                            await pc.setRemoteDescription(remoteOffer).catch(() => {});
+                            if (pc.signalingState === "have-remote-offer") {
+                                const answer = await pc.createAnswer();
+                                await pc.setLocalDescription(answer);
+                                await update(sigRef, {
+                                    answer: { fromUid: window.currentUserUid, toUid: peerUid, sdp: answer, ts: Date.now() }
+                                });
+                            }
+                        }
+                    }
+
+                    if (sig.answer && sig.answer.toUid === window.currentUserUid) {
+                        if (pc.signalingState === "have-local-offer") {
+                            await pc.setRemoteDescription(new RTCSessionDescription(sig.answer.sdp)).catch(() => {});
+                        }
+                    }
+
+                    const remoteCands = sig.candidates?.[peerUid] || {};
+                    if (pc.remoteDescription) {
+                        for (const [cKey, cVal] of Object.entries(remoteCands)) {
+                            if (cVal && !peerState.appliedCandidates.has(cKey)) {
+                                peerState.appliedCandidates.add(cKey);
+                                await pc.addIceCandidate(new RTCIceCandidate(cVal)).catch(() => {});
+                            }
+                        }
+                    }
                 });
+            }
+
+            if (isInitiator) {
+                await sendOffer();
             }
 
             return pc;
@@ -3964,49 +4723,6 @@
             }
         });
 
-        onChildAdded(ref(db, "voiceRoom/signals"), (snapshot) => {
-            const roomKey = snapshot.key || "";
-            if (!roomKey.includes(window.currentUserUid)) return;
-            const uids = roomKey.split("__");
-            const peerUid = uids[0] === window.currentUserUid ? uids[1] : uids[0];
-            if (!peerUid) return;
-
-            const sigRef = ref(db, `voiceRoom/signals/${roomKey}`);
-            onValue(sigRef, async (sigSnap) => {
-                if (!window.state.inVoiceRoom || !vrLocalStream) return;
-                const sig = sigSnap.val();
-                if (!sig) return;
-
-                if (sig.offer && sig.offer.toUid === window.currentUserUid) {
-                    let pc = vrPeers[peerUid]?.pc;
-                    if (!pc) pc = await createVrPeerConnection(peerUid, false);
-                    if (pc && pc.signalingState === "stable") {
-                        await pc.setRemoteDescription(new RTCSessionDescription(sig.offer.sdp));
-                        const answer = await pc.createAnswer();
-                        await pc.setLocalDescription(answer);
-                        await update(sigRef, {
-                            answer: { fromUid: window.currentUserUid, toUid: peerUid, sdp: answer }
-                        });
-                    }
-                }
-
-                if (sig.answer && sig.answer.toUid === window.currentUserUid) {
-                    const pc = vrPeers[peerUid]?.pc;
-                    if (pc && pc.signalingState === "have-local-offer") {
-                        await pc.setRemoteDescription(new RTCSessionDescription(sig.answer.sdp));
-                    }
-                }
-
-                const remoteCands = sig.candidates?.[peerUid] || {};
-                const pc = vrPeers[peerUid]?.pc;
-                if (pc && pc.remoteDescription) {
-                    for (const c of Object.values(remoteCands)) {
-                        if (c) await pc.addIceCandidate(new RTCIceCandidate(c)).catch(() => {});
-                    }
-                }
-            });
-        });
-
         window.joinPublicVoiceRoom = async function() {
             if (vrJoiningOrLeaving || window.state.inVoiceRoom) return;
             if (!window.state.voiceRoomEnabled) {
@@ -4021,9 +4737,16 @@
 
             vrJoiningOrLeaving = true;
             try {
-                vrLocalStream = await getProcessedVoiceStream();
                 window.state.vrMuted = false;
-                vrLocalStream.getAudioTracks().forEach(t => t.enabled = true);
+                vrLocalStream = await getActiveOutgoingStream();
+                setOutgoingAudioEnabled(true);
+
+                const existingMembers = Object.keys(window.state.voiceRoomMembers || {});
+                for (const otherUid of existingMembers) {
+                    if (otherUid && otherUid !== window.currentUserUid) {
+                        await remove(ref(db, `voiceRoom/signals/${getDmRoomId(window.currentUserUid, otherUid)}`)).catch(() => {});
+                    }
+                }
 
                 const myMemberRef = ref(db, `voiceRoom/members/${window.currentUserUid}`);
                 await set(myMemberRef, {
@@ -4035,6 +4758,14 @@
 
                 window.state.inVoiceRoom = true;
                 updatePublicVoiceRoomUI();
+
+                const activeUids = Object.keys(window.state.voiceRoomMembers || {}).filter(u => u !== window.currentUserUid);
+                for (const peerUid of activeUids) {
+                    if (!vrPeers[peerUid] && window.currentUserUid < peerUid) {
+                        await createVrPeerConnection(peerUid, true).catch(console.error);
+                    }
+                }
+
                 window.showToast("已進入公共語音房！", "success");
             } catch (err) {
                 console.error(err);
@@ -4045,9 +4776,8 @@
         };
 
         window.toggleVoiceRoomMute = function() {
-            if (!vrLocalStream) return;
             window.state.vrMuted = !window.state.vrMuted;
-            vrLocalStream.getAudioTracks().forEach(t => t.enabled = !window.state.vrMuted);
+            setOutgoingAudioEnabled(!window.state.vrMuted);
             const icon = document.getElementById("vr-mute-icon");
             const label = document.getElementById("vr-mute-label");
             if (icon) icon.className = window.state.vrMuted ? "fa-solid fa-microphone-slash text-red-400" : "fa-solid fa-microphone";
@@ -4074,13 +4804,6 @@
         /* =========================================================
            4. 一對一私聊 WebRTC 語音通話
         ========================================================= */
-        const rtcConfig = {
-            iceServers: [
-                { urls: "stun:stun.l.google.com:19302" },
-                { urls: "stun:stun1.l.google.com:19302" }
-            ]
-        };
-
         let peerConnection = null;
         let currentCallRoomId = "";
         let pendingIncomingCall = null;
@@ -4144,6 +4867,7 @@
             if (peerConnection) {
                 peerConnection.ontrack = null;
                 peerConnection.onicecandidate = null;
+                peerConnection.oniceconnectionstatechange = null;
                 peerConnection.close();
                 peerConnection = null;
             }
@@ -4196,7 +4920,10 @@
             }
 
             try {
-                const stream = await getProcessedVoiceStream();
+                isCallMuted = false;
+                const stream = await getActiveOutgoingStream();
+                setOutgoingAudioEnabled(true);
+
                 currentCallRoomId = roomId;
                 refreshVoiceCallButtonState();
 
@@ -4207,6 +4934,7 @@
                     const remoteAudio = document.getElementById("remote-voice-audio");
                     if (remoteAudio && event.streams[0]) {
                         remoteAudio.srcObject = event.streams[0];
+                        remoteAudio.play().catch(() => {});
                     }
                 };
 
@@ -4214,14 +4942,27 @@
                 const callerCandidatesRef = ref(db, `voiceCalls/${roomId}/callerCandidates`);
                 const calleeCandidatesRef = ref(db, `voiceCalls/${roomId}/calleeCandidates`);
 
+                await remove(callRef).catch(() => {});
+
                 peerConnection.onicecandidate = async (event) => {
                     if (event.candidate) {
-                        await set(push(callerCandidatesRef), event.candidate.toJSON());
+                        await set(push(callerCandidatesRef), event.candidate.toJSON()).catch(() => {});
                     }
                 };
 
-                const offer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(offer);
+                const publishOffer = async () => {
+                    if (!peerConnection || peerConnection.signalingState === "closed") return;
+                    const offer = await peerConnection.createOffer({ iceRestart: true });
+                    await peerConnection.setLocalDescription(offer);
+                    await update(callRef, {
+                        offer: { type: offer.type, sdp: offer.sdp, ts: Date.now() }
+                    });
+                };
+
+                attachIceRecovery(peerConnection, publishOffer);
+
+                const initialOffer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(initialOffer);
 
                 await set(callRef, {
                     roomId,
@@ -4229,7 +4970,7 @@
                     callerName: window.getEffectiveNickname(),
                     calleeUid: partnerUid,
                     status: "ringing",
-                    offer: { type: offer.type, sdp: offer.sdp },
+                    offer: { type: initialOffer.type, sdp: initialOffer.sdp, ts: Date.now() },
                     createdAt: Date.now()
                 });
 
@@ -4237,7 +4978,7 @@
 
                 callCandidatesUnsub = onChildAdded(calleeCandidatesRef, async (snap) => {
                     const cand = snap.val();
-                    if (cand && peerConnection && !addedIceCandidateIds.has(snap.key)) {
+                    if (cand && peerConnection && peerConnection.remoteDescription && !addedIceCandidateIds.has(snap.key)) {
                         addedIceCandidateIds.add(snap.key);
                         await peerConnection.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
                     }
@@ -4258,10 +4999,13 @@
                         window.showToast("對方已拒絕語音通話", "info");
                         return;
                     }
-                    if (data.status === "accepted" && data.answer && peerConnection && !peerConnection.currentRemoteDescription) {
-                        await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-                        showActiveCallBar("語音通話已連線");
-                        startCallTimer();
+                    if (data.status === "accepted" && data.answer && peerConnection) {
+                        const currentSdp = peerConnection.currentRemoteDescription?.sdp;
+                        if (currentSdp !== data.answer.sdp && (peerConnection.signalingState === "have-local-offer" || peerConnection.signalingState === "stable")) {
+                            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer)).catch(() => {});
+                            showActiveCallBar("語音通話已連線");
+                            if (!callTimerInterval) startCallTimer();
+                        }
                     }
                 });
             } catch (err) {
@@ -4281,7 +5025,10 @@
             if (incModal) { incModal.classList.add("hidden"); incModal.classList.remove("flex"); }
 
             try {
-                const stream = await getProcessedVoiceStream();
+                isCallMuted = false;
+                const stream = await getActiveOutgoingStream();
+                setOutgoingAudioEnabled(true);
+
                 const roomId = incoming.roomId;
                 currentCallRoomId = roomId;
                 pendingIncomingCall = null;
@@ -4294,6 +5041,7 @@
                     const remoteAudio = document.getElementById("remote-voice-audio");
                     if (remoteAudio && event.streams[0]) {
                         remoteAudio.srcObject = event.streams[0];
+                        remoteAudio.play().catch(() => {});
                     }
                 };
 
@@ -4301,9 +5049,11 @@
                 const callerCandidatesRef = ref(db, `voiceCalls/${roomId}/callerCandidates`);
                 const calleeCandidatesRef = ref(db, `voiceCalls/${roomId}/calleeCandidates`);
 
+                attachIceRecovery(peerConnection, null);
+
                 peerConnection.onicecandidate = async (event) => {
                     if (event.candidate) {
-                        await set(push(calleeCandidatesRef), event.candidate.toJSON());
+                        await set(push(calleeCandidatesRef), event.candidate.toJSON()).catch(() => {});
                     }
                 };
 
@@ -4313,7 +5063,7 @@
 
                 await update(callRef, {
                     status: "accepted",
-                    answer: { type: answer.type, sdp: answer.sdp }
+                    answer: { type: answer.type, sdp: answer.sdp, ts: Date.now() }
                 });
 
                 showActiveCallBar(`與 ${incoming.callerName || "流浪者"} 通話中`);
@@ -4321,17 +5071,31 @@
 
                 callCandidatesUnsub = onChildAdded(callerCandidatesRef, async (snap) => {
                     const cand = snap.val();
-                    if (cand && peerConnection && !addedIceCandidateIds.has(snap.key)) {
+                    if (cand && peerConnection && peerConnection.remoteDescription && !addedIceCandidateIds.has(snap.key)) {
                         addedIceCandidateIds.add(snap.key);
                         await peerConnection.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
                     }
                 });
 
-                callUnsub = onValue(callRef, (snap) => {
-                    if (!snap.exists()) {
+                callUnsub = onValue(callRef, async (snap) => {
+                    const data = snap.val();
+                    if (!snap.exists() || !data) {
                         cleanupVoiceCallResources();
                         refreshVoiceCallButtonState();
                         window.showToast("對方已掛斷語音通話", "info");
+                        return;
+                    }
+                    if (data.offer && peerConnection && data.offer.sdp !== peerConnection.remoteDescription?.sdp) {
+                        if (peerConnection.signalingState === "stable" || peerConnection.signalingState === "have-local-offer") {
+                            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer)).catch(() => {});
+                            if (peerConnection.signalingState === "have-remote-offer") {
+                                const reAnswer = await peerConnection.createAnswer();
+                                await peerConnection.setLocalDescription(reAnswer);
+                                await update(callRef, {
+                                    answer: { type: reAnswer.type, sdp: reAnswer.sdp, ts: Date.now() }
+                                });
+                            }
+                        }
                     }
                 });
             } catch (err) {
@@ -4354,11 +5118,8 @@
         };
 
         window.toggleCallMute = function() {
-            if (!processedVoiceStream) return;
             isCallMuted = !isCallMuted;
-            processedVoiceStream.getAudioTracks().forEach(track => {
-                track.enabled = !isCallMuted;
-            });
+            setOutgoingAudioEnabled(!isCallMuted);
             const icon = document.getElementById("mute-icon");
             const label = document.getElementById("mute-label");
             if (icon) icon.className = isCallMuted ? "fa-solid fa-microphone-slash text-red-400" : "fa-solid fa-microphone";
