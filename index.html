@@ -722,6 +722,11 @@
                             <span>玩家討論</span>
                             <span id="unread-chat-badge" class="hidden ml-0.5 px-1.5 py-0.2 rounded-full bg-emerald-500 text-stone-950 text-[10px] font-mono-tech font-black">NEW</span>
                         </button>
+                        <button type="button" onclick="switchTab('boss')" id="tab-boss" class="px-3 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] flex items-center gap-1.5 relative">
+                            <i class="fa-solid fa-skull-crossbones text-rose-400"></i>
+                            <span>全服 Boss 挑戰</span>
+                            <span id="boss-nav-live-badge" class="hidden ml-0.5 px-1.5 py-0.2 rounded-full bg-rose-500 text-white text-[10px] font-mono-tech font-black">LIVE</span>
+                        </button>
                         <button type="button" onclick="switchTab('dm')" id="tab-dm" class="px-3 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] flex items-center gap-1.5 relative">
                             <i class="fa-solid fa-envelope text-cyan-400"></i>
                             <span>私訊</span>
@@ -1168,6 +1173,55 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 分頁 4：全服 Boss 挑戰（獨立主分頁；沿用既有 Firebase Boss 活動資料） -->
+            <section id="view-boss" class="hidden space-y-5">
+                <div class="relative overflow-hidden rounded-2xl border border-rose-500/50 bg-gradient-to-br from-[#250d12] via-[#17100f] to-[#100d08] p-5 sm:p-8 shadow-2xl">
+                    <div class="absolute -right-8 -top-10 text-[180px] text-rose-500/10 pointer-events-none"><i class="fa-solid fa-dragon"></i></div>
+                    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-2 text-[10px] font-mono-tech tracking-[.2em] text-rose-300"><i class="fa-solid fa-tower-broadcast"></i> LEVEL-0 // WORLD EVENT</div>
+                            <h2 class="mt-2 text-2xl sm:text-3xl font-black text-rose-100">全服 Boss 挑戰</h2>
+                            <p class="mt-2 text-xs sm:text-sm text-rose-100/70">全體流浪者共同討伐後室異常 Boss。每位玩家的挑戰畫面會同步顯示同一條 Boss 血量。</p>
+                        </div>
+                        <div class="flex flex-col items-start sm:items-end gap-2">
+                            <span id="boss-page-status" class="px-3 py-1.5 rounded-full bg-stone-900/80 border border-stone-600 text-stone-300 text-xs font-black">等待管理員啟動</span>
+                            <button type="button" id="boss-page-admin-btn" onclick="openAdminBossModal()" class="hidden px-4 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-stone-950 text-xs font-black shadow-lg"><i class="fa-solid fa-play mr-1"></i> 管理員啟動活動</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="lg:col-span-2 rounded-2xl border border-rose-500/40 bg-[#170e10] p-5 sm:p-6">
+                        <div class="flex items-center justify-between gap-3 mb-4">
+                            <div class="flex items-center gap-2"><i class="fa-solid fa-skull-crossbones text-rose-400 text-xl"></i><h3 class="font-black text-rose-100">後室異常 Boss</h3></div>
+                            <span class="text-[10px] font-mono-tech text-rose-300">WORLD BOSS</span>
+                        </div>
+                        <div class="flex items-end justify-between gap-3 mb-2"><span class="text-xs text-rose-200/70">全服共享生命值</span><strong id="boss-page-hp-text" class="font-mono-tech text-lg text-white">尚未啟動</strong></div>
+                        <div class="h-5 rounded-full bg-black/70 border border-rose-900 overflow-hidden"><div id="boss-page-hp-bar" class="h-full rounded-full bg-gradient-to-r from-red-700 via-rose-500 to-amber-300 transition-all duration-300" style="width:0%"></div></div>
+                        <p id="boss-page-hp-percent" class="mt-2 text-right text-[10px] font-mono-tech text-rose-200/60">等待活動開始</p>
+                        <div class="mt-5 rounded-xl border border-rose-900/60 bg-black/25 p-4">
+                            <h4 class="text-xs font-black text-rose-200 mb-2">挑戰方式</h4>
+                            <ol class="list-decimal list-inside space-y-1.5 text-xs leading-relaxed text-stone-300">
+                                <li>管理員啟動活動後，全服玩家會同步進入挑戰。</li>
+                                <li>點擊畫面中落下的能量方塊，可對 Boss 造成 20 點傷害並恢復 1 點自身生命。</li>
+                                <li>Boss 每 10 秒反擊一次，造成 10～20 點傷害。</li>
+                                <li>成功擊敗 Boss 且自身仍存活，即可獲得活動獎勵。</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="rounded-2xl border border-amber-500/30 bg-[#191509] p-5">
+                        <div class="flex items-center gap-2 mb-4"><i class="fa-solid fa-award text-amber-300 text-xl"></i><h3 class="font-black text-amber-100">通關獎勵</h3></div>
+                        <div class="rounded-xl bg-amber-950/30 border border-amber-500/30 p-4 text-center">
+                            <div class="text-3xl font-black text-amber-300">1,000</div><div class="text-xs font-bold text-amber-100">能量核心</div>
+                        </div>
+                        <div class="mt-3 rounded-xl bg-[#0d0b05] border border-amber-500/20 p-4 text-center">
+                            <i class="fa-solid fa-id-badge text-2xl text-amber-300"></i><p class="mt-2 text-xs font-black text-amber-100">Boss 專屬頭像框</p>
+                        </div>
+                        <p class="mt-3 text-[10px] leading-relaxed text-stone-400">依照目前既有活動規則，成功擊敗 Boss 並存活的玩家可領取獎勵。此頁面不會更動玩家帳號、聊天或私訊資料。</p>
+                    </div>
+                </div>
+            </section>
 
         </main>
 
@@ -2422,7 +2476,30 @@
             const safePlayerHp = Math.max(0, Math.min(100, playerBossHp));
             if (pTextEl) pTextEl.textContent = String(safePlayerHp);
             if (pBarEl) pBarEl.style.width = `${safePlayerHp}%`;
+            if (typeof window.renderBossEventPage === 'function') window.renderBossEventPage();
         }
+
+        window.renderBossEventPage = function() {
+            const active = Boolean(bossActive);
+            const status = document.getElementById('boss-page-status');
+            const hpText = document.getElementById('boss-page-hp-text');
+            const hpBar = document.getElementById('boss-page-hp-bar');
+            const hpPercent = document.getElementById('boss-page-hp-percent');
+            const liveBadge = document.getElementById('boss-nav-live-badge');
+            const adminBtn = document.getElementById('boss-page-admin-btn');
+            const adminBossBtn = document.getElementById('admin-boss-trigger-btn');
+            if (status) {
+                status.textContent = active ? (bossCurrentHp <= 0 ? 'Boss 已被擊敗' : '全服討伐進行中') : '等待管理員啟動';
+                status.className = active ? 'px-3 py-1.5 rounded-full bg-rose-950 border border-rose-400 text-rose-200 text-xs font-black' : 'px-3 py-1.5 rounded-full bg-stone-900/80 border border-stone-600 text-stone-300 text-xs font-black';
+            }
+            if (hpText) hpText.textContent = active ? `${Math.max(0, bossCurrentHp)} / ${bossMaxHp}` : '尚未啟動';
+            const pct = active && bossMaxHp > 0 ? Math.max(0, Math.min(100, bossCurrentHp / bossMaxHp * 100)) : 0;
+            if (hpBar) hpBar.style.width = `${pct}%`;
+            if (hpPercent) hpPercent.textContent = active ? `${pct.toFixed(1)}% 剩餘` : '等待活動開始';
+            if (liveBadge) liveBadge.classList.toggle('hidden', !active);
+            if (adminBtn) adminBtn.classList.toggle('hidden', !window.state?.isAdmin);
+            if (adminBossBtn) adminBossBtn.classList.toggle('hidden', !window.state?.isAdmin);
+        };
 
         function spawnFallingRhythmTile() {
             if (!bossActive || playerBossHp <= 0 || bossCurrentHp <= 0) return;
@@ -2518,6 +2595,7 @@
         window.applyCloudBossEvent = function(bossData) {
             if (!bossData || !bossData.active) {
                 stopBossBattleLocal(true);
+                if (typeof window.renderBossEventPage === 'function') window.renderBossEventPage();
                 return;
             }
             const overlay = document.getElementById('boss-rhythm-overlay');
@@ -3510,44 +3588,64 @@
                 info: 'fa-bell text-amber-400'
             };
             toast.className = `pointer-events-auto px-4 py-3 rounded-xl border ${colors[type] || colors.info} text-xs sm:text-sm font-bold flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 opacity-0`;
-            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} text-base"></i><span>${message}</span>`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} text-base shrink-0"></i><span>${escapeHtml(message)}</span>`;
             container.appendChild(toast);
-            requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
+            requestAnimationFrame(() => { toast.classList.remove('translate-y-2', 'opacity-0'); });
             setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
+                toast.classList.add('translate-y-2', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            }, 3000);
         };
 
-        window.switchTab = function(tabName) {
-            if (tabName !== 'chat' && window.state.chatFullscreen) window.setChatFullscreen(false);
-            window.state.activeTab = tabName;
-            ['calculator', 'market', 'chat', 'dm'].forEach(t => {
-                const view = document.getElementById(`view-${t}`);
-                const btn = document.getElementById(`tab-${t}`);
-                if (!view || !btn) return;
-                if (t === tabName) {
-                    view.classList.remove('hidden');
-                    btn.className = 'px-3 py-1.5 rounded-lg transition-all bg-[#8c7b38] text-[#141208] shadow-md font-black flex items-center gap-1.5 relative';
-                } else {
-                    view.classList.add('hidden');
-                    btn.className = 'px-3 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] font-bold flex items-center gap-1.5 relative';
-                }
-            });
+        window.switchTab = function(tab) {
+            window.state.activeTab = tab;
+            if (tab !== 'chat' && window.state.chatFullscreen) window.setChatFullscreen(false);
+
+            const calcView = document.getElementById('view-calculator');
+            const marketView = document.getElementById('view-market');
+            const chatView = document.getElementById('view-chat');
+            const bossView = document.getElementById('view-boss');
+            const dmView = document.getElementById('view-dm');
+
+            const tabCalc = document.getElementById('tab-calculator');
+            const tabMarket = document.getElementById('tab-market');
+            const tabChat = document.getElementById('tab-chat');
+            const tabBoss = document.getElementById('tab-boss');
+            const tabDm = document.getElementById('tab-dm');
+
             const valControls = document.getElementById('valuation-controls');
-            if (valControls) {
-                valControls.classList.toggle('hidden', tabName !== 'calculator');
-                valControls.classList.toggle('flex', tabName === 'calculator');
-            }
-            if (tabName === 'market') {
-                window.renderMarketListings();
-            } else if (tabName === 'chat') {
-                document.getElementById('unread-chat-badge')?.classList.add('hidden');
-                window.renderChatMessages();
-            } else if (tabName === 'dm') {
-                document.getElementById('unread-dm-badge')?.classList.add('hidden');
+            const chatBadge = document.getElementById('unread-chat-badge');
+            const dmBadge = document.getElementById('unread-dm-badge');
+
+            const inactiveClass = 'px-3 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0] flex items-center gap-1.5 relative';
+            const activeClass = 'px-3 py-1.5 rounded-lg transition-all bg-[#8c7b38] text-[#141208] shadow-md font-black flex items-center gap-1.5 relative';
+
+            if (calcView) calcView.classList.toggle('hidden', tab !== 'calculator');
+            if (marketView) marketView.classList.toggle('hidden', tab !== 'market');
+            if (chatView) chatView.classList.toggle('hidden', tab !== 'chat');
+            if (bossView) bossView.classList.toggle('hidden', tab !== 'boss');
+            if (dmView) dmView.classList.toggle('hidden', tab !== 'dm');
+
+            if (tabCalc) tabCalc.className = tab === 'calculator' ? activeClass : inactiveClass;
+            if (tabMarket) tabMarket.className = tab === 'market' ? activeClass : inactiveClass;
+            if (tabChat) tabChat.className = tab === 'chat' ? activeClass : inactiveClass;
+            if (tabBoss) tabBoss.className = tab === 'boss' ? activeClass : inactiveClass;
+            if (tabDm) tabDm.className = tab === 'dm' ? activeClass : inactiveClass;
+
+            if (valControls) valControls.classList.toggle('hidden', tab !== 'calculator');
+
+            if (tab === 'chat') {
+                if (chatBadge) chatBadge.classList.add('hidden');
+                const chatContainer = document.getElementById('chat-messages-container');
+                if (chatContainer) requestAnimationFrame(() => { chatContainer.scrollTop = chatContainer.scrollHeight; });
+            } else if (tab === 'dm') {
+                if (dmBadge) dmBadge.classList.add('hidden');
                 renderDmSidebar();
                 window.renderDmMessages();
+            } else if (tab === 'market') {
+                window.renderMarketListings();
+            } else if (tab === 'boss') {
+                if (typeof window.renderBossEventPage === 'function') window.renderBossEventPage();
             }
         };
 
@@ -3560,33 +3658,46 @@
                     ? 'px-2.5 py-1.5 rounded-lg transition-all bg-[#8c7b38] text-[#141208] shadow-md font-black'
                     : 'px-2.5 py-1.5 rounded-lg transition-all text-[#9c9163] hover:text-[#f5eab0]';
             });
-            window.updateAllUI();
+            updateCalculatorUI();
+            renderReferenceDatabase();
         };
 
-        window.handlePointsInput = function(side, val) {
-            window.state[side].points = window.parsePointsString(val);
-            window.updateAllUI();
+        window.handlePointsInput = function(side, rawValue) {
+            const parsed = window.parsePointsString(rawValue);
+            window.state[side].points = parsed;
+            const fmtEl = document.getElementById(`${side}-points-formatted`);
+            if (fmtEl) fmtEl.textContent = window.formatValue(parsed);
+            updateCalculatorUI();
         };
 
         window.addQuickPoints = function(side, amount) {
-            window.state[side].points += amount;
+            window.state[side].points = (window.state[side].points || 0) + amount;
             const inputEl = document.getElementById(`${side}-points-input`);
             if (inputEl) inputEl.value = window.formatValue(window.state[side].points);
-            window.updateAllUI();
+            const fmtEl = document.getElementById(`${side}-points-formatted`);
+            if (fmtEl) fmtEl.textContent = window.formatValue(window.state[side].points);
+            updateCalculatorUI();
         };
 
-        window.addWeapon = function(side, weaponId) {
-            if (!window.state[side].weapons[weaponId]) window.state[side].weapons[weaponId] = 0;
-            window.state[side].weapons[weaponId] += 1;
-            window.updateAllUI();
-            window.renderModalWeapons();
+        window.addWeaponToSide = function(side, weaponId) {
+            const weapons = window.state[side].weapons;
+            weapons[weaponId] = (weapons[weaponId] || 0) + 1;
+            updateCalculatorUI();
+            const w = WEAPONS_DB.find(item => item.id === weaponId);
+            if (w) window.showToast(`已加入「${w.name}」至${side === 'my' ? '我方付出' : '對方拿出'}`, 'success');
         };
 
-        window.updateWeaponCount = function(side, weaponId, delta) {
-            if (!window.state[side].weapons[weaponId]) return;
-            window.state[side].weapons[weaponId] += delta;
-            if (window.state[side].weapons[weaponId] <= 0) delete window.state[side].weapons[weaponId];
-            window.updateAllUI();
+        window.changeWeaponQty = function(side, weaponId, delta) {
+            const weapons = window.state[side].weapons;
+            const nextQty = (weapons[weaponId] || 0) + delta;
+            if (nextQty <= 0) delete weapons[weaponId];
+            else weapons[weaponId] = nextQty;
+            updateCalculatorUI();
+        };
+
+        window.removeWeapon = function(side, weaponId) {
+            delete window.state[side].weapons[weaponId];
+            updateCalculatorUI();
         };
 
         window.clearSide = function(side) {
@@ -3594,34 +3705,159 @@
             window.state[side].weapons = {};
             const inputEl = document.getElementById(`${side}-points-input`);
             if (inputEl) inputEl.value = '';
-            window.updateAllUI();
-            window.showToast(side === 'my' ? '已清空我方交易欄' : '已清空對方交易欄', 'info');
+            const fmtEl = document.getElementById(`${side}-points-formatted`);
+            if (fmtEl) fmtEl.textContent = '0';
+            updateCalculatorUI();
         };
 
         window.resetAll = function() {
-            window.state.my = { points: 0, weapons: {} };
-            window.state.their = { points: 0, weapons: {} };
-            const myInput = document.getElementById('my-points-input');
-            const theirInput = document.getElementById('their-points-input');
-            if (myInput) myInput.value = '';
-            if (theirInput) theirInput.value = '';
-            window.updateAllUI();
-            window.showToast('已重置所有交易欄位數據', 'info');
+            window.clearSide('my');
+            window.clearSide('their');
+            window.showToast('交易評估終端已清除重置', 'info');
         };
+
+        function calculateSideSummary(sideData) {
+            let weaponVal = 0, weaponMin = 0, weaponMax = 0, itemCount = 0;
+            for (const [wId, qty] of Object.entries(sideData.weapons)) {
+                if (!qty || qty <= 0) continue;
+                const weapon = WEAPONS_DB.find(w => w.id === wId);
+                if (!weapon) continue;
+                itemCount += qty;
+                weaponVal += window.getWeaponUnitValue(weapon) * qty;
+                weaponMin += weapon.min * qty;
+                weaponMax += weapon.max * qty;
+            }
+            const pts = sideData.points || 0;
+            return { total: weaponVal + pts, minTotal: weaponMin + pts, maxTotal: weaponMax + pts, points: pts, itemCount };
+        }
+
+        function renderSideWeaponsList(side) {
+            const listEl = document.getElementById(`${side}-weapons-list`);
+            if (!listEl) return;
+            const entries = Object.entries(window.state[side].weapons).filter(([_, qty]) => qty > 0);
+            if (entries.length === 0) {
+                listEl.innerHTML = `<div class="border border-dashed border-[#4a4122] rounded-xl py-8 text-center text-xs text-[#7d734b]">尚未加入任何武器，點擊上方「加入武器」選擇</div>`;
+                return;
+            }
+            listEl.innerHTML = entries.map(([wId, qty]) => {
+                const w = WEAPONS_DB.find(item => item.id === wId);
+                if (!w) return '';
+                const unitVal = window.getWeaponUnitValue(w);
+                const subTotal = unitVal * qty;
+                const isGreen = w.category === 'green';
+                const badgeClass = isGreen ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-600/50' : 'bg-amber-950/80 text-amber-300 border border-amber-600/50';
+                return `
+                    <div class="bg-[#121008]/95 border border-[#453d1f] rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs sm:text-sm font-black text-[#faf2c3] truncate">${escapeHtml(w.name)}</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded font-bold ${badgeClass}">${isGreen ? '獨家' : '違禁品'}</span>
+                            </div>
+                            <div class="text-[11px] font-mono-tech text-[#9c9163] mt-0.5">單價: ${window.formatValue(unitVal)} · 小計: <span class="text-[#f2e394] font-bold">${window.formatValue(subTotal)}</span></div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" onclick="changeWeaponQty('${side}', '${w.id}', -1)" class="w-7 h-7 rounded-lg bg-[#241f0f] hover:bg-[#383018] text-[#faf2c3] border border-[#574d28] text-xs font-black">-</button>
+                            <span class="w-6 text-center text-xs font-mono-tech font-bold text-[#faf2c3]">${qty}</span>
+                            <button type="button" onclick="changeWeaponQty('${side}', '${w.id}', 1)" class="w-7 h-7 rounded-lg bg-[#241f0f] hover:bg-[#383018] text-[#faf2c3] border border-[#574d28] text-xs font-black">+</button>
+                            <button type="button" onclick="removeWeapon('${side}', '${w.id}')" class="w-7 h-7 rounded-lg bg-red-950/60 hover:bg-red-900/70 text-red-300 border border-red-800/50 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function updateCalculatorUI() {
+            const mySum = calculateSideSummary(window.state.my);
+            const theirSum = calculateSideSummary(window.state.their);
+            document.getElementById('my-item-count').textContent = `${mySum.itemCount} 件物資`;
+            document.getElementById('my-total-display').textContent = window.formatValue(mySum.total);
+            document.getElementById('my-range-display').innerHTML = `<span>區間: ${window.formatValue(mySum.minTotal)} ~ ${window.formatValue(mySum.maxTotal)}</span><span class="text-[#f2e394] font-bold">含積分: ${window.formatValue(mySum.points)}</span>`;
+
+            document.getElementById('their-item-count').textContent = `${theirSum.itemCount} 件物資`;
+            document.getElementById('their-total-display').textContent = window.formatValue(theirSum.total);
+            document.getElementById('their-range-display').innerHTML = `<span>區間: ${window.formatValue(theirSum.minTotal)} ~ ${window.formatValue(theirSum.maxTotal)}</span><span class="text-[#6ee7b7] font-bold">含積分: ${window.formatValue(theirSum.points)}</span>`;
+
+            renderSideWeaponsList('my');
+            renderSideWeaponsList('their');
+
+            const verdictPanel = document.getElementById('verdict-panel');
+            const verdictBox = document.getElementById('verdict-box');
+            const verdictBadge = document.getElementById('verdict-badge');
+            const verdictPercent = document.getElementById('verdict-percent');
+            const verdictDiff = document.getElementById('verdict-diff');
+
+            verdictPanel.classList.remove('glow-win', 'glow-loss', 'glow-even');
+
+            if (mySum.total === 0 && theirSum.total === 0) {
+                verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-[#2b2613] text-[#c7ba81] border border-[#574d28]';
+                verdictBadge.textContent = '[ 系統待機：請輸入交易物資 ]';
+                verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-[#d6c67c] my-1';
+                verdictPercent.textContent = '0.0%';
+                verdictDiff.textContent = '淨差額: 0';
+                verdictBox.style.borderColor = '#4d4423';
+                return;
+            }
+
+            const diff = theirSum.total - mySum.total;
+            const base = mySum.total > 0 ? mySum.total : theirSum.total;
+            const pct = base > 0 ? (diff / base) * 100 : 0;
+            const pctStr = `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`;
+            const diffStr = `${diff >= 0 ? '+' : ''}${window.formatValue(diff)}`;
+
+            if (pct > 5) {
+                verdictPanel.classList.add('glow-win');
+                verdictBox.style.borderColor = '#22c55e';
+                verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-emerald-950 text-emerald-300 border border-emerald-500/60';
+                verdictBadge.textContent = '[ 評估結果：賺爛了 / 超值入手 ]';
+                verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-emerald-400 my-1';
+                verdictPercent.textContent = pctStr;
+                verdictDiff.textContent = `淨賺差額: ${diffStr}`;
+            } else if (pct < -5) {
+                verdictPanel.classList.add('glow-loss');
+                verdictBox.style.borderColor = '#ef4444';
+                verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-red-950 text-red-300 border border-red-500/60';
+                verdictBadge.textContent = '[ 警告：虧損偏高 / 建議重新議價 ]';
+                verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-red-400 my-1';
+                verdictPercent.textContent = pctStr;
+                verdictDiff.textContent = `淨虧差額: ${diffStr}`;
+            } else {
+                verdictPanel.classList.add('glow-even');
+                verdictBox.style.borderColor = '#eab308';
+                verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-amber-950 text-amber-300 border border-amber-500/60';
+                verdictBadge.textContent = '[ 評估結果：價值相當 / 公平交換 ]';
+                verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-amber-300 my-1';
+                verdictPercent.textContent = pctStr;
+                verdictDiff.textContent = `淨差額: ${diffStr}`;
+            }
+        }
+
+        function renderReferenceDatabase() {
+            const greenEl = document.getElementById('ref-green-list');
+            const goldEl = document.getElementById('ref-gold-list');
+            if (!greenEl || !goldEl) return;
+
+            const renderCards = (items, isGreen) => items.map(w => {
+                const val = window.getWeaponUnitValue(w);
+                return `
+                    <div class="bg-[#18150b] border ${isGreen ? 'border-emerald-800/50 hover:border-emerald-500/70' : 'border-amber-800/50 hover:border-amber-500/70'} rounded-lg p-2.5 transition">
+                        <div class="text-xs font-bold text-[#faf2c3] truncate">${escapeHtml(w.name)}</div>
+                        <div class="text-[11px] font-mono-tech ${isGreen ? 'text-emerald-400' : 'text-amber-400'} mt-0.5">${window.formatValue(val)} <span class="text-[#8a7f56]">(${w.priceText})</span></div>
+                    </div>`;
+            }).join('');
+
+            greenEl.innerHTML = renderCards(WEAPONS_DB.filter(w => w.category === 'green'), true);
+            goldEl.innerHTML = renderCards(WEAPONS_DB.filter(w => w.category === 'gold'), false);
+        }
 
         window.openWeaponModal = function(side) {
             window.state.activeModalSide = side;
-            const modal = document.getElementById('weapon-modal');
-            const title = document.getElementById('modal-title');
-            const searchInput = document.getElementById('weapon-search');
-            if (title) {
-                title.innerHTML = side === 'my'
-                    ? '<i class="fa-solid fa-hand-holding-dollar text-amber-400"></i> 加入物資至【我方付出】'
-                    : '<i class="fa-solid fa-scale-unbalanced text-emerald-400"></i> 加入物資至【對方拿出】';
-            }
-            if (searchInput) searchInput.value = '';
+            window.state.modalFilter = 'all';
+            const titleEl = document.getElementById('modal-title');
+            if (titleEl) titleEl.textContent = side === 'my' ? '選擇要加入「我方付出」的物資' : '選擇要加入「對方拿出」的物資';
+            const searchEl = document.getElementById('weapon-search');
+            if (searchEl) searchEl.value = '';
             window.setModalFilter('all');
-            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+            const modal = document.getElementById('weapon-modal');
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); setTimeout(() => searchEl?.focus(), 50); }
         };
 
         window.closeWeaponModal = function() {
@@ -3634,9 +3870,8 @@
             ['all', 'green', 'gold'].forEach(f => {
                 const btn = document.getElementById(`filter-${f}`);
                 if (!btn) return;
-                if (f === filter) {
-                    btn.className = 'px-3 py-1.5 rounded-lg text-xs font-black bg-[#8c7b38] text-[#141208] transition';
-                } else {
+                if (f === filter) btn.className = 'px-3 py-1.5 rounded-lg text-xs font-black bg-[#8c7b38] text-[#141208] transition';
+                else {
                     const colorClass = f === 'green' ? 'text-emerald-400' : (f === 'gold' ? 'text-amber-400' : 'text-[#9c9163]');
                     btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold ${colorClass} hover:bg-[#242010] transition`;
                 }
@@ -3647,1822 +3882,1068 @@
         window.renderModalWeapons = function() {
             const grid = document.getElementById('modal-weapon-grid');
             if (!grid) return;
-            const keyword = (document.getElementById('weapon-search')?.value || '').trim().toLowerCase();
-            const side = window.state.activeModalSide;
-            const filtered = WEAPONS_DB.filter(w =>
-                (window.state.modalFilter === 'all' || w.category === window.state.modalFilter) &&
-                (!keyword || w.name.toLowerCase().includes(keyword))
-            );
-            if (filtered.length === 0) {
-                grid.innerHTML = `<div class="col-span-full py-10 text-center text-[#7d734b] text-sm">找不到符合條件的後室物資</div>`;
+            const q = (document.getElementById('weapon-search')?.value || '').trim().toLowerCase();
+            const filter = window.state.modalFilter;
+            const list = WEAPONS_DB.filter(w => {
+                if (filter !== 'all' && w.category !== filter) return false;
+                if (q && !w.name.toLowerCase().includes(q)) return false;
+                return true;
+            });
+            if (list.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-10 text-center text-xs text-[#7d734b]">找不到符合條件的物資</div>`;
                 return;
             }
-            grid.innerHTML = filtered.map(w => {
+            const side = window.state.activeModalSide;
+            grid.innerHTML = list.map(w => {
+                const currentQty = window.state[side].weapons[w.id] || 0;
+                const val = window.getWeaponUnitValue(w);
                 const isGreen = w.category === 'green';
-                const qty = window.state[side].weapons[w.id] || 0;
                 return `
-                    <button type="button" onclick="addWeapon('${side}', '${w.id}')" class="text-left p-3.5 rounded-xl bg-[#121008] hover:bg-[#241f0f] border ${isGreen ? 'border-emerald-700/50 hover:border-emerald-400' : 'border-amber-700/50 hover:border-amber-400'} transition flex items-center justify-between gap-3 group">
+                    <button type="button" onclick="addWeaponToSide('${side}', '${w.id}')" class="text-left bg-[#121008] hover:bg-[#241f0e] border ${isGreen ? 'border-emerald-700/50 hover:border-emerald-400' : 'border-amber-700/50 hover:border-amber-400'} rounded-xl p-3.5 transition flex items-center justify-between gap-2 group">
                         <div class="min-w-0">
                             <div class="flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full ${isGreen ? 'bg-emerald-400' : 'bg-amber-400'} shrink-0"></span>
-                                <span class="text-sm font-black text-[#faf2c3] truncate">${w.name}</span>
+                                <span class="text-sm font-black text-[#faf2c3] truncate">${escapeHtml(w.name)}</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded font-bold ${isGreen ? 'bg-emerald-950 text-emerald-300' : 'bg-amber-950 text-amber-300'}">${isGreen ? '獨家' : '違禁品'}</span>
                             </div>
-                            <div class="text-[11px] font-mono-tech ${isGreen ? 'text-emerald-300' : 'text-amber-300'} mt-1">市價區間: ${w.priceText}</div>
+                            <div class="text-xs font-mono-tech ${isGreen ? 'text-emerald-400' : 'text-amber-400'} mt-1">${window.formatValue(val)} <span class="text-[11px] text-[#8a7f56]">(${w.priceText})</span></div>
                         </div>
-                        <div class="flex items-center gap-2 shrink-0">
-                            ${qty > 0 ? `<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/50 text-xs font-mono-tech font-bold">x${qty}</span>` : ''}
-                            <span class="w-7 h-7 rounded-lg bg-[#292311] group-hover:bg-[#8c7b38] group-hover:text-[#141208] text-[#d6c67c] flex items-center justify-center transition"><i class="fa-solid fa-plus text-xs"></i></span>
+                        <div class="shrink-0 flex items-center gap-1.5">
+                            ${currentQty > 0 ? `<span class="px-2 py-0.5 rounded bg-[#2e2712] text-[#f2e394] border border-[#756733] text-xs font-mono-tech font-bold">x${currentQty}</span>` : ''}
+                            <span class="w-8 h-8 rounded-lg bg-[#292311] group-hover:bg-[#8c7b38] group-hover:text-[#141208] text-[#d6c67c] flex items-center justify-center transition"><i class="fa-solid fa-plus"></i></span>
                         </div>
-                    </button>
-                `;
+                    </button>`;
             }).join('');
-        };
-
-        function calculateSideSummary(side) {
-            const sideData = window.state[side];
-            let weaponsVal = 0, minWeaponsVal = 0, maxWeaponsVal = 0, itemCount = 0;
-            Object.entries(sideData.weapons).forEach(([wId, qty]) => {
-                const w = WEAPONS_DB.find(item => item.id === wId);
-                if (w && qty > 0) {
-                    itemCount += qty;
-                    weaponsVal += window.getWeaponUnitValue(w) * qty;
-                    minWeaponsVal += w.min * qty;
-                    maxWeaponsVal += w.max * qty;
-                }
-            });
-            return {
-                total: weaponsVal + sideData.points,
-                minTotal: minWeaponsVal + sideData.points,
-                maxTotal: maxWeaponsVal + sideData.points,
-                points: sideData.points,
-                itemCount
-            };
-        }
-
-        function renderSideWeaponsList(side) {
-            const container = document.getElementById(`${side}-weapons-list`);
-            if (!container) return;
-            const entries = Object.entries(window.state[side].weapons).filter(([_, qty]) => qty > 0);
-            if (entries.length === 0) {
-                container.innerHTML = `<div class="flex-grow min-h-[140px] rounded-xl border border-dashed border-[#423a1e] bg-[#121008]/50 flex flex-col items-center justify-center text-[#7d734b] text-xs p-4 text-center"><i class="fa-solid fa-box-open text-xl mb-1.5 opacity-60"></i><span>尚未加入任何物資，點擊上方「加入武器」</span></div>`;
-                return;
-            }
-            container.innerHTML = entries.map(([wId, qty]) => {
-                const w = WEAPONS_DB.find(item => item.id === wId);
-                if (!w) return '';
-                const isGreen = w.category === 'green';
-                const subtotal = window.getWeaponUnitValue(w) * qty;
-                return `
-                    <div class="p-3 rounded-xl bg-[#121008]/95 border ${isGreen ? 'border-emerald-700/40' : 'border-amber-700/40'} flex items-center justify-between gap-2">
-                        <div class="min-w-0">
-                            <div class="flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full ${isGreen ? 'bg-emerald-400' : 'bg-amber-400'} shrink-0"></span>
-                                <span class="text-xs sm:text-sm font-bold text-[#faf2c3] truncate">${w.name}</span>
-                            </div>
-                            <div class="text-[11px] font-mono-tech text-[#9c9163] mt-0.5">單價: ${w.priceText} · 小計: <span class="${isGreen ? 'text-emerald-300' : 'text-amber-300'} font-bold">${window.formatValue(subtotal)}</span></div>
-                        </div>
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <button type="button" onclick="updateWeaponCount('${side}', '${w.id}', -1)" class="w-7 h-7 rounded-lg bg-[#241f0f] hover:bg-red-950 text-[#d6c67c] hover:text-red-300 border border-[#4d4423] text-xs font-bold flex items-center justify-center transition"><i class="fa-solid fa-minus"></i></button>
-                            <span class="w-7 text-center text-xs font-mono-tech font-bold text-[#faf2c3]">${qty}</span>
-                            <button type="button" onclick="updateWeaponCount('${side}', '${w.id}', 1)" class="w-7 h-7 rounded-lg bg-[#241f0f] hover:bg-emerald-950 text-[#d6c67c] hover:text-emerald-300 border border-[#4d4423] text-xs font-bold flex items-center justify-center transition"><i class="fa-solid fa-plus"></i></button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function renderReferenceLists() {
-            const greenEl = document.getElementById('ref-green-list');
-            const goldEl = document.getElementById('ref-gold-list');
-            if (greenEl) {
-                greenEl.innerHTML = WEAPONS_DB.filter(w => w.category === 'green').map(w => `
-                    <div class="p-2 rounded-lg bg-[#1a170c] border border-emerald-800/40 flex flex-col justify-between">
-                        <span class="text-xs font-bold text-[#faf2c3] truncate">${w.name}</span>
-                        <span class="text-[11px] font-mono-tech text-emerald-400 mt-0.5">${w.priceText}</span>
-                    </div>
-                `).join('');
-            }
-            if (goldEl) {
-                goldEl.innerHTML = WEAPONS_DB.filter(w => w.category === 'gold').map(w => `
-                    <div class="p-2 rounded-lg bg-[#1a170c] border border-amber-800/40 flex flex-col justify-between">
-                        <span class="text-xs font-bold text-[#faf2c3] truncate">${w.name}</span>
-                        <span class="text-[11px] font-mono-tech text-amber-400 mt-0.5">${w.priceText}</span>
-                    </div>
-                `).join('');
-            }
-        }
-
-        window.updateAllUI = function() {
-            const mySum = calculateSideSummary('my');
-            const theirSum = calculateSideSummary('their');
-            document.getElementById('my-total-display').textContent = window.formatValue(mySum.total);
-            document.getElementById('my-item-count').textContent = `${mySum.itemCount} 件物資`;
-            document.getElementById('my-range-display').innerHTML = `<span>區間: ${window.formatValue(mySum.minTotal)} ~ ${window.formatValue(mySum.maxTotal)}</span><span class="text-[#f2e394] font-bold">含積分: ${window.formatValue(mySum.points)}</span>`;
-            document.getElementById('my-points-formatted').textContent = window.formatValue(mySum.points);
-
-            document.getElementById('their-total-display').textContent = window.formatValue(theirSum.total);
-            document.getElementById('their-item-count').textContent = `${theirSum.itemCount} 件物資`;
-            document.getElementById('their-range-display').innerHTML = `<span>區間: ${window.formatValue(theirSum.minTotal)} ~ ${window.formatValue(theirSum.maxTotal)}</span><span class="text-[#6ee7b7] font-bold">含積分: ${window.formatValue(theirSum.points)}</span>`;
-            document.getElementById('their-points-formatted').textContent = window.formatValue(theirSum.points);
-
-            const verdictBox = document.getElementById('verdict-box');
-            const verdictBadge = document.getElementById('verdict-badge');
-            const verdictPercent = document.getElementById('verdict-percent');
-            const verdictDiff = document.getElementById('verdict-diff');
-            verdictBox.classList.remove('glow-win', 'glow-loss', 'glow-even');
-
-            if (mySum.total === 0 && theirSum.total === 0) {
-                verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-[#2b2613] text-[#c7ba81] border border-[#574d28]';
-                verdictBadge.textContent = '[ 系統待機：請輸入交易物資 ]';
-                verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-[#d6c67c] my-1';
-                verdictPercent.textContent = '0.0%';
-                verdictDiff.textContent = '淨差額: 0';
-            } else {
-                const diff = theirSum.total - mySum.total;
-                const pct = mySum.total > 0 ? (diff / mySum.total) * 100 : (theirSum.total > 0 ? 100 : 0);
-                const sign = diff > 0 ? '+' : '';
-                if (pct > 5) {
-                    verdictBox.classList.add('glow-win');
-                    verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-emerald-950 text-emerald-300 border border-emerald-500/60';
-                    verdictBadge.textContent = '▲ 賺爛了 (BIG WIN)';
-                    verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-emerald-400 my-1';
-                } else if (pct < -5) {
-                    verdictBox.classList.add('glow-loss');
-                    verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-red-950 text-red-300 border border-red-500/60';
-                    verdictBadge.textContent = '▼ 虧大了 (BIG LOSS)';
-                    verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-red-400 my-1';
-                } else {
-                    verdictBox.classList.add('glow-even');
-                    verdictBadge.className = 'px-3.5 py-1 rounded text-xs font-black tracking-wider mb-2 bg-amber-950 text-amber-300 border border-amber-500/60';
-                    verdictBadge.textContent = '◆ 價值持平 (FAIR TRADE)';
-                    verdictPercent.className = 'text-4xl sm:text-5xl font-mono-tech font-bold tracking-tight text-amber-300 my-1';
-                }
-                verdictPercent.textContent = `${sign}${pct.toFixed(1)}%`;
-                verdictDiff.textContent = `淨差額: ${sign}${window.formatValue(diff)}`;
-            }
-            renderSideWeaponsList('my');
-            renderSideWeaponsList('their');
         };
 
         function escapeHtml(str) {
             if (!str) return '';
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+            return str.toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
 
-        function formatChatTime(timestamp) {
-            if (!timestamp) return '';
-            const d = new Date(timestamp);
+        function formatChatTime(ts) {
+            if (!ts) return '剛剛';
+            const d = new Date(ts);
+            if (isNaN(d.getTime())) return '剛剛';
             return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
         }
 
-        function getChatEffectClass(effectId) {
-            if (!effectId) return '';
-            const found = CHAT_EFFECT_SHOP.find(e => e.id === effectId);
-            return found ? found.cssClass : '';
+        function getEffectBubbleClass(effectId, isMine) {
+            if (effectId === 'gold') return 'bubble-fx-gold';
+            if (effectId === 'silver') return 'bubble-fx-silver';
+            if (effectId === 'fire') return 'bubble-fx-fire';
+            if (effectId === 'lightning') return 'bubble-fx-lightning';
+            if (effectId === 'ice') return 'bubble-fx-ice';
+            return isMine ? 'bg-[#362f14] border border-[#8c7b38]/70 text-[#faf2c3] rounded-tr-sm' : 'bg-[#17150c] border border-[#4d4423] text-[#e8dfae] rounded-tl-sm';
         }
 
         window.renderChatMessages = function() {
             const container = document.getElementById('chat-messages-container');
             const countEl = document.getElementById('chat-msg-count');
-            if (!container) return;
-            const now = Date.now();
-            const msgs = (window.state.chatMessages || []).filter(m => !(m && m.imageUrl && m.expiresAt && Number(m.expiresAt) <= now));
+            const nowMs = Date.now();
+            const msgs = (window.state.chatMessages || []).filter(m => {
+                if (!m) return false;
+                if (m.imageUrl && m.expiresAt && Number(m.expiresAt) <= nowMs) return false;
+                return true;
+            });
             if (countEl) countEl.textContent = msgs.length;
+            if (!container) return;
 
             if (msgs.length === 0) {
-                container.innerHTML = `<div class="py-16 text-center text-[#7d734b]"><i class="fa-solid fa-radio text-3xl mb-3 opacity-50"></i><p class="text-sm font-bold">目前尚無流浪者留言</p><p class="text-xs mt-1">在下方輸入訊息，開始與其他後室玩家交流交易吧！</p></div>`;
-                if (document.getElementById('floating-mini-window')?.classList.contains('open')) window.renderFloatingMiniWindow();
+                container.innerHTML = `<div class="py-16 text-center text-[#7d734b]"><i class="fa-solid fa-radio text-3xl mb-3 opacity-40"></i><p class="text-sm font-bold">頻道目前寂靜無聲</p><p class="text-xs mt-1">在下方輸入訊息，開始與其他玩家交流或洽談物資！</p></div>`;
                 return;
             }
 
-            container.innerHTML = msgs.map(msg => {
-                const isMine = msg.senderUid === window.currentUserUid;
-                const isMsgMainAdmin = Boolean(msg.isAdmin && msg.adminRole !== 'co');
-                const isMsgCoAdmin = Boolean(msg.isAdmin && msg.adminRole === 'co');
-                const isMsgVip = Boolean(msg.isVip);
-                const msgFrameId = msg.avatarFrame || (msg.hasCyberFrame ? 'cyber' : '');
-                const isCyberFrameMsg = msgFrameId === 'cyber';
-                const shouldAnimateCyber = isCyberFrameMsg && msg.id && !animatedCyberMsgIds.has(msg.id);
-                if (shouldAnimateCyber) animatedCyberMsgIds.add(msg.id);
+            const wasNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 140;
 
-                const safeNick = escapeHtml(msg.nickname || '無名流浪者');
-                const safeText = escapeHtml(msg.text || '');
-                const safeImageUrl = (msg.imageUrl && (msg.imageUrl.startsWith('data:image/') || msg.imageUrl.startsWith('https://'))) ? msg.imageUrl : '';
-                const timeStr = formatChatTime(msg.createdAt);
-                const customFxClass = getChatEffectClass(msg.chatEffect);
+            container.innerHTML = msgs.map(m => {
+                const isMine = m.senderUid === window.currentUserUid;
+                const safeNick = escapeHtml(m.nickname || '無名流浪者');
+                const safeText = escapeHtml(m.text || '');
+                const timeStr = formatChatTime(m.createdAt);
+                const msgIsMainAdmin = Boolean(m.isAdmin && m.adminRole !== 'co');
+                const msgIsCoAdmin = Boolean(m.isAdmin && m.adminRole === 'co');
+                const msgIsVip = Boolean(m.isVip);
 
-                let bubbleClass = isMine
-                    ? 'bg-gradient-to-br from-[#3b3214] to-[#26200c] border border-[#a89444]/70 text-[#faf2c3] rounded-tr-sm'
-                    : 'bg-[#1a170c]/95 border border-[#4d4423] text-[#e6dfb8] rounded-tl-sm';
+                const frameId = m.avatarFrame || (m.hasCyberFrame ? 'cyber' : '');
+                const isCyberFrame = frameId === 'cyber';
+                const shouldPlayCyberEnter = isCyberFrame && m.id && !animatedCyberMsgIds.has(m.id);
+                if (shouldPlayCyberEnter) animatedCyberMsgIds.add(m.id);
 
-                if (isMsgMainAdmin) bubbleClass = 'admin-rainbow-bubble text-white rounded-tl-sm';
-                else if (isMsgCoAdmin) bubbleClass = 'coadmin-diamond-bubble rounded-tl-sm';
-                if (customFxClass) bubbleClass = `${customFxClass} ${isMine ? 'rounded-tr-sm' : 'rounded-tl-sm'}`;
-                if (shouldAnimateCyber) bubbleClass += ' cyber-msg-enter-box';
+                const animBoxClass = shouldPlayCyberEnter ? 'cyber-msg-enter-box' : '';
+                const animTextClass = shouldPlayCyberEnter ? 'cyber-msg-enter-text' : '';
+                const animAvatarClass = shouldPlayCyberEnter ? 'cyber-msg-enter-avatar' : '';
 
-                let nickClass = isMine ? 'text-amber-300' : 'text-[#d6c67c]';
-                if (isMsgMainAdmin) nickClass = 'admin-rainbow-text font-black';
-                else if (isMsgCoAdmin) nickClass = 'text-sky-200 font-black';
+                const clickAttr = !isMine && m.senderUid
+                    ? `onclick='openDmConfirmModal("${m.senderUid}", "${safeNick.replace(/"/g, "&quot;")}", "${(m.avatar && m.avatar.startsWith("data:image/")) ? m.avatar : DEFAULT_AVATAR_URL}")'`
+                    : '';
+                const cursorClass = !isMine && m.senderUid ? 'cursor-pointer hover:brightness-110' : '';
+                const avatarHtml = renderAvatarWithFrameHtml(m.avatar, frameId, `w-9 h-9 rounded-full object-cover border border-[#6e602e] bg-[#241f0f] ${cursorClass}`, clickAttr, animAvatarClass);
 
-                const adminBadge = isMsgCoAdmin
-                    ? `<span class="px-1.5 py-0.2 rounded bg-sky-950/90 text-sky-200 border border-sky-300/70 text-[10px] font-mono-tech font-black">💎 共同管理員</span>`
-                    : (isMsgMainAdmin ? `<span class="px-1.5 py-0.2 rounded bg-purple-950/90 text-amber-200 border border-fuchsia-400/60 text-[10px] font-mono-tech font-black">🌈 管理員</span>` : '');
-
-                const vipBadge = isMsgVip ? `<span class="px-1.5 py-0.2 rounded vip-gold-badge text-[10px] font-black">★ VIP</span>` : '';
-                const isTargetMuted = Boolean(msg.senderUid && window.state.mutedUsers[msg.senderUid]);
-
-                let adminActionsHtml = '';
-                if (window.state.isAdmin && msg.id) {
-                    const canModerateThisMsg = !(window.state.adminRole === 'co' && isMsgMainAdmin);
-                    const delBtn = canModerateThisMsg ? `<button type="button" onclick="adminDeleteMessage('${msg.id}', ${isMsgMainAdmin})" class="text-[10px] px-1.5 py-0.5 rounded bg-red-950/80 hover:bg-red-800 text-red-300 border border-red-700/50 font-bold">刪除</button>` : '';
-                    const muteBtn = (!isMine && msg.senderUid && canModerateThisMsg) ? `<button type="button" onclick="adminToggleMute('${msg.senderUid}', '${safeNick.replace(/'/g, "&#39;")}', ${isMsgMainAdmin})" class="text-[10px] px-1.5 py-0.5 rounded ${isTargetMuted ? 'bg-emerald-950 text-emerald-300 border-emerald-700/50' : 'bg-amber-950 text-amber-300 border-amber-700/50'} border font-bold">${isTargetMuted ? '解禁' : '禁言'}</button>` : '';
-                    const grantBtn = msg.senderUid ? `<button type="button" onclick="adminGrantCores('${msg.senderUid}', '${safeNick.replace(/'/g, "&#39;")}', 20)" class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950/90 hover:bg-cyan-800 text-cyan-300 border border-cyan-600/50 font-bold">+20核心</button>` : '';
-                    adminActionsHtml = `<div class="flex items-center gap-1 mt-1 ${isMine ? 'justify-end' : 'justify-start'}">${delBtn}${muteBtn}${grantBtn}</div>`;
+                let nameClass = isMine ? 'text-amber-300' : 'text-emerald-300';
+                let badgeHtml = '';
+                if (msgIsMainAdmin) {
+                    nameClass = 'admin-rainbow-text font-black';
+                    badgeHtml = `<span class="px-1.5 py-0.5 rounded bg-gradient-to-r from-red-500/20 via-amber-400/20 to-purple-500/20 text-amber-200 border border-amber-400/60 text-[10px] font-mono-tech font-black">🌈 管理員</span>`;
+                } else if (msgIsCoAdmin) {
+                    nameClass = 'text-sky-200 font-black';
+                    badgeHtml = `<span class="px-1.5 py-0.5 rounded bg-sky-950/90 text-sky-200 border border-sky-300 text-[10px] font-mono-tech font-black">💎 共同管理員</span>`;
+                }
+                if (msgIsVip) {
+                    badgeHtml += `<span class="px-1.5 py-0.5 rounded vip-gold-badge text-[10px] font-black">★ VIP</span>`;
                 }
 
-                const avatarClickAttr = (!isMine && msg.senderUid) ? `onclick='openDmConfirmModal("${msg.senderUid}", "${safeNick.replace(/"/g, "&quot;")}", "${(msg.avatar && msg.avatar.startsWith("data:image/")) ? msg.avatar : DEFAULT_AVATAR_URL}")'` : '';
-                const avatarCursorClass = (!isMine && msg.senderUid) ? 'cursor-pointer hover:scale-105 transition' : '';
-                const animAvatarClass = shouldAnimateCyber ? 'cyber-msg-enter-avatar' : '';
-                const avatarHtml = renderAvatarWithFrameHtml(msg.avatar, msgFrameId, `w-9 h-9 rounded-full object-cover bg-[#241f0f] ${avatarCursorClass}`, avatarClickAttr, animAvatarClass);
-                const contentHtml = safeImageUrl
-                    ? `<div class="space-y-1.5"><img src="${safeImageUrl}" alt="玩家圖片" class="max-w-[240px] max-h-[240px] rounded-xl object-cover border border-white/15">${safeText ? `<p class="text-xs sm:text-sm leading-relaxed break-words whitespace-pre-wrap ${shouldAnimateCyber ? 'cyber-msg-enter-text' : ''}">${safeText}</p>` : ''}<div class="text-[10px] font-mono-tech opacity-75">圖片將於 24 小時後自動清除</div></div>`
-                    : `<p class="text-xs sm:text-sm leading-relaxed break-words whitespace-pre-wrap ${shouldAnimateCyber ? 'cyber-msg-enter-text' : ''}">${safeText}</p>`;
+                let bubbleClass = getEffectBubbleClass(m.effect, isMine);
+                if (msgIsMainAdmin && !m.effect) bubbleClass = 'admin-rainbow-bubble text-[#fff9db] rounded-2xl';
+                else if (msgIsCoAdmin && !m.effect) bubbleClass = 'coadmin-diamond-bubble rounded-2xl';
+                else bubbleClass += (isMine ? ' rounded-tr-sm' : ' rounded-tl-sm');
+
+                let adminActionsHtml = '';
+                if (window.state.isAdmin && m.id) {
+                    const canModerateTarget = window.state.adminRole === 'main' || !msgIsMainAdmin;
+                    const isTargetMuted = Boolean(m.senderUid && window.state.mutedUsers[m.senderUid]);
+                    adminActionsHtml = `
+                        <div class="flex items-center gap-1 mt-1 ${isMine ? 'justify-end' : 'justify-start'} text-[10px]">
+                            ${canModerateTarget ? `<button type="button" onclick="adminDeleteMessage('${m.id}', ${msgIsMainAdmin})" class="px-1.5 py-0.5 rounded bg-red-950/80 hover:bg-red-800 text-red-300 border border-red-700/50 font-bold">刪訊</button>` : ''}
+                            ${!isMine && m.senderUid && canModerateTarget ? `<button type="button" onclick="adminToggleMute('${m.senderUid}', '${safeNick.replace(/"/g, "&quot;")}', ${msgIsMainAdmin})" class="px-1.5 py-0.5 rounded ${isTargetMuted ? 'bg-emerald-950 text-emerald-300 border-emerald-700/50' : 'bg-amber-950/80 text-amber-300 border-amber-700/50'} border font-bold">${isTargetMuted ? '解禁' : '禁言'}</button>` : ''}
+                            ${!isMine && m.senderUid ? `<button type="button" onclick="adminGrantCores('${m.senderUid}', '${safeNick.replace(/"/g, "&quot;")}', 20)" class="px-1.5 py-0.5 rounded bg-cyan-950/80 hover:bg-cyan-800 text-cyan-300 border border-cyan-600/50 font-bold">+20核心</button>` : ''}
+                        </div>`;
+                }
+
+                const bodyContentHtml = m.imageUrl
+                    ? `<div class="space-y-1.5 ${animTextClass}"><img src="${m.imageUrl}" alt="玩家圖片" class="max-w-[240px] max-h-[240px] rounded-xl object-contain border border-white/15 bg-black/40"><div class="text-[10px] opacity-70 font-mono-tech">24小時後自動刪除</div></div>`
+                    : `<div class="text-xs sm:text-sm leading-relaxed break-words whitespace-pre-wrap ${animTextClass}">${safeText}</div>`;
 
                 return `
                     <div class="flex items-start gap-2.5 ${isMine ? 'flex-row-reverse' : 'flex-row'}">
                         ${avatarHtml}
                         <div class="max-w-[78%] sm:max-w-[68%] flex flex-col ${isMine ? 'items-end' : 'items-start'}">
-                            <div class="flex items-center gap-1.5 mb-1 px-1 flex-wrap ${isMine ? 'flex-row-reverse' : 'flex-row'}">
-                                <span class="text-xs font-black ${nickClass}">${isMine ? `${safeNick} (我)` : safeNick}</span>
-                                ${adminBadge}${vipBadge}
-                                ${isTargetMuted ? `<span class="text-[10px] text-red-400 font-mono-tech">[已禁言]</span>` : ''}
+                            <div class="flex items-center gap-1.5 mb-1 px-1 flex-wrap ${isMine ? 'flex-row-reverse' : ''}">
+                                <span class="text-xs font-black ${nameClass} ${cursorClass}" ${clickAttr}>${isMine ? '我 (' + safeNick + ')' : safeNick}</span>
+                                ${badgeHtml}
                                 <span class="text-[10px] font-mono-tech text-[#8a7f56]">${timeStr}</span>
                             </div>
-                            <div class="px-4 py-2.5 rounded-2xl shadow-md ${bubbleClass}">${contentHtml}</div>
+                            <div class="px-4 py-2.5 rounded-2xl shadow-md ${bubbleClass} ${animBoxClass}">
+                                ${bodyContentHtml}
+                            </div>
                             ${adminActionsHtml}
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }).join('');
 
-            container.scrollTop = container.scrollHeight;
-            if (document.getElementById('floating-mini-window')?.classList.contains('open')) window.renderFloatingMiniWindow();
+            if (wasNearBottom) container.scrollTop = container.scrollHeight;
+            const miniWin = document.getElementById('floating-mini-window');
+            if (miniWin && miniWin.classList.contains('open')) window.renderFloatingMiniWindow();
         };
 
         window.handleSendChatMessage = async function(event) {
             event.preventDefault();
             if (!window.state.isAdmin && window.state.mutedUsers[window.currentUserUid]) {
-                window.showToast('你目前已被管理員禁言，暫時無法在公共頻道發言。', 'error');
+                window.showToast('你目前已被管理員禁言，暫時無法在討論區發言。', 'error');
                 return;
             }
             const textInput = document.getElementById('chat-text-input');
             const sendBtn = document.getElementById('chat-send-btn');
             const nickname = window.getEffectiveNickname();
             const text = textInput ? textInput.value.trim().slice(0, 300) : '';
-            if (!text) { window.showToast('請輸入要發送的訊息內容', 'error'); textInput?.focus(); return; }
+            if (!text) { window.showToast('請先輸入訊息內容', 'error'); textInput?.focus(); return; }
             if (!window.chatCloudAPI || typeof window.chatCloudAPI.sendMessage !== 'function') {
                 window.showToast('雲端聊天室尚未連線完成，請稍後再試', 'error');
                 return;
             }
+            if (sendBtn) sendBtn.disabled = true;
             try {
-                if (sendBtn) sendBtn.disabled = true;
                 await window.chatCloudAPI.sendMessage(
                     nickname, text, window.state.userAvatar, window.state.isAdmin,
                     window.state.equippedEffect, window.state.equippedAvatarFrame || '',
                     window.state.adminRole, Boolean(window.state.hasVip && window.state.vipBadgeEnabled)
                 );
                 if (textInput) textInput.value = '';
+                const container = document.getElementById('chat-messages-container');
+                if (container) requestAnimationFrame(() => { container.scrollTop = container.scrollHeight; });
             } catch (err) {
                 console.error(err);
-                window.showToast('訊息發送失敗，請檢查網路或資料庫權限', 'error');
+                window.showToast('訊息傳送失敗，請檢查網路或 Firebase 權限', 'error');
             } finally {
                 if (sendBtn) sendBtn.disabled = false;
-                textInput?.focus();
             }
         };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initUserProfile();
-            renderReferenceLists();
-            window.updateAllUI();
-            startHourlyCyberScheduler();
-            initGearMenuControls();
-        });
-    </script>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import {
-            getDatabase,
-            ref,
-            push,
-            remove,
-            set,
-            update,
-            runTransaction,
-            onValue,
-            onChildAdded,
-            onDisconnect,
-            query,
-            limitToLast,
-            get
-        } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyA6DmVSZtOQ4uzJY6IjFLnOV8LQ-DMhUX4",
-            authDomain: "backrooms-chat.firebaseapp.com",
-            databaseURL: "https://backrooms-chat-default-rtdb.firebaseio.com",
-            projectId: "backrooms-chat",
-            storageBucket: "backrooms-chat.firebasestorage.app",
-            messagingSenderId: "16982267920",
-            appId: "1:16982267920:web:306f59881100f2cb549295",
-            measurementId: "G-1SLPSR7Q9T"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const messagesQuery = query(ref(db, "messages"), limitToLast(80));
-        const marketListingsRef = ref(db, "marketListings");
-        const bossEventRef = ref(db, "events/bossBattle");
-        const mutedUsersRef = ref(db, "mutedUsers");
-        const monthlyResetRef = ref(db, "monthlyResetMonth");
-        const myGiftCoresRef = ref(db, `coreGifts/${window.currentUserUid}`);
-        const dmRequestsRef = ref(db, "dmRequests");
-        const dmRoomsRef = ref(db, "dmRooms");
-        const cyberEventRef = ref(db, "events/cyber");
-        const redPacketEventRef = ref(db, "events/redPacket");
-        const danmakuEventRef = ref(db, "events/danmaku");
-        const rpsDuelsRef = ref(db, "rpsDuels");
-        const voiceRoomEnabledRef = ref(db, "voiceRoom/enabled");
-        const voiceRoomMembersRef = ref(db, "voiceRoom/members");
-
-        const pageLoadedAt = Date.now();
-
-        /* 線上交易市場雲端同步 */
-        window.marketCloudAPI = {
-            createListing: async (payload) => {
-                const newRef = push(marketListingsRef);
-                await set(newRef, payload);
-            },
-            deleteListing: async (listingId) => {
-                if (!listingId) return;
-                await remove(ref(db, `marketListings/${listingId}`));
-            }
-        };
-
-        onValue(marketListingsRef, (snapshot) => {
-            const raw = snapshot.val() || {};
-            const list = Object.entries(raw).map(([id, val]) => ({ id, ...val }));
-            list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-            window.state.marketListings = list;
-            if (window.state.activeTab === 'market') {
-                window.renderMarketListings();
-            }
-        });
-
-        /* Boss 討伐活動雲端同步 */
-        window.bossCloudAPI = {
-            startEvent: async (maxHp) => {
-                await set(bossEventRef, {
-                    active: true,
-                    maxHp: Number(maxHp),
-                    hp: Number(maxHp),
-                    startedAt: Date.now()
-                });
-            },
-            dealDamage: async (dmg) => {
-                await runTransaction(ref(db, "events/bossBattle/hp"), (curr) => {
-                    if (curr === null || curr === undefined) return curr;
-                    return Math.max(0, Number(curr) - Number(dmg || 20));
-                });
-            },
-            endEvent: async () => {
-                await update(bossEventRef, { active: false, hp: 0 });
-            }
-        };
-
-        onValue(bossEventRef, (snapshot) => {
-            const data = snapshot.val();
-            window.applyCloudBossEvent(data);
-        });
 
         /* =========================================================
-           1. 穩定麥克風串流 + Web Audio API 小孩變聲器
+           WebRTC 語音通話 + 8人公共語音房 + 管理員小孩變聲器
         ========================================================= */
-        let voiceAudioCtx = null;
-        let voiceSourceNode = null;
-        let voiceDestNode = null;
-        let pitchShiftNode = null;
-        let formantFilter = null;
-        let rawMicStream = null;
-        let processedVoiceStream = null;
-        let audioKeepAliveTimer = null;
+        const ICE_SERVERS = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
+        let localStream = null, rawMicStream = null, kidVoiceCtx = null, kidVoiceSource = null, kidVoiceDest = null;
 
-        async function ensureRawMicStream() {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                throw new Error("此瀏覽器不支援麥克風語音通話");
-            }
-            if (!rawMicStream || rawMicStream.getAudioTracks().every(t => t.readyState === "ended")) {
-                rawMicStream = await navigator.mediaDevices.getUserMedia({
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true
-                    },
-                    video: false
-                });
-            }
-            rawMicStream.getAudioTracks().forEach(track => {
-                track.enabled = !(currentCallRoomId ? isCallMuted : window.state.vrMuted);
-            });
-            return rawMicStream;
-        }
-
-        async function ensureVoiceChangerStream() {
-            await ensureRawMicStream();
+        function buildProcessedAudioStream(rawStream) {
+            cleanupVoiceChangerGraph();
+            rawMicStream = rawStream;
+            if (!window.state.kidVoiceEnabled || !window.state.isAdmin) return rawStream;
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!voiceAudioCtx || voiceAudioCtx.state === "closed") {
-                voiceAudioCtx = new AudioCtx();
-                voiceSourceNode = voiceAudioCtx.createMediaStreamSource(rawMicStream);
-                voiceDestNode = voiceAudioCtx.createMediaStreamDestination();
-
-                const bufferSize = 2048;
-                pitchShiftNode = voiceAudioCtx.createScriptProcessor(bufferSize, 1, 1);
-                const grainSize = 1024;
-                const ringBuffer = new Float32Array(grainSize * 2);
-                let writeIdx = 0;
-                let phase1 = 0;
-                let phase2 = 0.5;
-
-                pitchShiftNode.onaudioprocess = (e) => {
-                    const input = e.inputBuffer.getChannelData(0);
-                    const output = e.outputBuffer.getChannelData(0);
-                    const isKidMode = Boolean(window.state.isAdmin && window.state.kidVoiceEnabled);
-
-                    if (!isKidMode) {
-                        output.set(input);
-                        return;
-                    }
-
-                    const pitchRatio = 1.42;
-                    const phaseInc = (pitchRatio - 1) / grainSize;
-
-                    for (let i = 0; i < input.length; i++) {
-                        ringBuffer[writeIdx] = input[i];
-                        ringBuffer[writeIdx + grainSize] = input[i];
-
-                        const delay1 = phase1 * grainSize;
-                        const delay2 = phase2 * grainSize;
-
-                        let idx1 = writeIdx - delay1;
-                        if (idx1 < 0) idx1 += grainSize;
-                        const i1 = Math.floor(idx1);
-                        const f1 = idx1 - i1;
-                        const s1 = ringBuffer[i1] * (1 - f1) + ringBuffer[i1 + 1] * f1;
-
-                        let idx2 = writeIdx - delay2;
-                        if (idx2 < 0) idx2 += grainSize;
-                        const i2 = Math.floor(idx2);
-                        const f2 = idx2 - i2;
-                        const s2 = ringBuffer[i2] * (1 - f2) + ringBuffer[i2 + 1] * f2;
-
-                        const w1 = 0.5 - 0.5 * Math.cos(2 * Math.PI * phase1);
-                        const w2 = 0.5 - 0.5 * Math.cos(2 * Math.PI * phase2);
-
-                        output[i] = (s1 * w1 + s2 * w2) * 1.15;
-
-                        phase1 += phaseInc;
-                        if (phase1 >= 1) phase1 -= 1;
-                        if (phase1 < 0) phase1 += 1;
-
-                        phase2 += phaseInc;
-                        if (phase2 >= 1) phase2 -= 1;
-                        if (phase2 < 0) phase2 += 1;
-
-                        writeIdx = (writeIdx + 1) % grainSize;
-                    }
-                };
-
-                formantFilter = voiceAudioCtx.createBiquadFilter();
-                formantFilter.type = "highshelf";
-                formantFilter.frequency.value = 1400;
-                formantFilter.gain.value = 0;
-
-                voiceSourceNode.connect(pitchShiftNode);
-                pitchShiftNode.connect(formantFilter);
-                formantFilter.connect(voiceDestNode);
-                processedVoiceStream = voiceDestNode.stream;
-            }
-
-            if (voiceAudioCtx.state === "suspended") {
-                await voiceAudioCtx.resume().catch(() => {});
-            }
-            updateKidVoiceGraphState();
-
-            if (!audioKeepAliveTimer) {
-                audioKeepAliveTimer = setInterval(() => {
-                    if (voiceAudioCtx && voiceAudioCtx.state === "suspended") {
-                        voiceAudioCtx.resume().catch(() => {});
-                    }
-                }, 2500);
-            }
-            return processedVoiceStream;
-        }
-
-        async function getActiveOutgoingStream() {
-            const raw = await ensureRawMicStream();
-            if (window.state.isAdmin && window.state.kidVoiceEnabled) {
-                return await ensureVoiceChangerStream();
-            }
-            return raw;
-        }
-
-        async function replaceOutgoingAudioTrackOnPeers() {
+            if (!AudioCtx) return rawStream;
             try {
-                const stream = await getActiveOutgoingStream();
-                const newTrack = stream.getAudioTracks()[0];
-                if (!newTrack) return;
-
-                if (peerConnection) {
-                    const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === "audio");
-                    if (sender) await sender.replaceTrack(newTrack).catch(() => {});
-                }
-                for (const entry of Object.values(vrPeers)) {
-                    const sender = entry?.pc?.getSenders().find(s => s.track && s.track.kind === "audio");
-                    if (sender) await sender.replaceTrack(newTrack).catch(() => {});
-                }
-            } catch (e) {
-                console.error(e);
-            }
+                kidVoiceCtx = new AudioCtx();
+                kidVoiceSource = kidVoiceCtx.createMediaStreamSource(rawStream);
+                const highpass = kidVoiceCtx.createBiquadFilter();
+                highpass.type = 'highpass'; highpass.frequency.value = 320;
+                const formant = kidVoiceCtx.createBiquadFilter();
+                formant.type = 'peaking'; formant.frequency.value = 1850; formant.Q.value = 2.2; formant.gain.value = 7;
+                kidVoiceDest = kidVoiceCtx.createMediaStreamDestination();
+                kidVoiceSource.connect(highpass);
+                highpass.connect(formant);
+                formant.connect(kidVoiceDest);
+                const outStream = new MediaStream();
+                kidVoiceDest.stream.getAudioTracks().forEach(t => outStream.addTrack(t));
+                rawStream.getAudioTracks().forEach(t => { t.enabled = !window.state.vrMuted && !isCallMuted; });
+                return outStream;
+            } catch (e) { return rawStream; }
         }
 
-        function setOutgoingAudioEnabled(enabled) {
-            if (rawMicStream) {
-                rawMicStream.getAudioTracks().forEach(t => { t.enabled = enabled; });
-            }
-            if (processedVoiceStream) {
-                processedVoiceStream.getAudioTracks().forEach(t => { t.enabled = enabled; });
-            }
+        function cleanupVoiceChangerGraph() {
+            try { if (kidVoiceSource) kidVoiceSource.disconnect(); } catch (e) {}
+            try { if (kidVoiceCtx && kidVoiceCtx.state !== 'closed') kidVoiceCtx.close(); } catch (e) {}
+            kidVoiceSource = null; kidVoiceCtx = null; kidVoiceDest = null;
         }
 
-        function updateKidVoiceGraphState() {
-            const active = Boolean(window.state.isAdmin && window.state.kidVoiceEnabled);
-            if (formantFilter) {
-                formantFilter.gain.value = active ? 8 : 0;
+        async function replaceOutgoingTrackOnPeers(peerList) {
+            if (!rawMicStream) return;
+            const newStream = buildProcessedAudioStream(rawMicStream);
+            const newTrack = newStream.getAudioTracks()[0];
+            if (!newTrack) return;
+            localStream = newStream;
+            for (const pc of peerList) {
+                if (!pc || !pc.getSenders) continue;
+                const sender = pc.getSenders().find(s => s.track && s.track.kind === 'audio');
+                if (sender) { try { await sender.replaceTrack(newTrack); } catch (e) {} }
             }
         }
 
         window.toggleKidVoiceChanger = async function() {
-            if (!window.state.isAdmin) {
-                window.showToast("變聲器僅限管理員使用！", "error");
-                return;
-            }
+            if (!window.state.isAdmin) { window.showToast('只有管理員可以使用小孩變聲器！', 'error'); return; }
             window.state.kidVoiceEnabled = !window.state.kidVoiceEnabled;
-            updateKidVoiceGraphState();
             updateKidVoiceButtonsUI();
-            await replaceOutgoingAudioTrackOnPeers();
-            window.showToast(
-                window.state.kidVoiceEnabled ? "🧒 小孩變聲器已開啟！對方現在會聽到小孩聲音" : "小孩變聲器已關閉（恢復原聲）",
-                "info"
-            );
+            const vrPeers = Object.values(vrPeerConnections || {});
+            const activePeers = [peerConnection, ...vrPeers].filter(Boolean);
+            if (activePeers.length > 0 && rawMicStream) await replaceOutgoingTrackOnPeers(activePeers);
+            window.showToast(window.state.kidVoiceEnabled ? '已開啟小孩變聲器（高音童聲模式）' : '已關閉小孩變聲器', 'info');
         };
 
-        function stopAllMicIfUnused() {
-            if (!currentCallRoomId && !window.state.inVoiceRoom) {
-                if (audioKeepAliveTimer) {
-                    clearInterval(audioKeepAliveTimer);
-                    audioKeepAliveTimer = null;
-                }
-                if (rawMicStream) {
-                    rawMicStream.getTracks().forEach(t => t.stop());
-                    rawMicStream = null;
-                }
-                if (voiceAudioCtx && voiceAudioCtx.state !== "closed") {
-                    voiceAudioCtx.close().catch(() => {});
-                }
-                voiceAudioCtx = null;
-                processedVoiceStream = null;
-            }
-        }
-
-        /* =========================================================
-           2. 猜拳機器 20 秒強制對決系統
-        ========================================================= */
-        let activeDuelId = "";
-        let activeDuelData = null;
-        let rpsCountdownInterval = null;
-        let rpsSettling = false;
-
-        const RPS_LABELS = { scissors: "剪刀 ✌️", rock: "石頭 ✊", paper: "布 🖐️" };
-
-        function judgeRpsWinner(moveA, moveB) {
-            if (moveA === moveB) return "draw";
-            if (
-                (moveA === "scissors" && moveB === "paper") ||
-                (moveA === "rock" && moveB === "scissors") ||
-                (moveA === "paper" && moveB === "rock")
-            ) return "A";
-            return "B";
-        }
-
-        window.rpsCloudAPI = {
-            createDuel: async (target) => {
-                const duelRef = push(rpsDuelsRef);
-                const now = Date.now();
-                await set(duelRef, {
-                    challengerUid: window.currentUserUid,
-                    challengerName: window.getEffectiveNickname(),
-                    targetUid: target.uid,
-                    targetName: target.nickname || "無名流浪者",
-                    moveA: "",
-                    moveB: "",
-                    round: 1,
-                    status: "active",
-                    loserUid: "",
-                    deadline: now + 20000,
-                    createdAt: now
-                });
-            }
-        };
-
-        function closeRpsModal() {
-            if (rpsCountdownInterval) {
-                clearInterval(rpsCountdownInterval);
-                rpsCountdownInterval = null;
-            }
-            activeDuelId = "";
-            activeDuelData = null;
-            rpsSettling = false;
-            const modal = document.getElementById("rps-duel-modal");
-            if (modal) {
-                modal.classList.add("hidden");
-                modal.classList.remove("flex");
-            }
-        }
-
-        window.submitRpsMove = async function(move) {
-            if (!activeDuelId || !activeDuelData || activeDuelData.status !== "active") return;
-            const myUid = window.currentUserUid;
-            const isA = activeDuelData.challengerUid === myUid;
-            const field = isA ? "moveA" : "moveB";
-            if ((isA && activeDuelData.moveA) || (!isA && activeDuelData.moveB)) return;
-
-            document.querySelectorAll(".rps-move-btn").forEach(b => b.disabled = true);
-            try {
-                await update(ref(db, `rpsDuels/${activeDuelId}`), { [field]: move });
-            } catch (err) {
-                console.error(err);
-                document.querySelectorAll(".rps-move-btn").forEach(b => b.disabled = false);
-            }
-        };
-
-        async function evaluateOrTimeoutDuel(duelId, duel) {
-            if (!duel || duel.status !== "active" || rpsSettling) return;
-            const now = Date.now();
-            const hasA = Boolean(duel.moveA);
-            const hasB = Boolean(duel.moveB);
-            const expired = now >= Number(duel.deadline || 0);
-
-            if (!expired && (!hasA || !hasB)) return;
-
-            rpsSettling = true;
-            try {
-                if (hasA && hasB) {
-                    const outcome = judgeRpsWinner(duel.moveA, duel.moveB);
-                    if (outcome === "draw") {
-                        await update(ref(db, `rpsDuels/${duelId}`), {
-                            moveA: "",
-                            moveB: "",
-                            round: (Number(duel.round) || 1) + 1,
-                            deadline: Date.now() + 20000
-                        });
-                        rpsSettling = false;
-                        return;
-                    }
-                    const loserUid = outcome === "A" ? duel.targetUid : duel.challengerUid;
-                    await update(ref(db, `rpsDuels/${duelId}`), {
-                        status: "finished",
-                        loserUid,
-                        reason: "normal",
-                        finishedAt: Date.now()
-                    });
-                } else if (expired) {
-                    let loserUid = duel.challengerUid;
-                    if (hasA && !hasB) loserUid = duel.targetUid;
-                    else if (!hasA && hasB) loserUid = duel.challengerUid;
-
-                    await update(ref(db, `rpsDuels/${duelId}`), {
-                        status: "finished",
-                        loserUid,
-                        reason: "timeout",
-                        finishedAt: Date.now()
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-                rpsSettling = false;
-            }
-        }
-
-        function renderRpsModalUI(duelId, duel) {
-            const modal = document.getElementById("rps-duel-modal");
-            if (!modal) return;
-            const myUid = window.currentUserUid;
-            const isA = duel.challengerUid === myUid;
-            const myNameEl = document.getElementById("rps-my-name");
-            const oppNameEl = document.getElementById("rps-opp-name");
-            const myStatusEl = document.getElementById("rps-my-status");
-            const oppStatusEl = document.getElementById("rps-opp-status");
-            const hintEl = document.getElementById("rps-duel-hint");
-            const timerEl = document.getElementById("rps-timer-sec");
-
-            const myMove = isA ? duel.moveA : duel.moveB;
-            const oppMove = isA ? duel.moveB : duel.moveA;
-            const oppName = isA ? (duel.targetName || "對手") : (duel.challengerName || "對手");
-
-            if (myNameEl) myNameEl.textContent = window.getEffectiveNickname();
-            if (oppNameEl) oppNameEl.textContent = oppName;
-
-            if (myStatusEl) {
-                myStatusEl.textContent = myMove ? `已出：${RPS_LABELS[myMove] || myMove}` : "請出拳";
-                myStatusEl.className = myMove ? "text-[11px] font-mono-tech text-emerald-400 mt-1" : "text-[11px] font-mono-tech text-amber-300 mt-1";
-            }
-            if (oppStatusEl) {
-                oppStatusEl.textContent = oppMove ? "已出拳 ✓" : "思考中...";
-                oppStatusEl.className = oppMove ? "text-[11px] font-mono-tech text-emerald-400 mt-1" : "text-[11px] font-mono-tech text-amber-300 mt-1";
-            }
-
-            const roundNum = Number(duel.round) || 1;
-            if (hintEl) {
-                hintEl.innerHTML = roundNum > 1
-                    ? `第 ${roundNum} 局平手重賽！20 秒內未出拳直接判輸，輸家名字變「<strong>我是豬</strong>」（30 秒不可改名）。`
-                    : `20 秒內未出拳直接判輸！輸家名字會變成「<strong>我是豬</strong>」（30 秒內不可改名）。`;
-            }
-
-            document.querySelectorAll(".rps-move-btn").forEach(btn => {
-                btn.disabled = Boolean(myMove) || duel.status !== "active";
-            });
-
-            modal.classList.remove("hidden");
-            modal.classList.add("flex");
-
-            if (rpsCountdownInterval) clearInterval(rpsCountdownInterval);
-            rpsCountdownInterval = setInterval(() => {
-                const secLeft = Math.max(0, Math.ceil((Number(duel.deadline || 0) - Date.now()) / 1000));
-                if (timerEl) timerEl.textContent = String(secLeft);
-                if (secLeft <= 0) {
-                    evaluateOrTimeoutDuel(duelId, duel);
-                }
-            }, 250);
-        }
-
-        onValue(rpsDuelsRef, (snapshot) => {
-            const allDuels = snapshot.val() || {};
-            const myUid = window.currentUserUid;
-
-            const entries = Object.entries(allDuels)
-                .filter(([_, d]) => d && (d.challengerUid === myUid || d.targetUid === myUid))
-                .sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
-
-            const currentActive = entries.find(([_, d]) => d.status === "active");
-
-            if (currentActive) {
-                const [dId, dData] = currentActive;
-                activeDuelId = dId;
-                activeDuelData = dData;
-                rpsSettling = false;
-                renderRpsModalUI(dId, dData);
-                evaluateOrTimeoutDuel(dId, dData);
-                return;
-            }
-
-            if (activeDuelId && allDuels[activeDuelId] && allDuels[activeDuelId].status === "finished") {
-                const finishedDuel = allDuels[activeDuelId];
-                const finishedId = activeDuelId;
-                const didILose = finishedDuel.loserUid === myUid;
-                const loserName = finishedDuel.loserUid === finishedDuel.challengerUid
-                    ? (finishedDuel.challengerName || "挑戰者")
-                    : (finishedDuel.targetName || "對手");
-
-                closeRpsModal();
-
-                if (didILose) {
-                    window.applyPigPenalty(30000);
-                } else {
-                    window.showToast(`🎉 猜拳獲勝！「${loserName}」已變成「我是豬」（30 秒內不可改名）！`, "success");
-                }
-
-                setTimeout(() => {
-                    remove(ref(db, `rpsDuels/${finishedId}`)).catch(() => {});
-                }, 4000);
-            } else if (activeDuelId && !allDuels[activeDuelId]) {
-                closeRpsModal();
-            }
-        });
-
-        /* =========================================================
-           共用 WebRTC 設定（含免費公開 TURN 伺服器 + 斷線自動重連）
-        ========================================================= */
-        const rtcConfig = {
-            iceServers: [
-                { urls: "stun:stun.l.google.com:19302" },
-                { urls: "stun:stun1.l.google.com:19302" },
-                {
-                    urls: [
-                        "turn:openrelay.metered.ca:80",
-                        "turn:openrelay.metered.ca:443",
-                        "turn:openrelay.metered.ca:443?transport=tcp"
-                    ],
-                    username: "openrelayproject",
-                    credential: "openrelayproject"
-                }
-            ],
-            iceCandidatePoolSize: 4
-        };
-
-        function attachIceRecovery(pc, onRestartOffer) {
-            if (!pc) return;
-            pc.oniceconnectionstatechange = async () => {
-                if (!pc || pc.signalingState === "closed") return;
-                if (pc.iceConnectionState === "failed" || pc.iceConnectionState === "disconnected") {
-                    try {
-                        if (typeof pc.restartIce === "function") {
-                            pc.restartIce();
-                        }
-                        if (typeof onRestartOffer === "function") {
-                            await onRestartOffer();
-                        }
-                    } catch (e) {}
-                }
-            };
-        }
-
-        /* =========================================================
-           3. 公共 8 人語音房
-        ========================================================= */
-        const MAX_VOICE_ROOM_USERS = 8;
-        const vrPeers = {};
-        const vrSignalUnsubs = {};
-        let vrLocalStream = null;
-        let vrJoiningOrLeaving = false;
+        let vrPeerConnections = {}, vrProcessedCandidateIds = new Set();
 
         window.adminToggleVoiceRoomEnabled = async function() {
             if (!window.state.isAdmin) return;
             const nextEnabled = !window.state.voiceRoomEnabled;
-            try {
-                await set(voiceRoomEnabledRef, nextEnabled);
-                if (!nextEnabled && window.state.inVoiceRoom) {
-                    await window.leavePublicVoiceRoom(false);
-                }
-                window.showToast(nextEnabled ? "已開放公共語音房" : "管理員已關閉公共語音房", "info");
-            } catch (err) {
-                console.error(err);
-                window.showToast("切換語音房狀態失敗", "error");
-            }
+            if (window.voiceRoomCloudAPI?.setRoomEnabled) await window.voiceRoomCloudAPI.setRoomEnabled(nextEnabled);
+            window.showToast(nextEnabled ? '已開放 8 人公共語音房' : '已關閉公共語音房', 'info');
         };
 
-        function updatePublicVoiceRoomUI() {
-            const members = window.state.voiceRoomMembers || {};
-            const memberEntries = Object.entries(members).filter(([_, m]) => Boolean(m));
-            const count = memberEntries.length;
-            const enabled = Boolean(window.state.voiceRoomEnabled);
-            const isFull = count >= MAX_VOICE_ROOM_USERS;
-
-            const capBadge = document.getElementById("vr-capacity-badge");
-            const statusDot = document.getElementById("vr-status-dot");
-            const avatarsEl = document.getElementById("vr-members-avatars");
-            const joinBtn = document.getElementById("vr-join-btn");
-            const muteBtn = document.getElementById("vr-mute-btn");
-            const leaveBtn = document.getElementById("vr-leave-btn");
-            const adminBtnLabel = document.getElementById("admin-voice-room-toggle-label");
-
-            if (capBadge) {
-                capBadge.textContent = enabled ? `${count} / ${MAX_VOICE_ROOM_USERS} 人` : `已關閉 (${count}/${MAX_VOICE_ROOM_USERS})`;
-            }
-            if (adminBtnLabel) {
-                adminBtnLabel.textContent = enabled ? "語音房：開放中" : "語音房：已關閉";
-            }
-            if (statusDot) {
-                statusDot.className = enabled
-                    ? "w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"
-                    : "w-2.5 h-2.5 rounded-full bg-red-500 shrink-0";
-            }
-
+        window.renderPublicVoiceRoomUI = function() {
+            const membersObj = window.state.voiceRoomMembers || {};
+            const entries = Object.entries(membersObj).filter(([_, m]) => Boolean(m));
+            const count = entries.length, enabled = window.state.voiceRoomEnabled !== false;
+            const capBadge = document.getElementById('vr-capacity-badge'), avatarsEl = document.getElementById('vr-members-avatars');
+            const joinBtn = document.getElementById('vr-join-btn'), muteBtn = document.getElementById('vr-mute-btn');
+            const leaveBtn = document.getElementById('vr-leave-btn'), adminToggleLabel = document.getElementById('admin-voice-room-toggle-label');
+            if (capBadge) capBadge.textContent = enabled ? `${count} / 8 人` : '已關閉';
+            if (adminToggleLabel) adminToggleLabel.textContent = enabled ? '語音房：開放中' : '語音房：已關閉';
             if (avatarsEl) {
-                avatarsEl.innerHTML = memberEntries.map(([uid, info]) => {
-                    const safeAv = (info.avatar && info.avatar.startsWith("data:image/")) ? info.avatar : DEFAULT_AVATAR_URL;
-                    const isSelf = uid === window.currentUserUid;
-                    return `
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#1f1b0e] border ${isSelf ? 'border-emerald-400 text-emerald-200' : 'border-indigo-500/50 text-[#faf2c3]'} text-[10px] font-bold">
-                            <img src="${safeAv}" alt="頭像" class="w-4 h-4 rounded-full object-cover">
-                            <span class="max-w-[70px] truncate">${escapeHtml(info.nickname || "流浪者")}</span>
-                        </span>
-                    `;
-                }).join("");
+                avatarsEl.innerHTML = entries.map(([uid, m]) => {
+                    const av = (m.avatar && m.avatar.startsWith('data:image/')) ? m.avatar : DEFAULT_AVATAR_URL;
+                    return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-950/90 border border-indigo-400/50 text-[10px] text-indigo-100"><img src="${av}" alt="成員" class="w-4 h-4 rounded-full object-cover">${escapeHtml(m.nickname || '流浪者')}${m.muted ? '<i class="fa-solid fa-microphone-slash text-red-400"></i>' : ''}</span>`;
+                }).join('');
             }
+            const amIIn = Boolean(window.state.inVoiceRoom);
+            if (joinBtn) {
+                joinBtn.classList.toggle('hidden', amIIn);
+                joinBtn.disabled = !enabled || count >= 8;
+                joinBtn.innerHTML = !enabled ? `<i class="fa-solid fa-lock"></i> 語音房已關閉` : (count >= 8 ? `<i class="fa-solid fa-users-slash"></i> 語音房已滿 (8/8)` : `<i class="fa-solid fa-right-to-bracket"></i> 進入語音房`);
+            }
+            if (muteBtn) muteBtn.classList.toggle('hidden', !amIIn);
+            if (leaveBtn) leaveBtn.classList.toggle('hidden', !amIIn);
+        };
 
-            if (window.state.inVoiceRoom) {
-                if (joinBtn) joinBtn.classList.add("hidden");
-                if (muteBtn) { muteBtn.classList.remove("hidden"); muteBtn.classList.add("flex"); }
-                if (leaveBtn) { leaveBtn.classList.remove("hidden"); leaveBtn.classList.add("flex"); }
-            } else {
-                if (joinBtn) {
-                    joinBtn.classList.remove("hidden");
-                    joinBtn.disabled = !enabled || isFull;
-                    joinBtn.innerHTML = !enabled
-                        ? `<i class="fa-solid fa-lock"></i> 語音房已關閉`
-                        : (isFull
-                            ? `<i class="fa-solid fa-users-slash"></i> 語音房已滿 (${MAX_VOICE_ROOM_USERS}/${MAX_VOICE_ROOM_USERS})`
-                            : `<i class="fa-solid fa-right-to-bracket"></i> 進入語音房`);
-                }
-                if (muteBtn) { muteBtn.classList.add("hidden"); muteBtn.classList.remove("flex"); }
-                if (leaveBtn) { leaveBtn.classList.add("hidden"); leaveBtn.classList.remove("flex"); }
-            }
+        async function ensureVoiceRoomLocalStream() {
+            if (localStream && localStream.getAudioTracks().some(t => t.readyState === 'live')) return localStream;
+            const mic = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+            localStream = buildProcessedAudioStream(mic);
+            return localStream;
         }
 
-        function cleanupVrPeer(peerUid) {
-            const entry = vrPeers[peerUid];
-            if (entry) {
-                try { entry.pc.close(); } catch (e) {}
-                if (entry.audioEl) entry.audioEl.remove();
-                delete vrPeers[peerUid];
-            }
-            if (vrSignalUnsubs[peerUid]) {
-                vrSignalUnsubs[peerUid]();
-                delete vrSignalUnsubs[peerUid];
-            }
-        }
-
-        function cleanupAllVrPeers() {
-            Object.keys(vrPeers).forEach(uid => cleanupVrPeer(uid));
-            Object.keys(vrSignalUnsubs).forEach(uid => {
-                vrSignalUnsubs[uid]();
-                delete vrSignalUnsubs[uid];
-            });
-        }
-
-        async function createVrPeerConnection(peerUid, isInitiator) {
-            if (!vrLocalStream || peerUid === window.currentUserUid) return null;
-            if (vrPeers[peerUid]) return vrPeers[peerUid].pc;
-
-            const roomKey = getDmRoomId(window.currentUserUid, peerUid);
-            const signalPath = `voiceRoom/signals/${roomKey}`;
-            const sigRef = ref(db, signalPath);
-
-            const pc = new RTCPeerConnection(rtcConfig);
-            const audioEl = document.createElement("audio");
-            audioEl.autoplay = true;
-            audioEl.playsInline = true;
-            document.getElementById("vr-remote-audios")?.appendChild(audioEl);
-
-            const peerState = { pc, audioEl, appliedCandidates: new Set(), makingOffer: false };
-            vrPeers[peerUid] = peerState;
-
-            vrLocalStream.getTracks().forEach(track => {
-                pc.addTrack(track, vrLocalStream);
-            });
-
+        async function createOrGetVrPeerConnection(peerUid, isCaller) {
+            if (vrPeerConnections[peerUid]) return vrPeerConnections[peerUid];
+            const stream = await ensureVoiceRoomLocalStream();
+            const pc = new RTCPeerConnection(ICE_SERVERS);
+            vrPeerConnections[peerUid] = pc;
+            stream.getTracks().forEach(track => pc.addTrack(track, stream));
             pc.ontrack = (event) => {
-                if (event.streams && event.streams[0]) {
-                    audioEl.srcObject = event.streams[0];
-                    audioEl.play().catch(() => {});
+                const audioBox = document.getElementById('vr-remote-audios');
+                if (!audioBox) return;
+                let audioEl = document.getElementById(`vr-audio-${peerUid}`);
+                if (!audioEl) { audioEl = document.createElement('audio'); audioEl.id = `vr-audio-${peerUid}`; audioEl.autoplay = true; audioEl.playsInline = true; audioBox.appendChild(audioEl); }
+                if (event.streams && event.streams[0]) audioEl.srcObject = event.streams[0];
+            };
+            pc.onicecandidate = (event) => {
+                if (event.candidate && window.voiceRoomCloudAPI?.sendSignal) {
+                    window.voiceRoomCloudAPI.sendSignal(peerUid, { type: 'candidate', candidate: event.candidate.toJSON() });
                 }
             };
-
-            pc.onicecandidate = async (event) => {
-                if (event.candidate) {
-                    const candRef = push(ref(db, `${signalPath}/candidates/${window.currentUserUid}`));
-                    await set(candRef, event.candidate.toJSON()).catch(() => {});
-                }
-            };
-
-            const sendOffer = async () => {
-                if (peerState.makingOffer) return;
-                peerState.makingOffer = true;
-                try {
-                    const offer = await pc.createOffer({ iceRestart: true });
-                    await pc.setLocalDescription(offer);
-                    await update(sigRef, {
-                        offer: { fromUid: window.currentUserUid, toUid: peerUid, sdp: offer, ts: Date.now() }
-                    });
-                } finally {
-                    peerState.makingOffer = false;
-                }
-            };
-
-            attachIceRecovery(pc, sendOffer);
-
-            if (!vrSignalUnsubs[peerUid]) {
-                vrSignalUnsubs[peerUid] = onValue(sigRef, async (sigSnap) => {
-                    if (!window.state.inVoiceRoom || !vrLocalStream || !vrPeers[peerUid]) return;
-                    const sig = sigSnap.val();
-                    if (!sig) return;
-
-                    if (sig.offer && sig.offer.toUid === window.currentUserUid) {
-                        const remoteOffer = new RTCSessionDescription(sig.offer.sdp);
-                        if (pc.signalingState === "stable" || pc.signalingState === "have-local-offer") {
-                            await pc.setRemoteDescription(remoteOffer).catch(() => {});
-                            if (pc.signalingState === "have-remote-offer") {
-                                const answer = await pc.createAnswer();
-                                await pc.setLocalDescription(answer);
-                                await update(sigRef, {
-                                    answer: { fromUid: window.currentUserUid, toUid: peerUid, sdp: answer, ts: Date.now() }
-                                });
-                            }
-                        }
-                    }
-
-                    if (sig.answer && sig.answer.toUid === window.currentUserUid) {
-                        if (pc.signalingState === "have-local-offer") {
-                            await pc.setRemoteDescription(new RTCSessionDescription(sig.answer.sdp)).catch(() => {});
-                        }
-                    }
-
-                    const remoteCands = sig.candidates?.[peerUid] || {};
-                    if (pc.remoteDescription) {
-                        for (const [cKey, cVal] of Object.entries(remoteCands)) {
-                            if (cVal && !peerState.appliedCandidates.has(cKey)) {
-                                peerState.appliedCandidates.add(cKey);
-                                await pc.addIceCandidate(new RTCIceCandidate(cVal)).catch(() => {});
-                            }
-                        }
-                    }
-                });
+            if (isCaller) {
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                await window.voiceRoomCloudAPI?.sendSignal?.(peerUid, { type: 'offer', sdp: offer.sdp });
             }
-
-            if (isInitiator) {
-                await sendOffer();
-            }
-
             return pc;
         }
 
-        onValue(voiceRoomEnabledRef, (snapshot) => {
-            const val = snapshot.val();
-            window.state.voiceRoomEnabled = (val === null || val === undefined) ? true : Boolean(val);
-            updatePublicVoiceRoomUI();
-        });
+        window.handleVoiceRoomSignal = async function(fromUid, signalId, sigData) {
+            if (!window.state.inVoiceRoom || !fromUid || fromUid === window.currentUserUid || !sigData) return;
+            try {
+                if (sigData.type === 'offer') {
+                    const pc = await createOrGetVrPeerConnection(fromUid, false);
+                    await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sigData.sdp }));
+                    const answer = await pc.createAnswer();
+                    await pc.setLocalDescription(answer);
+                    await window.voiceRoomCloudAPI?.sendSignal?.(fromUid, { type: 'answer', sdp: answer.sdp });
+                } else if (sigData.type === 'answer') {
+                    const pc = vrPeerConnections[fromUid];
+                    if (pc && pc.signalingState !== 'stable') await pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: sigData.sdp }));
+                } else if (sigData.type === 'candidate' && sigData.candidate) {
+                    const pc = await createOrGetVrPeerConnection(fromUid, false);
+                    if (pc.remoteDescription) await pc.addIceCandidate(new RTCIceCandidate(sigData.candidate));
+                }
+            } catch (e) {} finally {
+                if (signalId && window.voiceRoomCloudAPI?.deleteSignal) window.voiceRoomCloudAPI.deleteSignal(signalId);
+            }
+        };
 
-        onValue(voiceRoomMembersRef, async (snapshot) => {
-            const raw = snapshot.val() || {};
-            window.state.voiceRoomMembers = raw;
-            updatePublicVoiceRoomUI();
-
-            if (!window.state.inVoiceRoom || !vrLocalStream) return;
-            const myUid = window.currentUserUid;
-            const activeUids = Object.keys(raw).filter(u => u !== myUid && raw[u]);
-
-            Object.keys(vrPeers).forEach(existingUid => {
-                if (!activeUids.includes(existingUid)) cleanupVrPeer(existingUid);
-            });
-
-            for (const peerUid of activeUids) {
-                if (!vrPeers[peerUid] && myUid < peerUid) {
-                    await createVrPeerConnection(peerUid, true).catch(console.error);
+        window.syncVoiceRoomPeersWithMembers = async function(membersObj) {
+            if (!window.state.inVoiceRoom) return;
+            const entries = Object.entries(membersObj || {}).filter(([_, m]) => Boolean(m));
+            if (window.state.voiceRoomEnabled === false || !membersObj[window.currentUserUid]) { await window.leavePublicVoiceRoom(false); return; }
+            const activeUids = new Set(entries.map(([uid]) => uid));
+            for (const existingUid of Object.keys(vrPeerConnections)) {
+                if (!activeUids.has(existingUid)) {
+                    try { vrPeerConnections[existingUid].close(); } catch (e) {}
+                    delete vrPeerConnections[existingUid];
+                    document.getElementById(`vr-audio-${existingUid}`)?.remove();
                 }
             }
-        });
+            for (const [uid] of entries) {
+                if (uid === window.currentUserUid) continue;
+                if (!vrPeerConnections[uid] && window.currentUserUid < uid) await createOrGetVrPeerConnection(uid, true);
+            }
+        };
 
         window.joinPublicVoiceRoom = async function() {
-            if (vrJoiningOrLeaving || window.state.inVoiceRoom) return;
-            if (!window.state.voiceRoomEnabled) {
-                window.showToast("公共語音房目前已被管理員關閉", "error");
-                return;
-            }
-            const currentMembers = Object.keys(window.state.voiceRoomMembers || {}).filter(k => window.state.voiceRoomMembers[k]);
-            if (currentMembers.length >= MAX_VOICE_ROOM_USERS) {
-                window.showToast(`公共語音房已達上限（${MAX_VOICE_ROOM_USERS} 人）！`, "error");
-                return;
-            }
-
-            vrJoiningOrLeaving = true;
+            if (window.state.voiceRoomEnabled === false) { window.showToast('公共語音房目前已被管理員關閉', 'error'); return; }
+            const currentCount = Object.values(window.state.voiceRoomMembers || {}).filter(Boolean).length;
+            if (currentCount >= 8) { window.showToast('公共語音房已滿（上限 8 人）', 'error'); return; }
             try {
-                window.state.vrMuted = false;
-                vrLocalStream = await getActiveOutgoingStream();
-                setOutgoingAudioEnabled(true);
-
-                const existingMembers = Object.keys(window.state.voiceRoomMembers || {});
-                for (const otherUid of existingMembers) {
-                    if (otherUid && otherUid !== window.currentUserUid) {
-                        await remove(ref(db, `voiceRoom/signals/${getDmRoomId(window.currentUserUid, otherUid)}`)).catch(() => {});
-                    }
-                }
-
-                const myMemberRef = ref(db, `voiceRoom/members/${window.currentUserUid}`);
-                await set(myMemberRef, {
+                await ensureVoiceRoomLocalStream();
+                window.state.inVoiceRoom = true; window.state.vrMuted = false; vrProcessedCandidateIds.clear();
+                updateVoiceRoomMuteUI();
+                await window.voiceRoomCloudAPI?.joinRoom?.({
                     nickname: window.getEffectiveNickname(),
-                    avatar: (window.state.userAvatar && window.state.userAvatar.startsWith("data:image/")) ? window.state.userAvatar : DEFAULT_AVATAR_URL,
-                    joinedAt: Date.now()
+                    avatar: (window.state.userAvatar && window.state.userAvatar.startsWith('data:image/')) ? window.state.userAvatar : DEFAULT_AVATAR_URL,
+                    muted: false
                 });
-                onDisconnect(myMemberRef).remove().catch(() => {});
-
-                window.state.inVoiceRoom = true;
-                updatePublicVoiceRoomUI();
-
-                const activeUids = Object.keys(window.state.voiceRoomMembers || {}).filter(u => u !== window.currentUserUid);
-                for (const peerUid of activeUids) {
-                    if (!vrPeers[peerUid] && window.currentUserUid < peerUid) {
-                        await createVrPeerConnection(peerUid, true).catch(console.error);
-                    }
-                }
-
-                window.showToast("已進入公共語音房！", "success");
-            } catch (err) {
-                console.error(err);
-                window.showToast(err.message || "進入語音房失敗（請確認麥克風權限）", "error");
-            } finally {
-                vrJoiningOrLeaving = false;
-            }
+                await window.syncVoiceRoomPeersWithMembers(window.state.voiceRoomMembers);
+                window.renderPublicVoiceRoomUI();
+                window.showToast('已進入公共語音房（最多 8 人）', 'success');
+            } catch (err) { window.showToast('無法啟用麥克風或加入語音房', 'error'); }
         };
 
-        window.toggleVoiceRoomMute = function() {
+        function updateVoiceRoomMuteUI() {
+            const icon = document.getElementById('vr-mute-icon'), label = document.getElementById('vr-mute-label');
+            if (icon) icon.className = window.state.vrMuted ? 'fa-solid fa-microphone-slash text-red-400' : 'fa-solid fa-microphone text-emerald-400';
+            if (label) label.textContent = window.state.vrMuted ? '已靜音' : '靜音';
+        }
+
+        window.toggleVoiceRoomMute = async function() {
+            if (!window.state.inVoiceRoom) return;
             window.state.vrMuted = !window.state.vrMuted;
-            setOutgoingAudioEnabled(!window.state.vrMuted);
-            const icon = document.getElementById("vr-mute-icon");
-            const label = document.getElementById("vr-mute-label");
-            if (icon) icon.className = window.state.vrMuted ? "fa-solid fa-microphone-slash text-red-400" : "fa-solid fa-microphone";
-            if (label) label.textContent = window.state.vrMuted ? "取消靜音" : "靜音";
+            if (localStream) localStream.getAudioTracks().forEach(t => { t.enabled = !window.state.vrMuted; });
+            if (rawMicStream) rawMicStream.getAudioTracks().forEach(t => { t.enabled = !window.state.vrMuted; });
+            updateVoiceRoomMuteUI();
+            await window.voiceRoomCloudAPI?.setMuted?.(window.state.vrMuted);
         };
 
-        window.leavePublicVoiceRoom = async function(showMsg = true) {
-            if (vrJoiningOrLeaving) return;
-            vrJoiningOrLeaving = true;
-            try {
-                window.state.inVoiceRoom = false;
-                window.state.vrMuted = false;
-                cleanupAllVrPeers();
-                vrLocalStream = null;
-                await remove(ref(db, `voiceRoom/members/${window.currentUserUid}`)).catch(() => {});
-                stopAllMicIfUnused();
-                updatePublicVoiceRoomUI();
-                if (showMsg) window.showToast("已離開公共語音房", "info");
-            } finally {
-                vrJoiningOrLeaving = false;
+        window.leavePublicVoiceRoom = async function(notifyCloud = true) {
+            window.state.inVoiceRoom = false; window.state.vrMuted = false;
+            Object.values(vrPeerConnections).forEach(pc => { try { pc.close(); } catch (e) {} });
+            vrPeerConnections = {};
+            const audioBox = document.getElementById('vr-remote-audios');
+            if (audioBox) audioBox.innerHTML = '';
+            if (!peerConnection) {
+                cleanupVoiceChangerGraph();
+                if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+                if (rawMicStream) { rawMicStream.getTracks().forEach(t => t.stop()); rawMicStream = null; }
             }
+            if (notifyCloud && window.voiceRoomCloudAPI?.leaveRoom) await window.voiceRoomCloudAPI.leaveRoom();
+            window.renderPublicVoiceRoomUI();
         };
 
-        /* =========================================================
-           4. 一對一私聊 WebRTC 語音通話
-        ========================================================= */
-        let peerConnection = null;
-        let currentCallRoomId = "";
-        let pendingIncomingCall = null;
-        let callUnsub = null;
-        let callCandidatesUnsub = null;
-        let callTimerInterval = null;
-        let callSeconds = 0;
-        let isCallMuted = false;
-        const addedIceCandidateIds = new Set();
+        let peerConnection = null, currentCallPartnerUid = null, currentCallPartnerName = '', incomingCallData = null;
+        let isCallMuted = false, callTimerInterval = null, callSeconds = 0, processedCandidateIds = new Set();
 
-        function formatCallDuration(sec) {
-            const m = String(Math.floor(sec / 60)).padStart(2, "0");
-            const s = String(sec % 60).padStart(2, "0");
-            return `${m}:${s}`;
-        }
-
-        function showActiveCallBar(statusText) {
-            const bar = document.getElementById("active-call-bar");
-            const statusEl = document.getElementById("call-status-text");
-            const timerEl = document.getElementById("call-timer-text");
-            if (statusEl) statusEl.textContent = statusText;
-            if (timerEl) timerEl.textContent = formatCallDuration(callSeconds);
-            if (bar) {
-                bar.classList.remove("hidden");
-                bar.classList.add("flex");
-            }
-        }
-
-        function hideActiveCallBar() {
-            const bar = document.getElementById("active-call-bar");
-            if (bar) {
-                bar.classList.add("hidden");
-                bar.classList.remove("flex");
-            }
+        function updateVoiceCallButtonState() {
+            const btn = document.getElementById('voice-call-btn');
+            if (!btn) return;
+            const roomId = window.state.activeDmRoomId, room = roomId ? window.state.dmRooms[roomId] : null;
+            btn.disabled = !(room && !peerConnection);
         }
 
         function startCallTimer() {
-            stopCallTimer();
-            callSeconds = 0;
-            const timerEl = document.getElementById("call-timer-text");
-            if (timerEl) timerEl.textContent = "00:00";
+            stopCallTimer(); callSeconds = 0;
+            const timerEl = document.getElementById('call-timer-text');
+            if (timerEl) timerEl.textContent = '00:00';
             callTimerInterval = setInterval(() => {
                 callSeconds += 1;
-                const el = document.getElementById("call-timer-text");
-                if (el) el.textContent = formatCallDuration(callSeconds);
+                if (timerEl) timerEl.textContent = `${String(Math.floor(callSeconds / 60)).padStart(2, '0')}:${String(callSeconds % 60).padStart(2, '0')}`;
             }, 1000);
         }
 
-        function stopCallTimer() {
-            if (callTimerInterval) {
-                clearInterval(callTimerInterval);
-                callTimerInterval = null;
-            }
+        function stopCallTimer() { if (callTimerInterval) { clearInterval(callTimerInterval); callTimerInterval = null; } }
+
+        function showActiveCallBar(partnerName, statusLabel = '語音通話中') {
+            const bar = document.getElementById('active-call-bar'), statusEl = document.getElementById('call-status-text');
+            if (statusEl) statusEl.textContent = `${statusLabel} // ${partnerName}`;
+            if (bar) { bar.classList.remove('hidden'); bar.classList.add('flex'); }
         }
 
-        function cleanupVoiceCallResources() {
-            stopCallTimer();
-            window.stopIncomingCallVibration();
-            if (callUnsub) { callUnsub(); callUnsub = null; }
-            if (callCandidatesUnsub) { callCandidatesUnsub(); callCandidatesUnsub = null; }
-            if (peerConnection) {
-                peerConnection.ontrack = null;
-                peerConnection.onicecandidate = null;
-                peerConnection.oniceconnectionstatechange = null;
-                peerConnection.close();
-                peerConnection = null;
-            }
-            const remoteAudio = document.getElementById("remote-voice-audio");
-            if (remoteAudio) remoteAudio.srcObject = null;
-            currentCallRoomId = "";
-            pendingIncomingCall = null;
-            isCallMuted = false;
-            addedIceCandidateIds.clear();
-            const muteIcon = document.getElementById("mute-icon");
-            const muteLabel = document.getElementById("mute-label");
-            if (muteIcon) muteIcon.className = "fa-solid fa-microphone";
-            if (muteLabel) muteLabel.textContent = "靜音";
-            const incModal = document.getElementById("incoming-call-modal");
-            if (incModal) { incModal.classList.add("hidden"); incModal.classList.remove("flex"); }
-            hideActiveCallBar();
-            stopAllMicIfUnused();
+        function hideActiveCallBar() {
+            const bar = document.getElementById('active-call-bar');
+            if (bar) { bar.classList.add('hidden'); bar.classList.remove('flex'); }
         }
 
-        function getPartnerUidForActiveDm() {
-            const roomId = window.state.activeDmRoomId;
-            if (!roomId || !window.state.dmRooms[roomId]) return "";
-            const room = window.state.dmRooms[roomId];
-            return window.currentUserUid === room.uidA ? room.uidB : room.uidA;
+        async function setupPeerConnection(partnerUid) {
+            const pc = new RTCPeerConnection(ICE_SERVERS);
+            peerConnection = pc;
+            const mic = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+            localStream = buildProcessedAudioStream(mic);
+            localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+            pc.ontrack = (event) => {
+                const audioEl = document.getElementById('remote-voice-audio');
+                if (audioEl && event.streams && event.streams[0]) audioEl.srcObject = event.streams[0];
+            };
+            pc.onicecandidate = (event) => {
+                if (event.candidate && window.voiceCallCloudAPI?.sendCandidate) window.voiceCallCloudAPI.sendCandidate(partnerUid, event.candidate.toJSON());
+            };
+            pc.onconnectionstatechange = () => {
+                if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed' || pc.connectionState === 'closed') cleanupCallLocal(false);
+            };
+            return pc;
         }
-
-        function refreshVoiceCallButtonState() {
-            const btn = document.getElementById("voice-call-btn");
-            if (!btn) return;
-            const partnerUid = getPartnerUidForActiveDm();
-            btn.disabled = !partnerUid || Boolean(currentCallRoomId);
-        }
-
-        const origRenderDmActiveHeader = renderDmActiveHeader;
-        renderDmActiveHeader = function() {
-            origRenderDmActiveHeader();
-            refreshVoiceCallButtonState();
-        };
 
         window.startVoiceCall = async function() {
-            const roomId = window.state.activeDmRoomId;
-            const partnerUid = getPartnerUidForActiveDm();
-            if (!roomId || !partnerUid) {
-                window.showToast("請先選擇一個私聊對象再撥打語音", "error");
-                return;
-            }
-            if (currentCallRoomId) {
-                window.showToast("目前已在語音通話中", "info");
-                return;
-            }
-
+            const roomId = window.state.activeDmRoomId, room = roomId ? window.state.dmRooms[roomId] : null;
+            if (!room) { window.showToast('請先選擇一個私聊對象', 'error'); return; }
+            const partnerUid = window.currentUserUid === room.uidA ? room.uidB : room.uidA;
+            const partnerName = room.members?.[partnerUid]?.nickname || '流浪者';
+            currentCallPartnerUid = partnerUid; currentCallPartnerName = partnerName; processedCandidateIds.clear();
             try {
-                isCallMuted = false;
-                const stream = await getActiveOutgoingStream();
-                setOutgoingAudioEnabled(true);
+                const pc = await setupPeerConnection(partnerUid);
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                await window.voiceCallCloudAPI?.sendOffer?.(partnerUid, window.getEffectiveNickname(), offer.sdp);
+                showActiveCallBar(partnerName, '正在撥號給');
+                updateVoiceCallButtonState();
+                window.showToast(`正在撥打語音給「${partnerName}」...`, 'info');
+            } catch (err) { cleanupCallLocal(false); window.showToast('無法啟動麥克風或建立語音通話', 'error'); }
+        };
 
-                currentCallRoomId = roomId;
-                refreshVoiceCallButtonState();
-
-                peerConnection = new RTCPeerConnection(rtcConfig);
-                stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
-
-                peerConnection.ontrack = (event) => {
-                    const remoteAudio = document.getElementById("remote-voice-audio");
-                    if (remoteAudio && event.streams[0]) {
-                        remoteAudio.srcObject = event.streams[0];
-                        remoteAudio.play().catch(() => {});
-                    }
-                };
-
-                const callRef = ref(db, `voiceCalls/${roomId}`);
-                const callerCandidatesRef = ref(db, `voiceCalls/${roomId}/callerCandidates`);
-                const calleeCandidatesRef = ref(db, `voiceCalls/${roomId}/calleeCandidates`);
-
-                await remove(callRef).catch(() => {});
-
-                peerConnection.onicecandidate = async (event) => {
-                    if (event.candidate) {
-                        await set(push(callerCandidatesRef), event.candidate.toJSON()).catch(() => {});
-                    }
-                };
-
-                const publishOffer = async () => {
-                    if (!peerConnection || peerConnection.signalingState === "closed") return;
-                    const offer = await peerConnection.createOffer({ iceRestart: true });
-                    await peerConnection.setLocalDescription(offer);
-                    await update(callRef, {
-                        offer: { type: offer.type, sdp: offer.sdp, ts: Date.now() }
-                    });
-                };
-
-                attachIceRecovery(peerConnection, publishOffer);
-
-                const initialOffer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(initialOffer);
-
-                await set(callRef, {
-                    roomId,
-                    callerUid: window.currentUserUid,
-                    callerName: window.getEffectiveNickname(),
-                    calleeUid: partnerUid,
-                    status: "ringing",
-                    offer: { type: initialOffer.type, sdp: initialOffer.sdp, ts: Date.now() },
-                    createdAt: Date.now()
-                });
-
-                showActiveCallBar("正在撥號等待對方接聽...");
-
-                callCandidatesUnsub = onChildAdded(calleeCandidatesRef, async (snap) => {
-                    const cand = snap.val();
-                    if (cand && peerConnection && peerConnection.remoteDescription && !addedIceCandidateIds.has(snap.key)) {
-                        addedIceCandidateIds.add(snap.key);
-                        await peerConnection.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
-                    }
-                });
-
-                callUnsub = onValue(callRef, async (snap) => {
-                    const data = snap.val();
-                    if (!data) {
-                        cleanupVoiceCallResources();
-                        refreshVoiceCallButtonState();
-                        window.showToast("語音通話已結束", "info");
-                        return;
-                    }
-                    if (data.status === "rejected") {
-                        await remove(callRef).catch(() => {});
-                        cleanupVoiceCallResources();
-                        refreshVoiceCallButtonState();
-                        window.showToast("對方已拒絕語音通話", "info");
-                        return;
-                    }
-                    if (data.status === "accepted" && data.answer && peerConnection) {
-                        const currentSdp = peerConnection.currentRemoteDescription?.sdp;
-                        if (currentSdp !== data.answer.sdp && (peerConnection.signalingState === "have-local-offer" || peerConnection.signalingState === "stable")) {
-                            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer)).catch(() => {});
-                            showActiveCallBar("語音通話已連線");
-                            if (!callTimerInterval) startCallTimer();
-                        }
-                    }
-                });
-            } catch (err) {
-                console.error(err);
-                cleanupVoiceCallResources();
-                refreshVoiceCallButtonState();
-                window.showToast(err.message || "無法啟動語音通話（請確認麥克風權限）", "error");
-            }
+        window.handleIncomingCallOffer = async function(callDoc) {
+            if (!callDoc || callDoc.toUid !== window.currentUserUid) return;
+            if (peerConnection || incomingCallData) { await window.voiceCallCloudAPI?.sendHangup?.(callDoc.fromUid); return; }
+            incomingCallData = callDoc;
+            window.startIncomingCallVibration();
+            const callerName = callDoc.fromNickname || '流浪者';
+            window.pushSystemNotification('LEVEL-0 語音來電', `${callerName} 正在撥打語音通話給你！`, null, { isCall: true });
+            const modal = document.getElementById('incoming-call-modal'), nameEl = document.getElementById('incoming-caller-name');
+            if (nameEl) nameEl.textContent = `${callerName} 來電中...`;
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
         };
 
         window.acceptVoiceCall = async function() {
-            const incoming = pendingIncomingCall;
-            if (!incoming || !incoming.roomId || !incoming.offer) return;
             window.stopIncomingCallVibration();
-
-            const incModal = document.getElementById("incoming-call-modal");
-            if (incModal) { incModal.classList.add("hidden"); incModal.classList.remove("flex"); }
-
+            if (!incomingCallData) return;
+            const callDoc = incomingCallData; incomingCallData = null;
+            const modal = document.getElementById('incoming-call-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+            currentCallPartnerUid = callDoc.fromUid; currentCallPartnerName = callDoc.fromNickname || '流浪者'; processedCandidateIds.clear();
             try {
-                isCallMuted = false;
-                const stream = await getActiveOutgoingStream();
-                setOutgoingAudioEnabled(true);
+                const pc = await setupPeerConnection(currentCallPartnerUid);
+                await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: callDoc.sdp }));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                await window.voiceCallCloudAPI?.sendAnswer?.(currentCallPartnerUid, answer.sdp);
+                showActiveCallBar(currentCallPartnerName, '語音通話中');
+                startCallTimer(); updateVoiceCallButtonState();
+            } catch (err) { cleanupCallLocal(false); window.showToast('接聽語音失敗', 'error'); }
+        };
 
-                const roomId = incoming.roomId;
-                currentCallRoomId = roomId;
-                pendingIncomingCall = null;
-                refreshVoiceCallButtonState();
+        window.rejectVoiceCall = async function() {
+            window.stopIncomingCallVibration();
+            if (!incomingCallData) return;
+            const fromUid = incomingCallData.fromUid; incomingCallData = null;
+            const modal = document.getElementById('incoming-call-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+            await window.voiceCallCloudAPI?.sendHangup?.(fromUid);
+            window.showToast('已拒接語音通話', 'info');
+        };
 
-                peerConnection = new RTCPeerConnection(rtcConfig);
-                stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
-
-                peerConnection.ontrack = (event) => {
-                    const remoteAudio = document.getElementById("remote-voice-audio");
-                    if (remoteAudio && event.streams[0]) {
-                        remoteAudio.srcObject = event.streams[0];
-                        remoteAudio.play().catch(() => {});
-                    }
-                };
-
-                const callRef = ref(db, `voiceCalls/${roomId}`);
-                const callerCandidatesRef = ref(db, `voiceCalls/${roomId}/callerCandidates`);
-                const calleeCandidatesRef = ref(db, `voiceCalls/${roomId}/calleeCandidates`);
-
-                attachIceRecovery(peerConnection, null);
-
-                peerConnection.onicecandidate = async (event) => {
-                    if (event.candidate) {
-                        await set(push(calleeCandidatesRef), event.candidate.toJSON()).catch(() => {});
-                    }
-                };
-
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(incoming.offer));
-                const answer = await peerConnection.createAnswer();
-                await peerConnection.setLocalDescription(answer);
-
-                await update(callRef, {
-                    status: "accepted",
-                    answer: { type: answer.type, sdp: answer.sdp, ts: Date.now() }
-                });
-
-                showActiveCallBar(`與 ${incoming.callerName || "流浪者"} 通話中`);
+        window.handleRemoteCallAnswer = async function(answerDoc) {
+            if (!peerConnection || !answerDoc || answerDoc.toUid !== window.currentUserUid) return;
+            try {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: answerDoc.sdp }));
+                showActiveCallBar(currentCallPartnerName, '語音通話中');
                 startCallTimer();
+            } catch (e) {}
+        };
 
-                callCandidatesUnsub = onChildAdded(callerCandidatesRef, async (snap) => {
-                    const cand = snap.val();
-                    if (cand && peerConnection && peerConnection.remoteDescription && !addedIceCandidateIds.has(snap.key)) {
-                        addedIceCandidateIds.add(snap.key);
-                        await peerConnection.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
-                    }
+        window.handleRemoteIceCandidate = async function(candDoc) {
+            if (!peerConnection || !candDoc || candDoc.toUid !== window.currentUserUid) return;
+            const key = candDoc.id || JSON.stringify(candDoc.candidate);
+            if (processedCandidateIds.has(key)) return;
+            processedCandidateIds.add(key);
+            try { if (candDoc.candidate) await peerConnection.addIceCandidate(new RTCIceCandidate(candDoc.candidate)); } catch (e) {}
+        };
+
+        window.toggleCallMute = function() {
+            if (!localStream) return;
+            isCallMuted = !isCallMuted;
+            localStream.getAudioTracks().forEach(t => { t.enabled = !isCallMuted; });
+            if (rawMicStream) rawMicStream.getAudioTracks().forEach(t => { t.enabled = !isCallMuted; });
+            const icon = document.getElementById('mute-icon'), label = document.getElementById('mute-label');
+            if (icon) icon.className = isCallMuted ? 'fa-solid fa-microphone-slash text-red-400' : 'fa-solid fa-microphone text-emerald-400';
+            if (label) label.textContent = isCallMuted ? '已靜音' : '靜音';
+        };
+
+        window.hangupVoiceCall = async function(notifyPeer = true) {
+            window.stopIncomingCallVibration();
+            if (notifyPeer && currentCallPartnerUid && window.voiceCallCloudAPI?.sendHangup) await window.voiceCallCloudAPI.sendHangup(currentCallPartnerUid);
+            cleanupCallLocal(true);
+        };
+
+        function cleanupCallLocal(showMsg) {
+            window.stopIncomingCallVibration();
+            stopCallTimer(); hideActiveCallBar();
+            const incModal = document.getElementById('incoming-call-modal');
+            if (incModal) { incModal.classList.add('hidden'); incModal.classList.remove('flex'); }
+            if (peerConnection) { try { peerConnection.close(); } catch (e) {} peerConnection = null; }
+            if (!window.state.inVoiceRoom) {
+                cleanupVoiceChangerGraph();
+                if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+                if (rawMicStream) { rawMicStream.getTracks().forEach(t => t.stop()); rawMicStream = null; }
+            }
+            const audioEl = document.getElementById('remote-voice-audio');
+            if (audioEl) audioEl.srcObject = null;
+            currentCallPartnerUid = null; currentCallPartnerName = ''; incomingCallData = null; isCallMuted = false;
+            updateVoiceCallButtonState();
+            if (showMsg) window.showToast('語音通話已結束', 'info');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initUserProfile();
+            initGearMenuControls();
+            updateCalculatorUI();
+            renderReferenceDatabase();
+            window.renderChatMessages();
+            window.renderMarketListings();
+            renderDmSidebar();
+            window.renderDmMessages();
+            window.renderPublicVoiceRoomUI();
+            updateVoiceCallButtonState();
+            startHourlyCyberScheduler();
+        });
+    </script>
+
+    <!-- Firebase 雲端同步模組（保留既有全部功能 + 線上交易市場 + Boss 討伐活動血量同步） -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import {
+            getFirestore, collection, addDoc, query, orderBy, limit,
+            onSnapshot, doc, setDoc, deleteDoc, getDoc, updateDoc, increment
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2u0x30C-J0i0eI0u992q366O6aP7i1b8",
+            authDomain: "backrooms-level0-chat.firebaseapp.com",
+            projectId: "backrooms-level0-chat",
+            storageBucket: "backrooms-level0-chat.appspot.com",
+            messagingSenderId: "102938475610",
+            appId: "1:102938475610:web:a1b2c3d4e5f6g7h8i9j0k1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const myUid = window.currentUserUid;
+        let isInitialChatLoad = true, knownChatIds = new Set(), dmRoomUnsub = null;
+        let activeRpsDuelId = null, rpsCountdownInterval = null, rpsOutcomeProcessed = false;
+
+        function setConnectionBadge(connected, labelText) {
+            const badge = document.getElementById('chat-connection-badge');
+            if (!badge) return;
+            badge.className = connected
+                ? 'px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-600/50 text-[10px] font-mono-tech font-bold flex items-center gap-1.5'
+                : 'px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-600/50 text-[10px] font-mono-tech font-bold flex items-center gap-1.5';
+            badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-400 animate-ping' : 'bg-amber-400'}"></span> ${labelText}`;
+        }
+
+        /* 線上交易市場雲端 API */
+        window.marketCloudAPI = {
+            async createListing(data) {
+                await addDoc(collection(db, 'backrooms_market'), data);
+            },
+            async deleteListing(listingId) {
+                await deleteDoc(doc(db, 'backrooms_market', listingId));
+            }
+        };
+
+        onSnapshot(query(collection(db, 'backrooms_market'), orderBy('createdAt', 'desc'), limit(60)), (snapshot) => {
+            const items = [];
+            snapshot.forEach((d) => items.push({ id: d.id, ...d.data() }));
+            window.state.marketListings = items;
+            if (typeof window.renderMarketListings === 'function') window.renderMarketListings();
+        });
+
+        /* Boss 討伐活動雲端 API */
+        window.bossCloudAPI = {
+            async startEvent(maxHp) {
+                await setDoc(doc(db, 'backrooms_events', 'boss_battle'), {
+                    active: true,
+                    maxHp: Number(maxHp) || 2000,
+                    hp: Number(maxHp) || 2000,
+                    startedAt: Date.now()
                 });
+            },
+            async dealDamage(dmg) {
+                const ref = doc(db, 'backrooms_events', 'boss_battle');
+                const snap = await getDoc(ref);
+                if (!snap.exists()) return;
+                const current = Number(snap.data().hp ?? 0);
+                const nextHp = Math.max(0, current - (Number(dmg) || 20));
+                await updateDoc(ref, { hp: nextHp, active: nextHp > 0 });
+            },
+            async endEvent() {
+                await setDoc(doc(db, 'backrooms_events', 'boss_battle'), { active: false, hp: 0, endedAt: Date.now() }, { merge: true });
+            }
+        };
 
-                callUnsub = onValue(callRef, async (snap) => {
-                    const data = snap.val();
-                    if (!snap.exists() || !data) {
-                        cleanupVoiceCallResources();
-                        refreshVoiceCallButtonState();
-                        window.showToast("對方已掛斷語音通話", "info");
-                        return;
+        window.chatCloudAPI = {
+            async sendMessage(nickname, text, avatar, isAdmin, effect, avatarFrame = '', adminRole = '', isVip = false) {
+                await addDoc(collection(db, 'backrooms_chat'), {
+                    nickname: (nickname || '無名流浪者').trim().slice(0, 20),
+                    text: text.trim().slice(0, 300),
+                    avatar: (avatar && avatar.startsWith('data:image/')) ? avatar : '',
+                    senderUid: myUid,
+                    isAdmin: Boolean(isAdmin),
+                    adminRole: isAdmin ? (adminRole || 'main') : '',
+                    isVip: Boolean(isVip),
+                    effect: effect || '',
+                    avatarFrame: avatarFrame || '',
+                    createdAt: Date.now()
+                });
+            },
+            async sendImageMessage(nickname, imageDataUrl, expiresAt, avatar, isAdmin, effect, avatarFrame = '', adminRole = '', isVip = false) {
+                await addDoc(collection(db, 'backrooms_chat'), {
+                    nickname: (nickname || '無名流浪者').trim().slice(0, 20),
+                    text: '',
+                    imageUrl: imageDataUrl,
+                    expiresAt: Number(expiresAt) || (Date.now() + 24 * 60 * 60 * 1000),
+                    avatar: (avatar && avatar.startsWith('data:image/')) ? avatar : '',
+                    senderUid: myUid,
+                    isAdmin: Boolean(isAdmin),
+                    adminRole: isAdmin ? (adminRole || 'main') : '',
+                    isVip: Boolean(isVip),
+                    effect: effect || '',
+                    avatarFrame: avatarFrame || '',
+                    createdAt: Date.now()
+                });
+            },
+            async deleteMessage(msgId) { await deleteDoc(doc(db, 'backrooms_chat', msgId)); },
+            async setMuteUser(targetUid, muted, nickname) {
+                await setDoc(doc(db, 'backrooms_muted', targetUid), { uid: targetUid, nickname: nickname || '', muted: Boolean(muted), updatedAt: Date.now() });
+            },
+            async grantCoresToUser(targetUid, amount) {
+                await addDoc(collection(db, 'backrooms_core_grants'), { targetUid, amount: Number(amount) || 20, fromUid: myUid, createdAt: Date.now() });
+            }
+        };
+
+        window.eventsCloudAPI = {
+            async broadcastCyberEvent(endsAt) { await setDoc(doc(db, 'backrooms_events', 'cyber_mode'), { endsAt: Number(endsAt), updatedAt: Date.now() }); },
+            async broadcastRedPacketEvent(waveId, packets) { await setDoc(doc(db, 'backrooms_events', 'red_packet_wave'), { waveId, packets, createdAt: Date.now() }); },
+            async broadcastDanmaku(danmakuId, nickname, text, isVip, isAdmin, adminRole) {
+                await setDoc(doc(db, 'backrooms_events', 'vip_danmaku'), { danmakuId, nickname, text, isVip: Boolean(isVip), isAdmin: Boolean(isAdmin), adminRole: adminRole || '', createdAt: Date.now() });
+            }
+        };
+
+        window.voiceRoomCloudAPI = {
+            async setRoomEnabled(enabled) { await setDoc(doc(db, 'backrooms_voice_room', 'config'), { enabled: Boolean(enabled), updatedAt: Date.now() }, { merge: true }); },
+            async joinRoom(memberInfo) { await setDoc(doc(db, 'backrooms_voice_room_members', myUid), { uid: myUid, nickname: memberInfo.nickname || '流浪者', avatar: memberInfo.avatar || '', muted: Boolean(memberInfo.muted), joinedAt: Date.now() }); },
+            async setMuted(muted) { await setDoc(doc(db, 'backrooms_voice_room_members', myUid), { muted: Boolean(muted), updatedAt: Date.now() }, { merge: true }); },
+            async leaveRoom() { await deleteDoc(doc(db, 'backrooms_voice_room_members', myUid)); },
+            async sendSignal(targetUid, payload) { await addDoc(collection(db, 'backrooms_voice_room_signals'), { fromUid: myUid, toUid: targetUid, payload, createdAt: Date.now() }); },
+            async deleteSignal(signalId) { try { await deleteDoc(doc(db, 'backrooms_voice_room_signals', signalId)); } catch (e) {} }
+        };
+
+        window.rpsCloudAPI = {
+            async createDuel(targetUser) {
+                const duelRef = await addDoc(collection(db, 'backrooms_rps_duels'), {
+                    challengerUid: myUid,
+                    challengerName: window.getEffectiveNickname(),
+                    opponentUid: targetUser.uid,
+                    opponentName: targetUser.nickname || '流浪者',
+                    challengerMove: '',
+                    opponentMove: '',
+                    status: 'active',
+                    expiresAt: Date.now() + 20000,
+                    createdAt: Date.now()
+                });
+                openRpsDuelModal(duelRef.id, {
+                    challengerUid: myUid,
+                    challengerName: window.getEffectiveNickname(),
+                    opponentUid: targetUser.uid,
+                    opponentName: targetUser.nickname || '流浪者',
+                    expiresAt: Date.now() + 20000
+                });
+            },
+            async submitMove(duelId, isChallenger, move) {
+                const field = isChallenger ? 'challengerMove' : 'opponentMove';
+                await updateDoc(doc(db, 'backrooms_rps_duels', duelId), { [field]: move });
+            },
+            async finishDuel(duelId, loserUid) {
+                try { await updateDoc(doc(db, 'backrooms_rps_duels', duelId), { status: 'finished', loserUid: loserUid || '' }); } catch (e) {}
+            }
+        };
+
+        function getRpsWinner(moveA, moveB) {
+            if (!moveA && !moveB) return 'draw';
+            if (moveA && !moveB) return 'A';
+            if (!moveA && moveB) return 'B';
+            if (moveA === moveB) return 'draw';
+            if ((moveA === 'rock' && moveB === 'scissors') || (moveA === 'scissors' && moveB === 'paper') || (moveA === 'paper' && moveB === 'rock')) return 'A';
+            return 'B';
+        }
+
+        function closeRpsDuelModal() {
+            if (rpsCountdownInterval) { clearInterval(rpsCountdownInterval); rpsCountdownInterval = null; }
+            activeRpsDuelId = null; rpsOutcomeProcessed = false;
+            const modal = document.getElementById('rps-duel-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        }
+
+        function openRpsDuelModal(duelId, duelData) {
+            if (activeRpsDuelId === duelId) return;
+            activeRpsDuelId = duelId; rpsOutcomeProcessed = false;
+            const isChallenger = duelData.challengerUid === myUid;
+            const myName = isChallenger ? (duelData.challengerName || '我') : (duelData.opponentName || '我');
+            const oppName = isChallenger ? (duelData.opponentName || '對手') : (duelData.challengerName || '對手');
+
+            document.getElementById('rps-my-name').textContent = myName;
+            document.getElementById('rps-opp-name').textContent = oppName;
+            document.getElementById('rps-my-status').textContent = '請出拳';
+            document.getElementById('rps-opp-status').textContent = '思考中...';
+            document.querySelectorAll('.rps-move-btn').forEach(b => { b.disabled = false; });
+
+            const modal = document.getElementById('rps-duel-modal');
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+
+            const expiresAt = Number(duelData.expiresAt) || (Date.now() + 20000);
+            if (rpsCountdownInterval) clearInterval(rpsCountdownInterval);
+            rpsCountdownInterval = setInterval(() => {
+                const remainSec = Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000));
+                const timerEl = document.getElementById('rps-timer-sec');
+                if (timerEl) timerEl.textContent = String(remainSec);
+                if (remainSec <= 0 && !rpsOutcomeProcessed) finalizeRpsDuel(duelId, duelData, true);
+            }, 250);
+        }
+
+        function finalizeRpsDuel(duelId, duelData, isTimeout) {
+            if (rpsOutcomeProcessed) return;
+            rpsOutcomeProcessed = true;
+            if (rpsCountdownInterval) { clearInterval(rpsCountdownInterval); rpsCountdownInterval = null; }
+
+            const cMove = duelData.challengerMove || '';
+            const oMove = duelData.opponentMove || '';
+            const isChallenger = duelData.challengerUid === myUid;
+
+            if (!isTimeout && cMove === oMove && cMove !== '') {
+                window.showToast('平手！2 秒後重新猜拳！', 'info');
+                setTimeout(() => {
+                    rpsOutcomeProcessed = false;
+                    document.querySelectorAll('.rps-move-btn').forEach(b => { b.disabled = false; });
+                    updateDoc(doc(db, 'backrooms_rps_duels', duelId), { challengerMove: '', opponentMove: '', expiresAt: Date.now() + 20000 }).catch(() => {});
+                    const nextExp = Date.now() + 20000;
+                    rpsCountdownInterval = setInterval(() => {
+                        const r = Math.max(0, Math.ceil((nextExp - Date.now()) / 1000));
+                        const t = document.getElementById('rps-timer-sec');
+                        if (t) t.textContent = String(r);
+                        if (r <= 0 && !rpsOutcomeProcessed) finalizeRpsDuel(duelId, { ...duelData, challengerMove: '', opponentMove: '', expiresAt: nextExp }, true);
+                    }, 250);
+                }, 1500);
+                return;
+            }
+
+            let loserUid = '';
+            if (isTimeout) {
+                if (!cMove && oMove) loserUid = duelData.challengerUid;
+                else if (cMove && !oMove) loserUid = duelData.opponentUid;
+                else if (!cMove && !oMove) loserUid = myUid;
+                else {
+                    const w = getRpsWinner(cMove, oMove);
+                    if (w === 'A') loserUid = duelData.opponentUid;
+                    else if (w === 'B') loserUid = duelData.challengerUid;
+                    else loserUid = myUid;
+                }
+            } else {
+                const w = getRpsWinner(cMove, oMove);
+                if (w === 'A') loserUid = duelData.opponentUid;
+                else if (w === 'B') loserUid = duelData.challengerUid;
+            }
+
+            if (isChallenger) window.rpsCloudAPI?.finishDuel?.(duelId, loserUid);
+            if (loserUid === myUid) window.applyPigPenalty(30000);
+            else if (loserUid) window.showToast('🎉 猜拳獲勝！對方名字已變成「我是豬」30 秒！', 'success');
+            else window.showToast('本局平手！', 'info');
+
+            setTimeout(() => closeRpsDuelModal(), 1200);
+        }
+
+        window.submitRpsMove = async function(move) {
+            if (!activeRpsDuelId || rpsOutcomeProcessed) return;
+            document.querySelectorAll('.rps-move-btn').forEach(b => { b.disabled = true; });
+            document.getElementById('rps-my-status').textContent = '已出拳，等待對手...';
+            const snap = await getDoc(doc(db, 'backrooms_rps_duels', activeRpsDuelId));
+            if (!snap.exists()) return;
+            const d = snap.data();
+            const isChallenger = d.challengerUid === myUid;
+            await window.rpsCloudAPI?.submitMove?.(activeRpsDuelId, isChallenger, move);
+        };
+
+        onSnapshot(query(collection(db, 'backrooms_rps_duels'), orderBy('createdAt', 'desc'), limit(15)), (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === 'added' || change.type === 'modified') {
+                    const data = change.data();
+                    if (!data || data.status === 'finished') return;
+                    if (data.challengerUid !== myUid && data.opponentUid !== myUid) return;
+                    if (!activeRpsDuelId && Number(data.expiresAt || 0) > Date.now()) openRpsDuelModal(change.id, data);
+                    if (activeRpsDuelId === change.id) {
+                        const isChallenger = data.challengerUid === myUid;
+                        const myMove = isChallenger ? data.challengerMove : data.opponentMove;
+                        const oppMove = isChallenger ? data.opponentMove : data.challengerMove;
+                        document.getElementById('rps-my-status').textContent = myMove ? '已出拳' : '請出拳';
+                        document.getElementById('rps-opp-status').textContent = oppMove ? '已出拳！' : '思考中...';
+                        if (myMove && oppMove && !rpsOutcomeProcessed) finalizeRpsDuel(change.id, data, false);
                     }
-                    if (data.offer && peerConnection && data.offer.sdp !== peerConnection.remoteDescription?.sdp) {
-                        if (peerConnection.signalingState === "stable" || peerConnection.signalingState === "have-local-offer") {
-                            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer)).catch(() => {});
-                            if (peerConnection.signalingState === "have-remote-offer") {
-                                const reAnswer = await peerConnection.createAnswer();
-                                await peerConnection.setLocalDescription(reAnswer);
-                                await update(callRef, {
-                                    answer: { type: reAnswer.type, sdp: reAnswer.sdp, ts: Date.now() }
-                                });
+                }
+            });
+        });
+
+        window.dmCloudAPI = {
+            async sendRequest(targetUser) {
+                const reqId = `${myUid}__${targetUser.uid}`;
+                await setDoc(doc(db, 'backrooms_dm_requests', reqId), {
+                    fromUid: myUid, fromNickname: window.getEffectiveNickname(),
+                    fromAvatar: (window.state.userAvatar && window.state.userAvatar.startsWith('data:image/')) ? window.state.userAvatar : '',
+                    toUid: targetUser.uid, toNickname: targetUser.nickname || '流浪者', toAvatar: targetUser.avatar || '',
+                    status: 'pending', updatedAt: Date.now()
+                });
+            },
+            async acceptRequest(reqId, reqData) {
+                const roomId = [reqData.fromUid, reqData.toUid].sort().join('__');
+                await setDoc(doc(db, 'backrooms_dm_rooms', roomId), {
+                    uidA: reqData.fromUid, uidB: reqData.toUid,
+                    members: {
+                        [reqData.fromUid]: { nickname: reqData.fromNickname || '流浪者', avatar: reqData.fromAvatar || '' },
+                        [reqData.toUid]: { nickname: reqData.toNickname || window.getEffectiveNickname(), avatar: reqData.toAvatar || ((window.state.userAvatar && window.state.userAvatar.startsWith('data:image/')) ? window.state.userAvatar : '') }
+                    },
+                    updatedAt: Date.now()
+                }, { merge: true });
+                await deleteDoc(doc(db, 'backrooms_dm_requests', reqId));
+                return roomId;
+            },
+            async rejectRequest(reqId) { await deleteDoc(doc(db, 'backrooms_dm_requests', reqId)); },
+            subscribeRoomMessages(roomId) {
+                if (dmRoomUnsub) { dmRoomUnsub(); dmRoomUnsub = null; }
+                dmRoomUnsub = onSnapshot(query(collection(db, 'backrooms_dm_rooms', roomId, 'messages'), orderBy('createdAt', 'asc'), limit(80)), async (snapshot) => {
+                    const list = [];
+                    snapshot.forEach((d) => list.push({ id: d.id, ...d.data() }));
+                    if (list.length > 50) {
+                        const overflow = list.length - 50;
+                        for (let i = 0; i < overflow; i++) { try { await deleteDoc(doc(db, 'backrooms_dm_rooms', roomId, 'messages', list[i].id)); } catch (e) {} }
+                    }
+                    window.state.dmMessages = list.slice(-50);
+                    if (typeof window.renderDmMessages === 'function') window.renderDmMessages();
+                });
+            },
+            async sendMessage(roomId, nickname, text) {
+                await addDoc(collection(db, 'backrooms_dm_rooms', roomId, 'messages'), { senderUid: myUid, nickname: (nickname || '流浪者').trim().slice(0, 20), text: text.trim().slice(0, 300), createdAt: Date.now() });
+                const snap = await getDoc(query(collection(db, 'backrooms_dm_rooms', roomId, 'messages'), orderBy('createdAt', 'asc'), limit(80))._query ? doc(db, 'backrooms_dm_rooms', roomId) : doc(db, 'backrooms_dm_rooms', roomId));
+                if (snap.exists()) {
+                    const allMsgs = window.state.dmMessages || [];
+                    if (allMsgs.length > 50) {
+                        const extra = allMsgs.length - 50;
+                        for (let i = 0; i < extra; i++) { try { await deleteDoc(doc(db, 'backrooms_dm_rooms', roomId, 'messages', allMsgs[i].id)); } catch (e) {} }
+                    }
+                }
+            }
+        };
+
+        window.voiceCallCloudAPI = {
+            async sendOffer(toUid, fromNickname, sdp) { await setDoc(doc(db, 'backrooms_calls', `${myUid}__${toUid}`), { fromUid: myUid, fromNickname, toUid, sdp, updatedAt: Date.now() }); },
+            async sendAnswer(toUid, sdp) { await setDoc(doc(db, 'backrooms_call_answers', `${toUid}__${myUid}`), { fromUid: myUid, toUid, sdp, updatedAt: Date.now() }); },
+            async sendCandidate(toUid, candidate) { await addDoc(collection(db, 'backrooms_call_candidates'), { fromUid: myUid, toUid, candidate, createdAt: Date.now() }); },
+            async sendHangup(toUid) {
+                if (!toUid) return;
+                await setDoc(doc(db, 'backrooms_call_hangups', `${myUid}__${toUid}`), { fromUid: myUid, toUid, updatedAt: Date.now() });
+                try { await deleteDoc(doc(db, 'backrooms_calls', `${myUid}__${toUid}`)); } catch (e) {}
+                try { await deleteDoc(doc(db, 'backrooms_calls', `${toUid}__${myUid}`)); } catch (e) {}
+            }
+        };
+
+        onSnapshot(query(collection(db, 'backrooms_chat'), orderBy('createdAt', 'asc'), limit(120)), (snapshot) => {
+            setConnectionBadge(true, '雲端同步中');
+            const messages = [];
+            snapshot.forEach((docSnap) => messages.push({ id: docSnap.id, ...docSnap.data() }));
+            window.state.chatMessages = messages;
+            if (!isInitialChatLoad) {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const data = change.data();
+                        if (!knownChatIds.has(change.id)) {
+                            knownChatIds.add(change.id);
+                            if (data.senderUid && data.senderUid !== myUid) {
+                                if (window.state.activeTab !== 'chat') {
+                                    const badge = document.getElementById('unread-chat-badge');
+                                    if (badge) badge.classList.remove('hidden');
+                                    window.showTopMessageBanner(data);
+                                }
+                                window.pushSystemNotification(`LEVEL-0 討論區 // ${data.nickname || '流浪者'}`, data.text || '[傳送了一張圖片]', data.avatar || null, { isCall: false });
                             }
                         }
                     }
                 });
-            } catch (err) {
-                console.error(err);
-                cleanupVoiceCallResources();
-                refreshVoiceCallButtonState();
-                window.showToast(err.message || "接聽語音失敗", "error");
+            } else {
+                snapshot.forEach((d) => knownChatIds.add(d.id));
+                isInitialChatLoad = false;
             }
-        };
+            if (typeof window.renderChatMessages === 'function') window.renderChatMessages();
+        }, () => setConnectionBadge(false, '連線重試中'));
 
-        window.rejectVoiceCall = async function() {
-            const incoming = pendingIncomingCall;
-            const modal = document.getElementById("incoming-call-modal");
-            if (modal) { modal.classList.add("hidden"); modal.classList.remove("flex"); }
-            window.stopIncomingCallVibration();
-            pendingIncomingCall = null;
-            if (incoming && incoming.roomId) {
-                await update(ref(db, `voiceCalls/${incoming.roomId}`), { status: "rejected" }).catch(() => {});
-            }
-        };
-
-        window.toggleCallMute = function() {
-            isCallMuted = !isCallMuted;
-            setOutgoingAudioEnabled(!isCallMuted);
-            const icon = document.getElementById("mute-icon");
-            const label = document.getElementById("mute-label");
-            if (icon) icon.className = isCallMuted ? "fa-solid fa-microphone-slash text-red-400" : "fa-solid fa-microphone";
-            if (label) label.textContent = isCallMuted ? "取消靜音" : "靜音";
-        };
-
-        window.hangupVoiceCall = async function(notifyRemote = true) {
-            const roomIdToEnd = currentCallRoomId;
-            cleanupVoiceCallResources();
-            refreshVoiceCallButtonState();
-            if (notifyRemote && roomIdToEnd) {
-                await remove(ref(db, `voiceCalls/${roomIdToEnd}`)).catch(() => {});
-            }
-        };
-
-        onValue(ref(db, "voiceCalls"), (snapshot) => {
-            const allCalls = snapshot.val() || {};
-            const myUid = window.currentUserUid;
-            const incModal = document.getElementById("incoming-call-modal");
-            const incNameEl = document.getElementById("incoming-caller-name");
-
-            let foundRinging = null;
-            Object.values(allCalls).forEach(call => {
-                if (!call) return;
-                if (call.calleeUid === myUid && call.status === "ringing" && call.offer) {
-                    foundRinging = call;
-                }
-            });
-
-            if (foundRinging && !currentCallRoomId) {
-                const isNewCall = !pendingIncomingCall || pendingIncomingCall.roomId !== foundRinging.roomId;
-                pendingIncomingCall = foundRinging;
-                if (incNameEl) incNameEl.textContent = `${foundRinging.callerName || "流浪者"} 來電中...`;
-                if (incModal) { incModal.classList.remove("hidden"); incModal.classList.add("flex"); }
-                if (isNewCall) {
-                    window.startIncomingCallVibration();
-                    window.pushSystemNotification(
-                        "LEVEL-0 語音來電",
-                        `${foundRinging.callerName || "流浪者"} 正在撥打語音通話`,
-                        null,
-                        { isCall: true }
-                    );
-                }
-            } else if (!foundRinging && pendingIncomingCall) {
-                pendingIncomingCall = null;
-                window.stopIncomingCallVibration();
-                if (incModal) { incModal.classList.add("hidden"); incModal.classList.remove("flex"); }
-            }
+        onSnapshot(collection(db, 'backrooms_muted'), (snapshot) => {
+            const mutedMap = {};
+            snapshot.forEach((d) => { const data = d.data(); if (data && data.muted) mutedMap[d.id] = true; });
+            window.state.mutedUsers = mutedMap;
+            if (typeof window.renderChatMessages === 'function') window.renderChatMessages();
         });
 
-        /* =========================================================
-           5. 聊天室 / 轉贈 / 私聊 / 全體活動雲端同步
-        ========================================================= */
-        window.chatCloudAPI = {
-            sendMessage: async (nickname, text, avatar, isAdmin, chatEffect, avatarFrame, adminRole, isVip) => {
-                const msgRef = push(ref(db, "messages"));
-                await set(msgRef, {
-                    senderUid: window.currentUserUid,
-                    nickname: nickname || "無名流浪者",
-                    text,
-                    avatar: (avatar && avatar.startsWith("data:image/")) ? avatar : DEFAULT_AVATAR_URL,
-                    isAdmin: Boolean(isAdmin),
-                    adminRole: isAdmin ? (adminRole || "main") : "",
-                    isVip: Boolean(isVip),
-                    chatEffect: chatEffect || "",
-                    avatarFrame: avatarFrame || "",
-                    hasCyberFrame: avatarFrame === "cyber",
-                    createdAt: Date.now()
-                });
-            },
-            sendImageMessage: async (nickname, imageDataUrl, expiresAt, avatar, isAdmin, chatEffect, avatarFrame, adminRole, isVip) => {
-                const msgRef = push(ref(db, "messages"));
-                await set(msgRef, {
-                    senderUid: window.currentUserUid,
-                    nickname: nickname || "無名流浪者",
-                    text: "",
-                    imageUrl: imageDataUrl,
-                    expiresAt: Number(expiresAt || (Date.now() + TWENTY_FOUR_HOURS_MS)),
-                    avatar: (avatar && avatar.startsWith("data:image/")) ? avatar : DEFAULT_AVATAR_URL,
-                    isAdmin: Boolean(isAdmin),
-                    adminRole: isAdmin ? (adminRole || "main") : "",
-                    isVip: Boolean(isVip),
-                    chatEffect: chatEffect || "",
-                    avatarFrame: avatarFrame || "",
-                    hasCyberFrame: avatarFrame === "cyber",
-                    createdAt: Date.now()
-                });
-            },
-            deleteMessage: async (msgId) => {
-                if (!msgId) return;
-                await remove(ref(db, `messages/${msgId}`));
-            },
-            setMuteUser: async (targetUid, muted, nickname) => {
-                if (!targetUid) return;
-                if (muted) {
-                    await set(ref(db, `mutedUsers/${targetUid}`), { nickname: nickname || "", mutedAt: Date.now() });
-                } else {
-                    await remove(ref(db, `mutedUsers/${targetUid}`));
-                }
-            },
-            grantCoresToUser: async (targetUid, amount) => {
-                if (!targetUid || !amount || amount <= 0) return;
-                const giftRef = push(ref(db, `coreGifts/${targetUid}`));
-                await set(giftRef, {
-                    amount: Number(amount),
-                    fromUid: window.currentUserUid,
-                    fromNick: window.getEffectiveNickname(),
-                    createdAt: Date.now()
-                });
-            }
-        };
-
-        onValue(myGiftCoresRef, async (snapshot) => {
-            const gifts = snapshot.val();
-            if (!gifts) return;
-            let totalAdded = 0;
-            const keys = Object.keys(gifts);
-            keys.forEach(k => {
-                const g = gifts[k];
-                if (g && Number(g.amount) > 0) totalAdded += Number(g.amount);
-            });
-            if (totalAdded > 0) {
-                window.state.energyCores += totalAdded;
-                saveLocalPlayerItems();
-                updateVipAndCurrencyUI();
-                window.showToast(`⚡ 收到 ${totalAdded} 能量核心！`, "success");
-            }
-            for (const k of keys) {
-                await remove(ref(db, `coreGifts/${window.currentUserUid}/${k}`)).catch(() => {});
-            }
-        });
-
-        window.eventsCloudAPI = {
-            broadcastCyberEvent: async (endsAt) => {
-                await set(cyberEventRef, { endsAt: Number(endsAt), triggeredAt: Date.now() });
-            },
-            broadcastRedPacketEvent: async (waveId, packets) => {
-                await set(redPacketEventRef, { waveId, packets, triggeredAt: Date.now() });
-            },
-            broadcastDanmaku: async (danmakuId, nickname, text, isVip, isAdmin, adminRole) => {
-                await set(danmakuEventRef, {
-                    danmakuId,
-                    nickname,
-                    text,
-                    isVip: Boolean(isVip),
-                    isAdmin: Boolean(isAdmin),
-                    adminRole: adminRole || "",
-                    triggeredAt: Date.now()
-                });
-            }
-        };
-
-        onValue(cyberEventRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data && Number(data.endsAt) > Date.now()) {
-                window.applyCloudCyberEvent(Number(data.endsAt));
-            }
-        });
-
-        onValue(redPacketEventRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data || !data.waveId || !Array.isArray(data.packets)) return;
-            if (Number(data.triggeredAt || 0) >= pageLoadedAt - 5000) {
-                window.spawnRedPacketWave(data.waveId, data.packets);
-            }
-        });
-
-        onValue(danmakuEventRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data || !data.text) return;
-            if (Number(data.triggeredAt || 0) >= pageLoadedAt - 3000) {
-                window.spawnDanmaku(data.danmakuId, data.nickname, data.text, data.isVip, data.isAdmin, data.adminRole);
-            }
-        });
-
-        window.dmCloudAPI = {
-            sendRequest: async (target) => {
-                const myUid = window.currentUserUid;
-                const reqId = `${myUid}__${target.uid}`;
-                await set(ref(db, `dmRequests/${reqId}`), {
-                    fromUid: myUid,
-                    fromNickname: window.getEffectiveNickname(),
-                    fromAvatar: window.state.userAvatar,
-                    toUid: target.uid,
-                    toNickname: target.nickname,
-                    status: "pending",
-                    updatedAt: Date.now()
-                });
-            },
-            acceptRequest: async (reqId, reqData) => {
-                const myUid = window.currentUserUid;
-                const otherUid = reqData.fromUid;
-                const roomId = getDmRoomId(myUid, otherUid);
-                const existingSnap = await get(ref(db, `dmRooms/${roomId}`));
-                if (!existingSnap.exists()) {
-                    await set(ref(db, `dmRooms/${roomId}`), {
-                        uidA: myUid,
-                        uidB: otherUid,
-                        members: {
-                            [myUid]: { nickname: window.getEffectiveNickname(), avatar: window.state.userAvatar },
-                            [otherUid]: { nickname: reqData.fromNickname || "流浪者", avatar: reqData.fromAvatar || DEFAULT_AVATAR_URL }
-                        },
-                        createdAt: Date.now()
-                    });
-                }
-                await update(ref(db, `dmRequests/${reqId}`), { status: "accepted", roomId, updatedAt: Date.now() });
-                return roomId;
-            },
-            rejectRequest: async (reqId) => {
-                await update(ref(db, `dmRequests/${reqId}`), { status: "rejected", updatedAt: Date.now() });
-            },
-            subscribeRoomMessages: (roomId) => {
-                if (window._dmRoomUnsub) { window._dmRoomUnsub(); window._dmRoomUnsub = null; }
-                const roomMsgsQuery = query(ref(db, `dmMessages/${roomId}`), limitToLast(60));
-                window._dmRoomUnsub = onValue(roomMsgsQuery, async (snapshot) => {
-                    const raw = snapshot.val() || {};
-                    const entries = Object.entries(raw).map(([id, val]) => ({ id, ...val }));
-                    entries.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-                    if (entries.length > 50) {
-                        const overflow = entries.slice(0, entries.length - 50);
-                        for (const item of overflow) {
-                            await remove(ref(db, `dmMessages/${roomId}/${item.id}`)).catch(() => {});
-                        }
-                        window.state.dmMessages = entries.slice(-50);
-                    } else {
-                        window.state.dmMessages = entries;
-                    }
-                    if (window.state.activeDmRoomId === roomId) window.renderDmMessages();
-                });
-            },
-            sendMessage: async (roomId, nickname, text) => {
-                const msgRef = push(ref(db, `dmMessages/${roomId}`));
-                await set(msgRef, {
-                    senderUid: window.currentUserUid,
-                    nickname: nickname || "無名流浪者",
-                    text,
-                    createdAt: Date.now()
-                });
-                const snap = await get(ref(db, `dmMessages/${roomId}`));
-                const val = snap.val() || {};
-                const list = Object.entries(val).map(([id, m]) => ({ id, ...m })).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-                if (list.length > 50) {
-                    const toDelete = list.slice(0, list.length - 50);
-                    for (const oldMsg of toDelete) {
-                        await remove(ref(db, `dmMessages/${roomId}/${oldMsg.id}`)).catch(() => {});
+        onSnapshot(query(collection(db, 'backrooms_core_grants'), orderBy('createdAt', 'desc'), limit(30)), async (snapshot) => {
+            for (const change of snapshot.docChanges()) {
+                if (change.type === 'added') {
+                    const data = change.data();
+                    if (data && data.targetUid === myUid && Number(data.amount) > 0) {
+                        const amt = Number(data.amount);
+                        window.state.energyCores += amt;
+                        try {
+                            localStorage.setItem('backrooms_energy_cores', String(window.state.energyCores));
+                            const coreEl = document.getElementById('energy-core-display');
+                            if (coreEl) coreEl.textContent = window.state.energyCores;
+                        } catch (e) {}
+                        window.showToast(`⚡ 獲得 ${amt} 能量核心！`, 'success');
+                        try { await deleteDoc(doc(db, 'backrooms_core_grants', change.id)); } catch (e) {}
                     }
                 }
             }
-        };
+        });
 
-        onValue(dmRequestsRef, (snapshot) => {
-            const allReqs = snapshot.val() || {};
-            const myUid = window.currentUserUid;
-            Object.entries(allReqs).forEach(([reqId, req]) => {
-                if (!req) return;
-                if (req.fromUid === myUid && req.status === "accepted" && req.roomId) {
-                    const roomId = req.roomId;
-                    setTimeout(async () => {
-                        const roomSnap = await get(ref(db, `dmRooms/${roomId}`));
-                        if (!roomSnap.exists()) {
-                            await set(ref(db, `dmRooms/${roomId}`), {
-                                uidA: myUid,
-                                uidB: req.toUid,
-                                members: {
-                                    [myUid]: { nickname: window.getEffectiveNickname(), avatar: window.state.userAvatar },
-                                    [req.toUid]: { nickname: req.toNickname || "流浪者", avatar: DEFAULT_AVATAR_URL }
-                                },
-                                createdAt: Date.now()
-                            }).catch(() => {});
-                        }
-                    }, 0);
+        onSnapshot(doc(db, 'backrooms_events', 'cyber_mode'), (docSnap) => {
+            if (docSnap.exists() && docSnap.data()?.endsAt) window.applyCloudCyberEvent(docSnap.data().endsAt);
+        });
+        onSnapshot(doc(db, 'backrooms_events', 'red_packet_wave'), (docSnap) => {
+            if (docSnap.exists() && docSnap.data()?.waveId && Array.isArray(docSnap.data()?.packets)) window.spawnRedPacketWave(docSnap.data().waveId, docSnap.data().packets);
+        });
+        onSnapshot(doc(db, 'backrooms_events', 'vip_danmaku'), (docSnap) => {
+            if (docSnap.exists() && docSnap.data()?.text) {
+                const d = docSnap.data();
+                window.spawnDanmaku(d.danmakuId || '', d.nickname || 'VIP', d.text, Boolean(d.isVip), Boolean(d.isAdmin), d.adminRole || '');
+            }
+        });
+        onSnapshot(doc(db, 'backrooms_events', 'boss_battle'), (docSnap) => {
+            if (docSnap.exists()) window.applyCloudBossEvent(docSnap.data());
+            else window.applyCloudBossEvent({ active: false });
+        });
+
+        onSnapshot(doc(db, 'backrooms_voice_room', 'config'), (docSnap) => {
+            window.state.voiceRoomEnabled = docSnap.exists() ? (docSnap.data()?.enabled !== false) : true;
+            window.renderPublicVoiceRoomUI();
+        });
+        onSnapshot(collection(db, 'backrooms_voice_room_members'), (snapshot) => {
+            const map = {};
+            snapshot.forEach((d) => { map[d.id] = d.data(); });
+            window.state.voiceRoomMembers = map;
+            window.renderPublicVoiceRoomUI();
+            window.syncVoiceRoomPeersWithMembers(map);
+        });
+        onSnapshot(query(collection(db, 'backrooms_voice_room_signals'), orderBy('createdAt', 'asc'), limit(60)), (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === 'added') {
+                    const d = change.data();
+                    if (d && d.toUid === myUid && d.fromUid !== myUid) window.handleVoiceRoomSignal(d.fromUid, change.id, d.payload);
                 }
             });
-            window.state.dmRequests = allReqs;
-            renderDmSidebar();
         });
 
-        onValue(dmRoomsRef, (snapshot) => {
-            window.state.dmRooms = snapshot.val() || {};
-            renderDmSidebar();
-            renderDmActiveHeader();
+        onSnapshot(collection(db, 'backrooms_dm_requests'), (snapshot) => {
+            const reqs = {};
+            let hasNewPendingForMe = false;
+            snapshot.forEach((d) => {
+                const data = d.data(); reqs[d.id] = data;
+                if (data && data.toUid === myUid && data.status === 'pending') hasNewPendingForMe = true;
+            });
+            window.state.dmRequests = reqs;
+            if (hasNewPendingForMe && window.state.activeTab !== 'dm') {
+                const badge = document.getElementById('unread-dm-badge');
+                if (badge) badge.classList.remove('hidden');
+            }
+        });
+        onSnapshot(collection(db, 'backrooms_dm_rooms'), (snapshot) => {
+            const rooms = {};
+            snapshot.forEach((d) => { rooms[d.id] = d.data(); });
+            window.state.dmRooms = rooms;
         });
 
-        async function checkMonthlyAutoReset() {
-            const currentMonth = getCurrentMonthKey();
-            try {
-                const snap = await get(monthlyResetRef);
-                const lastResetMonth = snap.val();
-                if (!lastResetMonth) {
-                    await set(monthlyResetRef, currentMonth);
-                } else if (lastResetMonth !== currentMonth) {
-                    await remove(ref(db, "messages"));
-                    await set(monthlyResetRef, currentMonth);
-                    window.showToast(`已進入 ${currentMonth}，本月公共頻道對話已自動重置`, "info");
+        onSnapshot(collection(db, 'backrooms_calls'), (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === 'added' || change.type === 'modified') {
+                    const data = change.data();
+                    if (data && data.toUid === myUid && data.fromUid !== myUid) window.handleIncomingCallOffer(data);
                 }
-            } catch (err) {}
-        }
-
-        checkMonthlyAutoReset();
-
-        onValue(mutedUsersRef, (snapshot) => {
-            window.state.mutedUsers = snapshot.val() || {};
-            window.renderChatMessages();
+            });
         });
-
-        let isInitialMessagesLoad = true;
-        onValue(messagesQuery, (snapshot) => {
-            const badge = document.getElementById("chat-connection-badge");
-            if (badge) {
-                badge.className = "px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-600/50 text-[10px] font-mono-tech font-bold flex items-center gap-1.5";
-                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> 即時連線中`;
-            }
-            const rawData = snapshot.val() || {};
-            const list = Object.entries(rawData).map(([id, val]) => ({ id, ...val }));
-            list.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-
-            if (!isInitialMessagesLoad && list.length > 0) {
-                const latest = list[list.length - 1];
-                if (latest.senderUid !== window.currentUserUid && (latest.createdAt || 0) >= pageLoadedAt - 2000) {
-                    if (window.state.activeTab !== "chat" || document.hidden || document.body.classList.contains("orb-minimized-mode")) {
-                        if (window.state.activeTab !== "chat") {
-                            document.getElementById("unread-chat-badge")?.classList.remove("hidden");
-                        }
-                        window.showTopMessageBanner(latest);
-                        window.pushSystemNotification(
-                            `後室討論區 // ${latest.nickname || "流浪者"}`,
-                            latest.text || (latest.imageUrl ? "[傳送了一張圖片]" : "新訊息"),
-                            latest.avatar
-                        );
-                    }
+        onSnapshot(collection(db, 'backrooms_call_answers'), (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === 'added' || change.type === 'modified') {
+                    const data = change.data();
+                    if (data && data.toUid === myUid) window.handleRemoteCallAnswer(data);
                 }
-            }
-            isInitialMessagesLoad = false;
-            window.state.chatMessages = list;
-            window.renderChatMessages();
-        }, (error) => {
-            console.error(error);
-            const badge = document.getElementById("chat-connection-badge");
-            if (badge) {
-                badge.className = "px-2 py-0.5 rounded bg-red-950 text-red-400 border border-red-600/50 text-[10px] font-mono-tech font-bold";
-                badge.textContent = "連線異常";
-            }
+            });
+        });
+        onSnapshot(query(collection(db, 'backrooms_call_candidates'), orderBy('createdAt', 'asc'), limit(80)), (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === 'added') {
+                    const data = change.data();
+                    if (data && data.toUid === myUid) window.handleRemoteIceCandidate({ id: change.id, ...data });
+                }
+            });
+        });
+        onSnapshot(collection(db, 'backrooms_call_hangups'), (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === 'added' || change.type === 'modified') {
+                    const data = change.data();
+                    if (data && data.toUid === myUid) window.hangupVoiceCall(false);
+                }
+            });
         });
     </script>
 </body>
-                                    </html>
+</html>
